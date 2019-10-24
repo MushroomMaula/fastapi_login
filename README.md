@@ -75,7 +75,8 @@ use your ``LoginManager`` instance as a dependency.
 
 ````python
 from fastapi.security import OAuth2PasswordBearer
-OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='/auth/token')
+# this has to be set first in order to use the instance as dependency
+manager.tokenUrl = '/auth/token'
 
 
 @app.get('/protected')
