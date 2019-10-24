@@ -50,7 +50,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@app.post('/protected', dependencies=[Depends(lm.protector)])
+@app.post('/protected', dependencies=[Depends(lm)])
 def protected_route():
     return {'status': 'Success'}
 
