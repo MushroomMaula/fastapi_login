@@ -71,7 +71,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
 ````
 
 Now whenever you want your user to be logged in to use a route, you can simply
-use the ``LoginManager.protector`` property as a dependency.
+use your ``LoginManager`` instance as a dependency.
 
 ````python
 from fastapi.security import OAuth2PasswordBearer
@@ -79,6 +79,6 @@ OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='/auth/token')
 
 
 @app.get('/protected')
-def protected_route(user: Depends(manager.protector):
+def protected_route(user: Depends(manager):
     ...
 ````
