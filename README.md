@@ -27,15 +27,16 @@ encoding and decoding our Json Web Tokens.
 from fastapi_login import LoginManager
 manager = LoginManager(app)
 ````
-For the example we will use a dictionary to represent our user database.In your
-application this could also be an database like sqlite or Postgres. It does not
+For the example we will use a dictionary to represent our user database. In your
+application this could also be a real database like sqlite or Postgres. It does not
 matter as you have to provide the function which retrieves the user.
 
 ````python
 fake_db = {'johndoe@e.mail': {'password': 'hunter2'}}
 ````
 
-Now we have to provide the ``LoginManager`` with a way to load our user.
+Now we have to provide the ``LoginManager`` with a way to load our user. The 
+`user_loader` callback should either return your user object or ``None``
 
 ````python
 @manager.user_loader
@@ -45,7 +46,7 @@ def load_user(email: str):  # could also be an asynchronous function
 ````
 
 Now we have to define a way to let the user login in our app. Therefore we will create
-a new route.
+a new route:
 
 ````python
 from fastapi import Depends
@@ -70,7 +71,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
 ````
 
 Now whenever you want your user to be logged in to use a route, you can simply
-use the ``LoginManager.get_current_user`` method.
+use the ``LoginManager.protector`` property as a dependency.
 
 ````python
 from fastapi.security import OAuth2PasswordBearer
@@ -80,10 +81,4 @@ OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='/auth/token')
 @app.get('/protected')
 def protected_route(user: Depends(manager.protector):
     ...
-````
-
-As this does not look very nice there is another Object that makes this easier
-
-````python
-# now we can use this as a dependency
 ````
