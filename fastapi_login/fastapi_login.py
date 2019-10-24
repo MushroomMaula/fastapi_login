@@ -23,30 +23,6 @@ def is_setup_correctly(app: Starlette) -> bool:
     return True
 
 
-class Protector:
-
-    def __init__(self, manager: 'LoginManager', tokenUrl: str):
-        """
-
-        :param manager: an instance of ``LoginManager``
-        :param tokenUrl: The api route where the user can login
-        """
-        self.manager = manager
-        self.tokenUrl = tokenUrl
-        self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
-
-    async def __call__(self, request: Request):
-        """
-
-        :param request: The HTTP Request
-        :return: The current user if possible
-        :raise: HTTPException if the user is not in the db or the token
-            format is invalid
-        """
-        token = await self.oauth_scheme(request)
-        return await self.manager.get_current_user(token)
-
-
 class LoginManager:
 
     def __init__(self, app: Starlette, tokenUrl: str = None, algorithm="HS256"):
@@ -62,6 +38,7 @@ class LoginManager:
         # this is not mandatory as they user may want to user their own
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
+        self.oauth_scheme = None
         self._protector = None
 
         if app is not None:
@@ -190,26 +167,14 @@ class LoginManager:
         encoded_jwt = jwt.encode(to_encode, str(self.app.config['secret']), self.algorithm)
         return encoded_jwt.decode()
 
-    @property
-    def protector(self):
-        """
-        Return a Protector instance.
-
-        Basic Usage::
-
-            @app.get('/protected')
-            def protected_route(user: Depends(manager.protector))
-
-        :return: an instance of Protector class where the manager is defaults
-            to this instance
-        """
-        if self.tokenUrl is None:
+    async def __call__(self, request: Request):
+        if not self.tokenUrl:
             raise Exception(
                 "You need to set the tokenUrl first!"
             )
 
-        # prevent the creation of a new protector every time
-        if self._protector is None:
-            self._protector = Protector(manager=self, tokenUrl=self.tokenUrl)
+        if self.oauth_scheme is None:
+            self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
 
-        return self._protector
+        token = await self.oauth_scheme(request)
+        return await self.get_current_user(token)
