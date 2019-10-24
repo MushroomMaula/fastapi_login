@@ -79,6 +79,6 @@ OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='/auth/token')
 
 
 @app.get('/protected')
-def protected_route(user: Depends(manager):
+def protected_route(user: Depends(manager)):
     ...
 ````
