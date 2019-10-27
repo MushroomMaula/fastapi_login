@@ -25,7 +25,7 @@ def is_setup_correctly(app: Starlette) -> bool:
 
 class LoginManager:
 
-    def __init__(self, app: Starlette, tokenUrl: str = None, algorithm="HS256"):
+    def __init__(self, app: Starlette = None, tokenUrl: str = None, algorithm="HS256"):
         """
         :param Starlette app: An instance or subclass of `Starlette`
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
