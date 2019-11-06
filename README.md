@@ -15,17 +15,18 @@ To begin we have to setup our FastAPI app:
 ````python
 from fastapi import FastAPI
 
+SECRET = "your-secret-key"
+
 app = FastAPI()
-app.config = {'secret': 'super-secret'}
 ````
-The config should be a ``Mapping`` or implement the ``__getitem__`` method.
+To obtain a suitable secret key you can run ``import os; print(os.urandom(24).hex())``.
 
 Now we can import and setup the LoginManager, which will handle the process of
 encoding and decoding our Json Web Tokens.
 
 ````python
 from fastapi_login import LoginManager
-manager = LoginManager(app)
+manager = LoginManager(SECRET, app)
 ````
 For the example we will use a dictionary to represent our user database. In your
 application this could also be a real database like sqlite or Postgres. It does not
@@ -74,7 +75,6 @@ Now whenever you want your user to be logged in to use a route, you can simply
 use your ``LoginManager`` instance as a dependency.
 
 ````python
-from fastapi.security import OAuth2PasswordBearer
 # this has to be set first in order to use the instance as dependency
 manager.tokenUrl = '/auth/token'
 
@@ -82,4 +82,10 @@ manager.tokenUrl = '/auth/token'
 @app.get('/protected')
 def protected_route(user: Depends(manager)):
     ...
+````
+
+You can also set the tokenUrl as a argument when initiating ``LoginManager``.
+
+````python
+manager = LoginManager(SECRET, App, tokenUrl="route/to/your/login/route")
 ````
