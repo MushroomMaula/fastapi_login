@@ -4,15 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
+async-asgi-testclient = "*"
+pytest-asyncio = "*"
 
 [packages]
-pytest = "*"
 fastapi = {extras = ["all"],version = "*"}
 passlib = {extras = ["bcrypt"],version = "*"}
 pyjwt = "*"
 python-multipart = "*"
-pytest-asyncio = "*"
-async-asgi-testclient = "*"
 
 [requires]
 python_version = "3.7"
