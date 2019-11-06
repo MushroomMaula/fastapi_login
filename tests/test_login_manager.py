@@ -6,7 +6,6 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_login import LoginManager
-from fastapi_login.config import FastAPIConfig
 from fastapi_login.exceptions import InvalidCredentialsException
 
 fake_db = {
@@ -27,9 +26,8 @@ fake_db = {
 
 app = FastAPI()
 client = TestClient(app)
-config = FastAPIConfig(app)
-config.set_secret(os.urandom(24).hex())
-lm = LoginManager(app, tokenUrl='/auth/token')
+SECRET = os.urandom(24).hex()
+lm = LoginManager(SECRET, app, tokenUrl='/auth/token')
 
 
 @app.post('/auth/token')
@@ -66,6 +64,8 @@ def load_user(email: str):
 async def async_load_user(email):
     return load_user(email)
 
+
+# TESTS
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('function', [load_user, async_load_user])
@@ -123,15 +123,8 @@ async def test_bad_user_identifier_in_token():
 
 
 @pytest.mark.asyncio
-async def test_bad_setup():
-    app = FastAPI()
-    with pytest.raises(Exception):
-        LoginManager(app)
-
-
-@pytest.mark.asyncio
 async def test_no_user_callback():
-    manager = LoginManager(app)
+    manager = LoginManager(SECRET, app)
     token = manager.create_access_token(data=dict(sub='john@doe.com'))
     with pytest.raises(Exception):
         try:
@@ -154,8 +147,10 @@ async def test_protector():
     )
     assert response.json()['status'] == 'Success'
 
+
 @pytest.mark.asyncio
 async def test_protect_tokenUrl_not_set():
-    manager = LoginManager(app)
+    manager = LoginManager(SECRET, app)
     with pytest.raises(Exception):
-        _ = manager.protector
+        await manager(None)
+
