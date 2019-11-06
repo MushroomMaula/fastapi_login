@@ -7,30 +7,22 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from starlette.applications import Starlette
+from starlette.datastructures import Secret
 from starlette.requests import Request
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
-def is_setup_correctly(app: Starlette) -> bool:
-    """
-    This checks if the app has the config attribute.
-    :param Starlette app: The app instance
-    :return: True if the app has a config attribute else False
-    """
-    if not hasattr(app, 'config'):
-        return False
-    return True
-
-
 class LoginManager:
 
-    def __init__(self, app: Starlette = None, tokenUrl: str = None, algorithm="HS256"):
+    def __init__(self, secret: str, app: Starlette = None, tokenUrl: str = None, algorithm="HS256"):
         """
+        :param str secret: Secret key used to sign and decrypt the JWT
         :param Starlette app: An instance or subclass of `Starlette`
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
         :param str tokenUrl: the url where the user can login to get the token
         """
+        self.secret = Secret(secret)
         self._user_callback = None
         self.app = app
         self.algorithm = algorithm
@@ -50,10 +42,6 @@ class LoginManager:
 
         :param Starlette app: An instance of subclass of Starlette
         """
-        if not is_setup_correctly(app):
-            raise Exception(
-                "Setup your app config as explained in the docs!"
-            )
         setattr(app, 'login_manager', self)
 
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
@@ -68,10 +56,10 @@ class LoginManager:
             >>> from fastapi_login import LoginManager
 
             >>> app = FastAPI()
-            >>> # setup the app config
-            >>> app.config = {}
+            >>> # use import os; print(os.urandom(24).hex()) to get a true secret key
+            >>> SECRET = "super-secret"
 
-            >>> manager = LoginManager(app)
+            >>> manager = LoginManager(SECRET, app)
 
             >>> manager.user_loader(get_user)
 
@@ -100,7 +88,7 @@ class LoginManager:
         try:
             payload = jwt.decode(
                 token,
-                str(self.app.config['secret']),
+                str(self.secret),
                 algorithms=[self.algorithm]
             )
             # the identifier should be stored under the sub (subject) key
@@ -155,16 +143,11 @@ class LoginManager:
         if expires_delta:
             expires_in = datetime.utcnow() + expires_delta
         else:
-            # check if the expiry has been changed using the config
-            expiry = self.app.config.get('TOKEN_EXPIRY')
-            if expiry:
-                expires_in = datetime.utcnow() + expiry
-            else:
-                # default to 15 minutes expiry times
-                expires_in = datetime.utcnow() + timedelta(minutes=15)
+            # default to 15 minutes expiry times
+            expires_in = datetime.utcnow() + timedelta(minutes=15)
 
         to_encode.update({'exp': expires_in})
-        encoded_jwt = jwt.encode(to_encode, str(self.app.config['secret']), self.algorithm)
+        encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         return encoded_jwt.decode()
 
     async def __call__(self, request: Request):
