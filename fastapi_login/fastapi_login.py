@@ -31,7 +31,6 @@ class LoginManager:
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
-        self._protector = None
 
         if app is not None:
             self.init_app(app)
@@ -95,7 +94,7 @@ class LoginManager:
             user_identifier = payload.get('sub')
             if user_identifier is None:
                 raise InvalidCredentialsException
-        except jwt.PyJWTError as e:
+        except jwt.PyJWTError:
             raise InvalidCredentialsException
 
         user = await self._load_user(user_identifier)
