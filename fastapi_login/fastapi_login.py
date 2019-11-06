@@ -124,7 +124,7 @@ class LoginManager:
 
         return user
 
-    def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> dict:
+    def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> str:
         """
         Helper function to create the encoded access token using the secret
         set in the app config and the algorithm of the LoginManager instance
