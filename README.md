@@ -11,21 +11,21 @@ $ pip install fastapi-login
 ## Usage
 
 To begin we have to setup our FastAPI app:
-
 ````python
 from fastapi import FastAPI
 
+SECRET = "your-secret-key"
+
 app = FastAPI()
-app.config = {'secret': 'super-secret'}
 ````
-The config should be a ``Mapping`` or implement the ``__getitem__`` method.
+To obtain a suitable secret key you can run ``import os; print(os.urandom(24).hex())``.
 
 Now we can import and setup the LoginManager, which will handle the process of
 encoding and decoding our Json Web Tokens.
 
 ````python
 from fastapi_login import LoginManager
-manager = LoginManager(app)
+manager = LoginManager(SECRET, tokenUrl='/auth/token')
 ````
 For the example we will use a dictionary to represent our user database. In your
 application this could also be a real database like sqlite or Postgres. It does not
@@ -74,7 +74,6 @@ Now whenever you want your user to be logged in to use a route, you can simply
 use your ``LoginManager`` instance as a dependency.
 
 ````python
-from fastapi.security import OAuth2PasswordBearer
 # this has to be set first in order to use the instance as dependency
 manager.tokenUrl = '/auth/token'
 
@@ -82,4 +81,26 @@ manager.tokenUrl = '/auth/token'
 @app.get('/protected')
 def protected_route(user: Depends(manager)):
     ...
+````
+
+You can also set the tokenUrl as a argument when initiating ``LoginManager``.
+
+````python
+manager = LoginManager(SECRET, App, tokenUrl="route/to/your/login/route")
+````
+
+If you also want to handle a not authenticated error, you can add your own subclass of Exception to the LoginManager.
+````python
+from starlette.responses import RedirectResponse
+
+class NotAuthenticatedException(Exception):
+    pass
+
+# these two argument are mandatory
+def exc_handler(request, exc):
+    return RedirectResponse(url='/login')
+
+manager.not_authenticated_exception = NotAuthenticatedException
+# You also have to add an exception handler to the your app instance
+app.add_exception_handler(NotAuthenticatedException, exc_handler)
 ````

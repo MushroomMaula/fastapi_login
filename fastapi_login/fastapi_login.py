@@ -7,54 +7,30 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from starlette.applications import Starlette
+from starlette.datastructures import Secret
 from starlette.requests import Request
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
-def is_setup_correctly(app: Starlette) -> bool:
-    """
-    This checks if the app has the config attribute.
-    :param Starlette app: The app instance
-    :return: True if the app has a config attribute else False
-    """
-    if not hasattr(app, 'config'):
-        return False
-    return True
-
-
 class LoginManager:
 
-    def __init__(self, app: Starlette = None, tokenUrl: str = None, algorithm="HS256"):
+    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256"):
         """
+        :param str secret: Secret key used to sign and decrypt the JWT
         :param Starlette app: An instance or subclass of `Starlette`
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
         :param str tokenUrl: the url where the user can login to get the token
         """
+        self.secret = Secret(secret)
         self._user_callback = None
-        self.app = app
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
         # this is not mandatory as they user may want to user their own
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
-        self._protector = None
-
-        if app is not None:
-            self.init_app(app)
-
-    def init_app(self, app: Starlette):
-        """
-        Adds this LoginManager instance to the app as attribute.
-
-        :param Starlette app: An instance of subclass of Starlette
-        """
-        if not is_setup_correctly(app):
-            raise Exception(
-                "Setup your app config as explained in the docs!"
-            )
-        setattr(app, 'login_manager', self)
+        self._not_authenticated_exception = None
 
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
@@ -68,10 +44,10 @@ class LoginManager:
             >>> from fastapi_login import LoginManager
 
             >>> app = FastAPI()
-            >>> # setup the app config
-            >>> app.config = {}
+            >>> # use import os; print(os.urandom(24).hex()) to get a true secret key
+            >>> SECRET = "super-secret"
 
-            >>> manager = LoginManager(app)
+            >>> manager = LoginManager(SECRET, app)
 
             >>> manager.user_loader(get_user)
 
@@ -85,6 +61,15 @@ class LoginManager:
         """
         self._user_callback = callback
         return callback
+
+    @property
+    def not_authenticated_exception(self):
+        return self._not_authenticated_exception
+
+    @not_authenticated_exception.setter
+    def not_authenticated_exception(self, value: Exception):
+        assert issubclass(value, Exception)
+        self._not_authenticated_exception = value
 
     async def get_current_user(self, token: str):
         """
@@ -100,14 +85,14 @@ class LoginManager:
         try:
             payload = jwt.decode(
                 token,
-                str(self.app.config['secret']),
+                str(self.secret),
                 algorithms=[self.algorithm]
             )
             # the identifier should be stored under the sub (subject) key
             user_identifier = payload.get('sub')
             if user_identifier is None:
                 raise InvalidCredentialsException
-        except jwt.PyJWTError as e:
+        except jwt.PyJWTError:
             raise InvalidCredentialsException
 
         user = await self._load_user(user_identifier)
@@ -137,7 +122,7 @@ class LoginManager:
 
         return user
 
-    def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> dict:
+    def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> str:
         """
         Helper function to create the encoded access token using the secret
         set in the app config and the algorithm of the LoginManager instance
@@ -155,26 +140,22 @@ class LoginManager:
         if expires_delta:
             expires_in = datetime.utcnow() + expires_delta
         else:
-            # check if the expiry has been changed using the config
-            expiry = self.app.config.get('TOKEN_EXPIRY')
-            if expiry:
-                expires_in = datetime.utcnow() + expiry
-            else:
-                # default to 15 minutes expiry times
-                expires_in = datetime.utcnow() + timedelta(minutes=15)
+            # default to 15 minutes expiry times
+            expires_in = datetime.utcnow() + timedelta(minutes=15)
 
         to_encode.update({'exp': expires_in})
-        encoded_jwt = jwt.encode(to_encode, str(self.app.config['secret']), self.algorithm)
+        encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         return encoded_jwt.decode()
 
     async def __call__(self, request: Request):
-        if not self.tokenUrl:
-            raise Exception(
-                "You need to set the tokenUrl first!"
-            )
 
-        if self.oauth_scheme is None:
+        if self.not_authenticated_exception is None:
             self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
+        else:
+            self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl, auto_error=False)
 
         token = await self.oauth_scheme(request)
-        return await self.get_current_user(token)
+        if token is not None:
+            return await self.get_current_user(token)
+
+        raise self.not_authenticated_exception

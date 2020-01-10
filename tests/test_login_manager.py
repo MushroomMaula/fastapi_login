@@ -4,9 +4,9 @@ import pytest
 from async_asgi_testclient import TestClient
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette.responses import RedirectResponse
 
 from fastapi_login import LoginManager
-from fastapi_login.config import FastAPIConfig
 from fastapi_login.exceptions import InvalidCredentialsException
 
 fake_db = {
@@ -27,9 +27,8 @@ fake_db = {
 
 app = FastAPI()
 client = TestClient(app)
-config = FastAPIConfig(app)
-config.set_secret(os.urandom(24).hex())
-lm = LoginManager(app, tokenUrl='/auth/token')
+SECRET = os.urandom(24).hex()
+lm = LoginManager(SECRET, tokenUrl='/auth/token')
 
 
 @app.post('/auth/token')
@@ -50,7 +49,12 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@app.post('/protected', dependencies=[Depends(lm)])
+@app.get('/redirect')
+def redirect_here():
+    return {'data': 'redirected'}
+
+
+@app.get('/protected', dependencies=[Depends(lm)])
 def protected_route():
     return {'status': 'Success'}
 
@@ -66,6 +70,8 @@ def load_user(email: str):
 async def async_load_user(email):
     return load_user(email)
 
+
+# TESTS
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('function', [load_user, async_load_user])
@@ -123,15 +129,8 @@ async def test_bad_user_identifier_in_token():
 
 
 @pytest.mark.asyncio
-async def test_bad_setup():
-    app = FastAPI()
-    with pytest.raises(Exception):
-        LoginManager(app)
-
-
-@pytest.mark.asyncio
 async def test_no_user_callback():
-    manager = LoginManager(app)
+    manager = LoginManager(SECRET, app)
     token = manager.create_access_token(data=dict(sub='john@doe.com'))
     with pytest.raises(Exception):
         try:
@@ -148,14 +147,29 @@ async def test_protector():
     token = lm.create_access_token(
         data={'sub': 'john@doe.com'}
     )
-    response = await client.post(
+    response = await client.get(
         '/protected',
         headers={'Authorization': f'Bearer {token}'}
     )
     assert response.json()['status'] == 'Success'
 
+
+class NotAuthenticatedException(Exception):
+    pass
+
+
+def handle_exc(request, exc):
+    print(request, exc)
+    return RedirectResponse(url='/redirect')
+
+
+app.add_exception_handler(NotAuthenticatedException, handle_exc)
+
+
 @pytest.mark.asyncio
-async def test_protect_tokenUrl_not_set():
-    manager = LoginManager(app)
-    with pytest.raises(Exception):
-        _ = manager.protector
+async def test_not_authenticated_exception():
+    lm.not_authenticated_exception = NotAuthenticatedException
+    resp = await client.get(
+        '/protected'
+    )
+    assert resp.json()['data'] == 'redirected'
