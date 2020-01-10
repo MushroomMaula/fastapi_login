@@ -4,6 +4,7 @@ import pytest
 from async_asgi_testclient import TestClient
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette.responses import RedirectResponse
 
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
@@ -27,7 +28,7 @@ fake_db = {
 app = FastAPI()
 client = TestClient(app)
 SECRET = os.urandom(24).hex()
-lm = LoginManager(SECRET, app, tokenUrl='/auth/token')
+lm = LoginManager(SECRET, tokenUrl='/auth/token')
 
 
 @app.post('/auth/token')
@@ -48,7 +49,12 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@app.post('/protected', dependencies=[Depends(lm)])
+@app.get('/redirect')
+def redirect_here():
+    return {'data': 'redirected'}
+
+
+@app.get('/protected', dependencies=[Depends(lm)])
 def protected_route():
     return {'status': 'Success'}
 
@@ -141,16 +147,29 @@ async def test_protector():
     token = lm.create_access_token(
         data={'sub': 'john@doe.com'}
     )
-    response = await client.post(
+    response = await client.get(
         '/protected',
         headers={'Authorization': f'Bearer {token}'}
     )
     assert response.json()['status'] == 'Success'
 
 
-@pytest.mark.asyncio
-async def test_protect_tokenUrl_not_set():
-    manager = LoginManager(SECRET, app)
-    with pytest.raises(Exception):
-        await manager(None)
+class NotAuthenticatedException(Exception):
+    pass
 
+
+def handle_exc(request, exc):
+    print(request, exc)
+    return RedirectResponse(url='/redirect')
+
+
+app.add_exception_handler(NotAuthenticatedException, handle_exc)
+
+
+@pytest.mark.asyncio
+async def test_not_authenticated_exception():
+    lm.not_authenticated_exception = NotAuthenticatedException
+    resp = await client.get(
+        '/protected'
+    )
+    assert resp.json()['data'] == 'redirected'
