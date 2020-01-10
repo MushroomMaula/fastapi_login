@@ -24,13 +24,13 @@ class LoginManager:
         """
         self.secret = Secret(secret)
         self._user_callback = None
-        self._not_authenticated_callback = None
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
         # this is not mandatory as they user may want to user their own
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
+        self._not_authenticated_exception = None
 
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
@@ -61,6 +61,15 @@ class LoginManager:
         """
         self._user_callback = callback
         return callback
+
+    @property
+    def not_authenticated_exception(self):
+        return self._not_authenticated_exception
+
+    @not_authenticated_exception.setter
+    def not_authenticated_exception(self, value: Exception):
+        assert issubclass(value, Exception)
+        self._not_authenticated_exception = value
 
     async def get_current_user(self, token: str):
         """
@@ -140,8 +149,13 @@ class LoginManager:
 
     async def __call__(self, request: Request):
 
-        if self.oauth_scheme is None:
+        if self.not_authenticated_exception is None:
             self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
+        else:
+            self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl, auto_error=False)
 
         token = await self.oauth_scheme(request)
-        return await self.get_current_user(token)
+        if token is not None:
+            return await self.get_current_user(token)
+
+        raise self.not_authenticated_exception
