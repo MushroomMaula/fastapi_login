@@ -15,7 +15,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 class LoginManager:
 
-    def __init__(self, secret: str, app: Starlette = None, tokenUrl: str = None, algorithm="HS256"):
+    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256"):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
         :param Starlette app: An instance or subclass of `Starlette`
@@ -24,24 +24,13 @@ class LoginManager:
         """
         self.secret = Secret(secret)
         self._user_callback = None
-        self.app = app
+        self._not_authenticated_callback = None
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
         # this is not mandatory as they user may want to user their own
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
-
-        if app is not None:
-            self.init_app(app)
-
-    def init_app(self, app: Starlette):
-        """
-        Adds this LoginManager instance to the app as attribute.
-
-        :param Starlette app: An instance of subclass of Starlette
-        """
-        setattr(app, 'login_manager', self)
 
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
@@ -150,10 +139,6 @@ class LoginManager:
         return encoded_jwt.decode()
 
     async def __call__(self, request: Request):
-        if not self.tokenUrl:
-            raise Exception(
-                "You need to set the tokenUrl first!"
-            )
 
         if self.oauth_scheme is None:
             self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
