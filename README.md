@@ -86,7 +86,7 @@ def protected_route(user: Depends(manager)):
 You can also set the tokenUrl as a argument when initiating ``LoginManager``.
 
 ````python
-manager = LoginManager(SECRET, App, tokenUrl="route/to/your/login/route")
+manager = LoginManager(SECRET, tokenUrl="route/to/your/login/route")
 ````
 
 If you also want to handle a not authenticated error, you can add your own subclass of Exception to the LoginManager.
