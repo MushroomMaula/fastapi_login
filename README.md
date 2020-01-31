@@ -74,19 +74,9 @@ Now whenever you want your user to be logged in to use a route, you can simply
 use your ``LoginManager`` instance as a dependency.
 
 ````python
-# this has to be set first in order to use the instance as dependency
-manager.tokenUrl = '/auth/token'
-
-
 @app.get('/protected')
-def protected_route(user: Depends(manager)):
+def protected_route(user=Depends(manager)):
     ...
-````
-
-You can also set the tokenUrl as a argument when initiating ``LoginManager``.
-
-````python
-manager = LoginManager(SECRET, tokenUrl="route/to/your/login/route")
 ````
 
 If you also want to handle a not authenticated error, you can add your own subclass of Exception to the LoginManager.
