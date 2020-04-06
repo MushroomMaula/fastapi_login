@@ -76,8 +76,8 @@ class LoginManager:
 
     async def get_current_user(self, token: str):
         """
-        This decodes the jwt based on the secret set in the app config
-        and on the algorithm set on the LoginManager.
+        This decodes the jwt based on the secret and on the algorithm
+        set on the LoginManager.
         If the token is correctly formatted and the user is found
         the user is returned else this raises a `fastapi.HTTPException`
 
