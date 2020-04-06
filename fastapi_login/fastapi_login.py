@@ -6,7 +6,6 @@ from typing import Callable, Awaitable, Union
 import jwt
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from starlette.applications import Starlette
 from starlette.datastructures import Secret
 from starlette.requests import Request
 
@@ -18,7 +17,6 @@ class LoginManager:
     def __init__(self, secret: str, tokenUrl: str, algorithm="HS256"):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
-        :param Starlette app: An instance or subclass of `Starlette`
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
         :param str tokenUrl: the url where the user can login to get the token
         """
@@ -68,13 +66,18 @@ class LoginManager:
 
     @not_authenticated_exception.setter
     def not_authenticated_exception(self, value: Exception):
+        """
+        Setter for the Exception which raises when the user is not authenticated
+
+        :param Exception value: The Exception you want to raise
+        """
         assert issubclass(value, Exception)
         self._not_authenticated_exception = value
 
     async def get_current_user(self, token: str):
         """
-        This decodes the jwt based on the secret set in the app config
-        and on the algorithm set on the LoginManager.
+        This decodes the jwt based on the secret and on the algorithm
+        set on the LoginManager.
         If the token is correctly formatted and the user is found
         the user is returned else this raises a `fastapi.HTTPException`
 
@@ -108,7 +111,7 @@ class LoginManager:
 
         :param typing.Any identifier: The identifier the user callback takes
         :return: The user object or None
-        :raise: Exception if the user_back has not been set
+        :raises: Exception if the user_back has not been set
         """
         if self._user_callback is None:
             raise Exception(
@@ -124,13 +127,12 @@ class LoginManager:
 
     def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> str:
         """
-        Helper function to create the encoded access token using the secret
-        set in the app config and the algorithm of the LoginManager instance
+        Helper function to create the encoded access token using
+        the provided secret and the algorithm of the LoginManager instance
 
         :param dict data: The data which should be stored in the token
         :param  timedelta expires_delta: An optional timedelta in which the token expires.
-            Defaults to 15 minutes can be set using the parameter
-             or the `TOKEN_EXPIRY` key in the app config
+            Defaults to 15 minutes
         :return: The encoded JWT with the data and the expiry. The expiry is
             available under the 'exp' key
         """
@@ -148,14 +150,24 @@ class LoginManager:
         return encoded_jwt.decode()
 
     async def __call__(self, request: Request):
+        """
+        Provides the functionality to act as a Dependency
+
+        :param Request request: The incoming request, this is set automatically
+            by FastAPI
+        :return: The user object or None
+        :raises: The not_authenticated_exception if set by the user
+        """
 
         if self.not_authenticated_exception is None:
             self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
         else:
+            # we handle Exception raising
             self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl, auto_error=False)
 
         token = await self.oauth_scheme(request)
         if token is not None:
             return await self.get_current_user(token)
 
+        # No token is present in the request and no Exception has been raised yet
         raise self.not_authenticated_exception
