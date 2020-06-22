@@ -91,6 +91,6 @@ def exc_handler(request, exc):
     return RedirectResponse(url='/login')
 
 manager.not_authenticated_exception = NotAuthenticatedException
-# You also have to add an exception handler to the your app instance
+# You also have to add an exception handler to your app instance
 app.add_exception_handler(NotAuthenticatedException, exc_handler)
 ````
