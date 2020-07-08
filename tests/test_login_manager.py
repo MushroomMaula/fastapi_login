@@ -130,7 +130,7 @@ async def test_bad_user_identifier_in_token():
 
 @pytest.mark.asyncio
 async def test_no_user_callback():
-    manager = LoginManager(SECRET, app)
+    manager = LoginManager(SECRET, tokenUrl="/none")
     token = manager.create_access_token(data=dict(sub='john@doe.com'))
     with pytest.raises(Exception):
         try:

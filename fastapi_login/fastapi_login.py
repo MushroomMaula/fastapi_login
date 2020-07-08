@@ -45,7 +45,7 @@ class LoginManager:
             >>> # use import os; print(os.urandom(24).hex()) to get a true secret key
             >>> SECRET = "super-secret"
 
-            >>> manager = LoginManager(SECRET, app)
+            >>> manager = LoginManager(SECRET, tokenUrl="Login")
 
             >>> manager.user_loader(get_user)
 
