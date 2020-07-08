@@ -1,3 +1,6 @@
+#1.3.0
+Added OpenAPI support
+
 #1.2.2
 Removed the provided config object and improved docstrings
 
