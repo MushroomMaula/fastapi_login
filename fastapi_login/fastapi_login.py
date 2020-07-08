@@ -12,7 +12,7 @@ from starlette.requests import Request
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
-class LoginManager:
+class LoginManager(OAuth2PasswordBearer):
 
     def __init__(self, secret: str, tokenUrl: str, algorithm="HS256"):
         """
@@ -30,6 +30,8 @@ class LoginManager:
         self.oauth_scheme = None
         self._not_authenticated_exception = None
 
+        super().__init__(tokenUrl=tokenUrl, auto_error=True)
+
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
         This sets the callback to retrieve the user.
@@ -45,7 +47,7 @@ class LoginManager:
             >>> # use import os; print(os.urandom(24).hex()) to get a true secret key
             >>> SECRET = "super-secret"
 
-            >>> manager = LoginManager(SECRET, app)
+            >>> manager = LoginManager(SECRET, tokenUrl="Login")
 
             >>> manager.user_loader(get_user)
 
@@ -73,6 +75,8 @@ class LoginManager:
         """
         assert issubclass(value, Exception)
         self._not_authenticated_exception = value
+        # change auto error setting on OAuth2PasswordBearer
+        self.auto_error = False
 
     async def get_current_user(self, token: str):
         """
@@ -158,14 +162,7 @@ class LoginManager:
         :return: The user object or None
         :raises: The not_authenticated_exception if set by the user
         """
-
-        if self.not_authenticated_exception is None:
-            self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl)
-        else:
-            # we handle Exception raising
-            self.oauth_scheme = OAuth2PasswordBearer(tokenUrl=self.tokenUrl, auto_error=False)
-
-        token = await self.oauth_scheme(request)
+        token = await super(LoginManager, self).__call__(request)
         if token is not None:
             return await self.get_current_user(token)
 
