@@ -6,7 +6,7 @@ with open("README.md", 'r') as f:
 
 setuptools.setup(
     name="fastapi-login",
-    version="1.3.0",
+    version="1.4.0",
     author="Max Rausch-Dupont",
     author_email="maxrd79@gmail.com",
     descritpion="Flask-Login like package for FastAPI",

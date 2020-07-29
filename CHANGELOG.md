@@ -1,3 +1,6 @@
+#1.4.0
+Fix security vulnerability found in uvicorn
+
 #1.3.0
 Added OpenAPI support
 
