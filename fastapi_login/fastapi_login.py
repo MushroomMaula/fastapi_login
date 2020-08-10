@@ -159,6 +159,11 @@ class LoginManager(OAuth2PasswordBearer):
         return encoded_jwt.decode()
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
+        """
+        Checks the requests cookies for the cookie with the name `self.cookie_name`
+
+        :return: The access token found in the cookies of the request or none
+        """
         auth = request.cookies.get(self.cookie_name)
         _, token = get_authorization_scheme_param(auth)
 
