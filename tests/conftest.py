@@ -1,12 +1,20 @@
 from asyncio import get_event_loop
 
 import pytest
-from fastapi import FastAPI
+from async_asgi_testclient import TestClient
+
+from tests.app import app, manager
 
 
 @pytest.fixture(scope='session')
-def app():
-    return FastAPI()
+def client() -> TestClient:
+    return TestClient(app)
+
+@pytest.fixture()
+def default_token() -> str:
+    return manager.create_access_token(
+        data={'sub': 'john@doe.com'}
+    )
 
 
 @pytest.yield_fixture(scope="session")
