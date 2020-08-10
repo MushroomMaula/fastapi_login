@@ -5,14 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-async-asgi-testclient = "*"
 pytest-asyncio = "*"
+async-asgi-testclient = "*"
 
 [packages]
-fastapi = {extras = ["all"],version = "*"}
-passlib = {extras = ["bcrypt"],version = "*"}
+fastapi = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "*"
 python-multipart = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

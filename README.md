@@ -94,3 +94,12 @@ manager.not_authenticated_exception = NotAuthenticatedException
 # You also have to add an exception handler to your app instance
 app.add_exception_handler(NotAuthenticatedException, exc_handler)
 ````
+
+
+### Usage with cookies
+Instead of checking the header for the token. ``fastapi-login``  also support access using cookies.
+````python
+from fastapi_login import LoginManager
+manager = LoginManager(SECRET, tokenUrl='/auth/token', use_cookie=True)
+````
+Now the manager will check the requests cookies for the access token. The name of the cookie can be set using ``manager.cookie_name``
