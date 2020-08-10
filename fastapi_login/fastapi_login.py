@@ -5,6 +5,7 @@ from typing import Callable, Awaitable, Union
 
 import jwt
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.security.utils import get_authorization_scheme_param
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
 from starlette.requests import Request
@@ -14,7 +15,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 class LoginManager(OAuth2PasswordBearer):
 
-    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256"):
+    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256", use_cookie=False):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
@@ -29,6 +30,9 @@ class LoginManager(OAuth2PasswordBearer):
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
         self._not_authenticated_exception = None
+
+        self.use_cookie = use_cookie
+        self.cookie_name = 'access-token'
 
         super().__init__(tokenUrl=tokenUrl, auto_error=True)
 
@@ -154,6 +158,18 @@ class LoginManager(OAuth2PasswordBearer):
         # decode here decodes the bytestr to a normal str not the token
         return encoded_jwt.decode()
 
+    def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
+        auth = request.cookies.get(self.cookie_name)
+        _, token = get_authorization_scheme_param(auth)
+
+        if not token and self.auto_error:
+            # this is the standard exception as raised
+            # by the parent class
+            raise InvalidCredentialsException
+
+        else:
+            return token
+
     async def __call__(self, request: Request):
         """
         Provides the functionality to act as a Dependency
@@ -163,9 +179,13 @@ class LoginManager(OAuth2PasswordBearer):
         :return: The user object or None
         :raises: The not_authenticated_exception if set by the user
         """
-        token = await super(LoginManager, self).__call__(request)
+        if self.use_cookie:
+            token = self._token_from_cookie(request)
+        else:
+            token = await super(LoginManager, self).__call__(request)
+
         if token is not None:
             return await self.get_current_user(token)
 
-        # No token is present in the request and no Exception has been raised yet
+        # No token is present in the request and no Exception has been raised (auto_error=False)
         raise self.not_authenticated_exception
