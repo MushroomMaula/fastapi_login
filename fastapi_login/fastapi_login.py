@@ -21,6 +21,8 @@ class LoginManager(OAuth2PasswordBearer):
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
         :param str tokenUrl: the url where the user can login to get the token
         """
+        if use_cookie is False and use_header is False:
+            raise Exception("use_cookie and use_header are both False one of them needs to be True")
         self.secret = Secret(secret)
         self._user_callback = None
         self.algorithm = algorithm
