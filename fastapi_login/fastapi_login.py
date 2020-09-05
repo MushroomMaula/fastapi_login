@@ -15,7 +15,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 class LoginManager(OAuth2PasswordBearer):
 
-    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256", use_cookie=False):
+    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256", use_cookie=False, use_header=True):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
@@ -32,6 +32,7 @@ class LoginManager(OAuth2PasswordBearer):
         self._not_authenticated_exception = None
 
         self.use_cookie = use_cookie
+        self.use_header = use_header
         self.cookie_name = 'access-token'
 
         super().__init__(tokenUrl=tokenUrl, auto_error=True)
@@ -184,9 +185,11 @@ class LoginManager(OAuth2PasswordBearer):
         :return: The user object or None
         :raises: The not_authenticated_exception if set by the user
         """
+        token = None
         if self.use_cookie:
             token = self._token_from_cookie(request)
-        else:
+                
+        if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
         if token is not None:
