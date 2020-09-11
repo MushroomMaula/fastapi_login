@@ -103,6 +103,7 @@ class LoginManager(OAuth2PasswordBearer):
             user_identifier = payload.get('sub')
             if user_identifier is None:
                 raise InvalidCredentialsException
+        # This includes all errors raised by pyjwt
         except jwt.PyJWTError:
             raise InvalidCredentialsException
 
@@ -173,7 +174,7 @@ class LoginManager(OAuth2PasswordBearer):
             raise InvalidCredentialsException
 
         else:
-            return token
+            return token if token else None
 
     async def __call__(self, request: Request):
         """
