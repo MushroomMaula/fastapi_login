@@ -17,7 +17,6 @@ async def async_load_user(email):
 # TESTS
 # TODO: add tests
 #  for expired tokens
-#  for cookie and header support at the same time
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('function', [load_user, async_load_user])
@@ -46,26 +45,15 @@ async def test_bad(data):
     bad_token = manager.create_access_token(
         data=data
     )
-    with pytest.raises(Exception):
-        try:
-            await manager.get_current_user(bad_token)
-        except HTTPException:
-            raise Exception
-        else:
-            # test failed
-            assert False
+    with pytest.raises(HTTPException):
+        await manager.get_current_user(bad_token)
 
 
 @pytest.mark.asyncio
 async def test_no_user_callback(default_token):
     manager._user_callback = None
     with pytest.raises(Exception):
-        try:
-            await manager.get_current_user(default_token)
-        except HTTPException:
-            raise Exception
-        else:
-            assert False
+        await manager.get_current_user(default_token)
 
     manager.user_loader(load_user)
 
