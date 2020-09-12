@@ -19,7 +19,9 @@ class LoginManager(OAuth2PasswordBearer):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
-        :param str tokenUrl: the url where the user can login to get the token
+        :param str tokenUrl: The url where the user can login to get the token
+        :param bool use_cookie: Set if cookies should be checked for the token
+        :param bool use_header: Set if headers should be checked for the token
         """
         if use_cookie is False and use_header is False:
             raise Exception("use_cookie and use_header are both False one of them needs to be True")
@@ -121,9 +123,9 @@ class LoginManager(OAuth2PasswordBearer):
         """
         This loads the user using the user_callback
 
-        :param typing.Any identifier: The identifier the user callback takes
+        :param Any identifier: The identifier the user callback takes
         :return: The user object or None
-        :raises: Exception if the user_back has not been set
+        :raises: Exception if the user_loader has not been set
         """
         if self._user_callback is None:
             raise Exception(
@@ -177,9 +179,10 @@ class LoginManager(OAuth2PasswordBearer):
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
         """
-        Checks the requests cookies for the cookie with the name `self.cookie_name`
+        Checks the requests cookies for cookies with the name `self.cookie_name`
 
-        :return: The access token found in the cookies of the request or none
+        :param Request request: The request to the route, normally filled in automatically
+        :return: The access token found in the cookies of the request or None
         """
         token = request.cookies.get(self.cookie_name)
 
