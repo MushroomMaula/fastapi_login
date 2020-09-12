@@ -5,7 +5,6 @@ from typing import Callable, Awaitable, Union
 
 import jwt
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.security.utils import get_authorization_scheme_param
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
 from starlette.requests import Request
@@ -182,8 +181,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         :return: The access token found in the cookies of the request or none
         """
-        auth = request.cookies.get(self.cookie_name)
-        _, token = get_authorization_scheme_param(auth)
+        token = request.cookies.get(self.cookie_name)
 
         if not token and self.auto_error:
             # this is the standard exception as raised
