@@ -1,3 +1,5 @@
+import time
+from datetime import timedelta
 from http.cookies import SimpleCookie
 from unittest.mock import Mock
 
@@ -15,8 +17,15 @@ async def async_load_user(email):
 
 
 # TESTS
-# TODO: add tests
-#  for expired tokens
+@pytest.mark.asyncio
+async def test_token_expiry(default_data):
+    token = manager.create_access_token(
+        data=default_data,
+        expires_delta=timedelta(microseconds=1)  # should be invalid instantly
+    )
+    time.sleep(1)
+    with pytest.raises(HTTPException):
+        await manager.get_current_user(token)
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('function', [load_user, async_load_user])
