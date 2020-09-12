@@ -41,7 +41,7 @@ async def test_bad_credentials(client):
     {'invalid': 'token-format'},
     {'sub': 'invalid-username'}
 ])
-async def test_bad(data):
+async def test_bad_data(data):
     bad_token = manager.create_access_token(
         data=data
     )
@@ -59,7 +59,7 @@ async def test_no_user_callback(default_token):
 
 
 @pytest.mark.asyncio
-async def test_protector(client, default_token):
+async def test_dependency_functionality(client, default_token):
     response = await client.get(
         '/protected',
         headers={'Authorization': f'Bearer {default_token}'}
@@ -68,7 +68,7 @@ async def test_protector(client, default_token):
 
 
 @pytest.mark.asyncio
-async def test_cookie_protector(client):
+async def test_cookie_checking(client):
     cookie_resp = await client.post(
         TOKEN_URL, query_string={'cookie': True},
         form=dict(username='john@doe.com', password='hunter2')
