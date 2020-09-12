@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 from fastapi import HTTPException
+from starlette.responses import Response
 
 from fastapi_login.exceptions import InvalidCredentialsException
 from tests.app import load_user, manager, fake_db, TOKEN_URL, NotAuthenticatedException, cookie_manager
@@ -106,8 +107,13 @@ async def test_not_authenticated_exception(data, client):
 
 
 def test__token_from_cookie(client, default_token):
-
     m = Mock(cookies={'access-token': 'Bearer '})
 
     cookie = manager._token_from_cookie(m)
     assert cookie is None
+
+
+def test_set_cookie(default_token):
+    response = Response()
+    manager.set_cookie(response, default_token)
+    assert response.headers['set-cookie'].startswith(f"{manager.cookie_name}={default_token}")
