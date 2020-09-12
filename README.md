@@ -95,6 +95,24 @@ manager.not_authenticated_exception = NotAuthenticatedException
 app.add_exception_handler(NotAuthenticatedException, exc_handler)
 ````
 
+To change the expiration date of the token use the ``expires_delta`` argument of the `create_access_token` method 
+with a timedelta. The default is set 15 min. Please be aware that setting a long expiry date is not considered a good practice
+as it would allow an attacker with the token to use your application as long as he wants.
+
+````python
+from datetime import timedelta
+
+data=dict(sub=user.email)
+
+# expires after 15 min
+token = manager.create_access_token(
+    data=data
+)
+#expires after 12 hours
+long_token = manager.create_access_token(
+    data=data, expires_delta=timedelta(hours=12)
+)
+````
 
 ### Usage with cookies
 Instead of checking the header for the token. ``fastapi-login``  also support access using cookies.
@@ -102,4 +120,23 @@ Instead of checking the header for the token. ``fastapi-login``  also support ac
 from fastapi_login import LoginManager
 manager = LoginManager(SECRET, tokenUrl='/auth/token', use_cookie=True)
 ````
-Now the manager will check the requests cookies for the access token. The name of the cookie can be set using ``manager.cookie_name``
+Now the manager will check the requests cookies the headers for the access token. The name of the cookie can be set using
+ ``manager.cookie_name``.
+If you only want to check the requests cookies you can turn the headers off using the ``use_header`` argument
+
+For convenience the LoginManager also includes the ``set_cookie`` method which sets the cookie to your response,
+with the recommended HTTPOnly flag and the ``manager.cookie_name`` as the key.
+````python
+from fastapi import Depends
+from starlette.responses import Response
+
+
+@app.get('/auth')
+def auth(response: Response, user=Depends(manager)):
+    token = manager.create_access_token(
+        data=dict(sub=user.email)
+    )
+    manager.set_cookie(response, token)
+    return response
+    
+````

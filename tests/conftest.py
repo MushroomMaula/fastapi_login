@@ -11,9 +11,13 @@ def client() -> TestClient:
     return TestClient(app)
 
 @pytest.fixture()
-def default_token() -> str:
+def default_data() -> dict:
+    return {'sub': 'john@doe.com'}
+
+@pytest.fixture()
+def default_token(default_data) -> str:
     return manager.create_access_token(
-        data={'sub': 'john@doe.com'}
+        data=default_data
     )
 
 

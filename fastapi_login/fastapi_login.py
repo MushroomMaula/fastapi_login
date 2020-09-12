@@ -5,10 +5,10 @@ from typing import Callable, Awaitable, Union
 
 import jwt
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.security.utils import get_authorization_scheme_param
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
 from starlette.requests import Request
+from starlette.responses import Response
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
@@ -19,7 +19,9 @@ class LoginManager(OAuth2PasswordBearer):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
-        :param str tokenUrl: the url where the user can login to get the token
+        :param str tokenUrl: The url where the user can login to get the token
+        :param bool use_cookie: Set if cookies should be checked for the token
+        :param bool use_header: Set if headers should be checked for the token
         """
         if use_cookie is False and use_header is False:
             raise Exception("use_cookie and use_header are both False one of them needs to be True")
@@ -38,6 +40,22 @@ class LoginManager(OAuth2PasswordBearer):
         self.cookie_name = 'access-token'
 
         super().__init__(tokenUrl=tokenUrl, auto_error=True)
+
+    @property
+    def not_authenticated_exception(self):
+        return self._not_authenticated_exception
+
+    @not_authenticated_exception.setter
+    def not_authenticated_exception(self, value: Exception):
+        """
+        Setter for the Exception which raises when the user is not authenticated
+
+        :param Exception value: The Exception you want to raise
+        """
+        assert issubclass(value, Exception)  # noqa
+        self._not_authenticated_exception = value
+        # change auto error setting on OAuth2PasswordBearer
+        self.auto_error = False
 
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
@@ -69,22 +87,6 @@ class LoginManager(OAuth2PasswordBearer):
         self._user_callback = callback
         return callback
 
-    @property
-    def not_authenticated_exception(self):
-        return self._not_authenticated_exception
-
-    @not_authenticated_exception.setter
-    def not_authenticated_exception(self, value: Exception):
-        """
-        Setter for the Exception which raises when the user is not authenticated
-
-        :param Exception value: The Exception you want to raise
-        """
-        assert issubclass(value, Exception)
-        self._not_authenticated_exception = value
-        # change auto error setting on OAuth2PasswordBearer
-        self.auto_error = False
-
     async def get_current_user(self, token: str):
         """
         This decodes the jwt based on the secret and on the algorithm
@@ -106,6 +108,7 @@ class LoginManager(OAuth2PasswordBearer):
             user_identifier = payload.get('sub')
             if user_identifier is None:
                 raise InvalidCredentialsException
+        # This includes all errors raised by pyjwt
         except jwt.PyJWTError:
             raise InvalidCredentialsException
 
@@ -120,9 +123,9 @@ class LoginManager(OAuth2PasswordBearer):
         """
         This loads the user using the user_callback
 
-        :param typing.Any identifier: The identifier the user callback takes
+        :param Any identifier: The identifier the user callback takes
         :return: The user object or None
-        :raises: Exception if the user_back has not been set
+        :raises: Exception if the user_loader has not been set
         """
         if self._user_callback is None:
             raise Exception(
@@ -158,17 +161,30 @@ class LoginManager(OAuth2PasswordBearer):
 
         to_encode.update({'exp': expires_in})
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
-        # decode here decodes the bytestr to a normal str not the token
+        # decode here decodes the byte str to a normal str not the token
         return encoded_jwt.decode()
+
+    def set_cookie(self, response: Response, token: str) -> None:
+        """
+        Utility function to handle cookie setting on the response
+
+        :param response: The response which is send back
+        :param token: The created JWT
+        """
+        response.set_cookie(
+            key=self.cookie_name,
+            value=token,
+            httponly=True
+        )
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
         """
-        Checks the requests cookies for the cookie with the name `self.cookie_name`
+        Checks the requests cookies for cookies with the name `self.cookie_name`
 
-        :return: The access token found in the cookies of the request or none
+        :param Request request: The request to the route, normally filled in automatically
+        :return: The access token found in the cookies of the request or None
         """
-        auth = request.cookies.get(self.cookie_name)
-        _, token = get_authorization_scheme_param(auth)
+        token = request.cookies.get(self.cookie_name)
 
         if not token and self.auto_error:
             # this is the standard exception as raised
@@ -176,7 +192,7 @@ class LoginManager(OAuth2PasswordBearer):
             raise InvalidCredentialsException
 
         else:
-            return token
+            return token if token else None
 
     async def __call__(self, request: Request):
         """

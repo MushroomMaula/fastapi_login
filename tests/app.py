@@ -72,9 +72,7 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), cooki
     )
 
     if cookie:
-        response.set_cookie(
-            key=cookie_manager.cookie_name, value=f"Bearer {access_token}", httponly=True
-        )
+        manager.set_cookie(response, access_token)
         return
 
     return {'access_token': access_token, 'token_type': 'bearer'}
