@@ -9,6 +9,7 @@ from fastapi.security.utils import get_authorization_scheme_param
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
 from starlette.requests import Request
+from starlette.responses import Response
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
@@ -161,6 +162,19 @@ class LoginManager(OAuth2PasswordBearer):
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         # decode here decodes the byte str to a normal str not the token
         return encoded_jwt.decode()
+
+    def set_cookie(self, response: Response, token: str) -> None:
+        """
+        Utility function to handle cookie setting on the response
+
+        :param response: The response which is send back
+        :param token: The created JWT
+        """
+        response.set_cookie(
+            key=self.cookie_name,
+            value=token,
+            httponly=True
+        )
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
         """
