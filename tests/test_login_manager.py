@@ -5,6 +5,7 @@ import pytest
 from fastapi import HTTPException
 from starlette.responses import Response
 
+from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 from tests.app import load_user, manager, fake_db, TOKEN_URL, NotAuthenticatedException, cookie_manager
 
@@ -14,6 +15,9 @@ async def async_load_user(email):
 
 
 # TESTS
+# TODO: add tests
+#  for expired tokens
+#  for cookie and header support at the same time
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('function', [load_user, async_load_user])
@@ -106,14 +110,26 @@ async def test_not_authenticated_exception(data, client):
     assert resp.json()['data'] == 'redirected'
 
 
-def test__token_from_cookie(client, default_token):
+def test_token_from_cookie_return():
     m = Mock(cookies={'access-token': ''})
 
     cookie = manager._token_from_cookie(m)
     assert cookie is None
+
+def test_token_from_cookie_exception():
+    # reset from tests before, asssume no custom exception has been set
+    manager.auto_error = True
+    m = Mock(cookies={'access-token': ''})
+    with pytest.raises(HTTPException):
+        manager._token_from_cookie(m)
 
 
 def test_set_cookie(default_token):
     response = Response()
     manager.set_cookie(response, default_token)
     assert response.headers['set-cookie'].startswith(f"{manager.cookie_name}={default_token}")
+
+
+def test_no_cookie_and_no_header_exception():
+    with pytest.raises(Exception):
+        LoginManager('secret', 'login', use_cookie=False, use_header=False)
