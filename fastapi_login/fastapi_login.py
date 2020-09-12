@@ -39,6 +39,22 @@ class LoginManager(OAuth2PasswordBearer):
 
         super().__init__(tokenUrl=tokenUrl, auto_error=True)
 
+    @property
+    def not_authenticated_exception(self):
+        return self._not_authenticated_exception
+
+    @not_authenticated_exception.setter
+    def not_authenticated_exception(self, value: Exception):
+        """
+        Setter for the Exception which raises when the user is not authenticated
+
+        :param Exception value: The Exception you want to raise
+        """
+        assert issubclass(value, Exception)  # noqa
+        self._not_authenticated_exception = value
+        # change auto error setting on OAuth2PasswordBearer
+        self.auto_error = False
+
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
         This sets the callback to retrieve the user.
@@ -68,22 +84,6 @@ class LoginManager(OAuth2PasswordBearer):
         """
         self._user_callback = callback
         return callback
-
-    @property
-    def not_authenticated_exception(self):
-        return self._not_authenticated_exception
-
-    @not_authenticated_exception.setter
-    def not_authenticated_exception(self, value: Exception):
-        """
-        Setter for the Exception which raises when the user is not authenticated
-
-        :param Exception value: The Exception you want to raise
-        """
-        assert issubclass(value, Exception)
-        self._not_authenticated_exception = value
-        # change auto error setting on OAuth2PasswordBearer
-        self.auto_error = False
 
     async def get_current_user(self, token: str):
         """
@@ -159,7 +159,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         to_encode.update({'exp': expires_in})
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
-        # decode here decodes the bytestr to a normal str not the token
+        # decode here decodes the byte str to a normal str not the token
         return encoded_jwt.decode()
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
