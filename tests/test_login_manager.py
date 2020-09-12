@@ -107,7 +107,7 @@ async def test_not_authenticated_exception(data, client):
 
 
 def test__token_from_cookie(client, default_token):
-    m = Mock(cookies={'access-token': 'Bearer '})
+    m = Mock(cookies={'access-token': ''})
 
     cookie = manager._token_from_cookie(m)
     assert cookie is None
