@@ -1,3 +1,8 @@
+#1.5.2
+- Update packages to its latest stable version
+- Fix error trying to decode the token, which is a string in newer versions of pyjwt [#21](https://github.com/MushroomMaula/fastapi_login/issues/21)
+- Fixed a typo in the changelog
+
 #1.5.1
 - Improve cookie support, now allows headers and cookies to be used at the same time.
 - Stops assuming every cookie is prefixed with ``Bearer``
