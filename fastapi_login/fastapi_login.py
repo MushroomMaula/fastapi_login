@@ -162,7 +162,7 @@ class LoginManager(OAuth2PasswordBearer):
         to_encode.update({'exp': expires_in})
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         # decode here decodes the byte str to a normal str not the token
-        return encoded_jwt.decode()
+        return encoded_jwt
 
     def set_cookie(self, response: Response, token: str) -> None:
         """
