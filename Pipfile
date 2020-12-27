@@ -7,6 +7,7 @@ verify_ssl = true
 pytest = "*"
 pytest-asyncio = "*"
 async-asgi-testclient = "*"
+mkdocs = "*"
 
 [packages]
 fastapi = "*"
