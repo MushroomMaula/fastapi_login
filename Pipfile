@@ -8,6 +8,7 @@ pytest = "*"
 pytest-asyncio = "*"
 async-asgi-testclient = "*"
 mkdocs = "*"
+mkdocs-material = "*"
 
 [packages]
 fastapi = "*"
