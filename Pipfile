@@ -9,6 +9,7 @@ pytest-asyncio = "*"
 async-asgi-testclient = "*"
 mkdocs = "*"
 mkdocs-material = "*"
+pymdown-extensions = "*"
 
 [packages]
 fastapi = "*"
