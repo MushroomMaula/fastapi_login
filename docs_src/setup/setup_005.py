@@ -1,0 +1,3 @@
+@manager.user_loader
+def query_user(user_id: str):
+    ...
