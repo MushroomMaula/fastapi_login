@@ -1,11 +1,10 @@
-# Set up
-
 First we need to set up our FastAPI app:
 ````python
 from fastapi import FastAPI
 app = FastAPI()
 ````
 
+## Secret
 Now we declare a secret key. We define our key as a global value for simplicity, 
 normally one would store the secret key in some sort of environment variable.
 
@@ -19,6 +18,7 @@ normally one would store the secret key in some sort of environment variable.
     python -c "import os; print(os.urandom(24).hex())"
     ````
 
+## LoginManager
 Now we start setting up ``fastapi-login`` by importing `LoginManager`.
 ````Python hl_lines="2"
 {!../docs_src/setup/setup_002.py!}
@@ -36,6 +36,7 @@ Thats all you need to setup the ``LoginManager`` object.
 !!! note
     The provided url should be the same your users use to obtain a token.
 
+## Database
 Now that we have created a new instance of ``LoginManager``, we need to setup
 our database.
 
