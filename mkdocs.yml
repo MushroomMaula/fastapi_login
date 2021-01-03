@@ -2,6 +2,14 @@ site_name: FastAPI Login
 theme:
   name: material
 
+nav:
+  - About: index.md
+  - installation.md
+  - setup.md
+  - usage.md
+  - advanced_usage.md
+
+
 markdown_extensions:
   - admonition
   - pymdownx.tabbed
