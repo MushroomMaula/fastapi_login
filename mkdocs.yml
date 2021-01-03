@@ -1,3 +1,9 @@
 site_name: FastAPI Login
 theme:
   name: material
+
+markdown_extensions:
+  - admonition
+  - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.superfences
