@@ -1,17 +1,7 @@
-# Welcome to MkDocs
+# About
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
-## Commands
+**Source Code: [https://github.com/MushroomMaula/fastapi_login](https://github.com/MushroomMaula/fastapi_login)**
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+fastapi-login provides a convenient, simple to use user authentication for FastAPI.
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
