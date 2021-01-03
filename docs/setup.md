@@ -36,4 +36,23 @@ Thats all you need to setup the ``LoginManager`` object.
 !!! note
     The provided url should be the same your users use to obtain a token.
 
+Now that we have created a new instance of ``LoginManager``, we need to setup
+our database.
+
+First we need a way to query a user from the db. For this example we will use
+a dictionary in order to model a database.
+````python
+{!../docs_src/setup/setup_004.py!}
+````
+
+Now that we have our "database" setup, and a way to retrieve a user 
+we need to pass this function to our manager object, this way ``LoginManager``
+automatically can return the user object.
+````python hl_lines="1"
+{!../docs_src/setup/setup_005.py!}
+````
+
+!!! note 
+    ``manager`` in this context is an instance of ``LoginManager`` 
+
 To see how to use ``fastapi-login`` as a dependency continue with [usage](usage.md)
