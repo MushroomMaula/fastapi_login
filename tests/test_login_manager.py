@@ -106,6 +106,21 @@ async def test_not_authenticated_exception(data, client):
     )
     assert resp.json()['data'] == 'redirected'
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize('data', [
+    (manager, '/protected'),
+    (cookie_manager, '/protected/request')
+])
+async def test_request_state_user(data, client):
+    curr_manager, url = data
+    curr_manager.not_authenticated_exception = NotAuthenticatedException
+    # cookie_jar is persisted from tests before -> clear
+    client.cookie_jar = SimpleCookie()
+    resp = await client.get(
+        url
+    )
+    assert resp.json()['data'] == 'redirected'
+
 
 def test_token_from_cookie_return():
     m = Mock(cookies={'access-token': ''})

@@ -222,7 +222,7 @@ class LoginManager(OAuth2PasswordBearer):
         @app.middleware("http")
         async def user_middleware(request: Request, call_next):
             try:
-                request.state.user = await self.__call__(request)
+                request.state.user = lambda: await self.__call__(request)
             except:
                 pass
             
