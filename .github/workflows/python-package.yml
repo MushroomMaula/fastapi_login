@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       run: |
           pipenv install --dev
-          # for lintingin
+          # for linting
           pipenv install flake8
     - name: Lint with flake8
       run: |
