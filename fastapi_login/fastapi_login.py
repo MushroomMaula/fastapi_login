@@ -231,7 +231,10 @@ class LoginManager(OAuth2PasswordBearer):
         async def user_middleware(request: Request, call_next):
             try:
                 request.state.user = await self.__call__(request)
-            except:
+            except Exception as e:
+                # An error occurred while getting the user
+                # as middlewares are called for every incoming request
+                # it's not a good idea to always return the Exception
                 pass
             
             return await call_next(request)
