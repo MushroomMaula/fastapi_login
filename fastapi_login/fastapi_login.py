@@ -139,13 +139,13 @@ class LoginManager(OAuth2PasswordBearer):
 
         return user
 
-    def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> str:
+    def create_access_token(self, *, data: dict, expires: timedelta = None) -> str:
         """
         Helper function to create the encoded access token using
         the provided secret and the algorithm of the LoginManager instance
 
         :param dict data: The data which should be stored in the token
-        :param  timedelta expires_delta: An optional timedelta in which the token expires.
+        :param  timedelta expires: An optional timedelta in which the token expires.
             Defaults to 15 minutes
         :return: The encoded JWT with the data and the expiry. The expiry is
             available under the 'exp' key
@@ -153,8 +153,8 @@ class LoginManager(OAuth2PasswordBearer):
 
         to_encode = data.copy()
 
-        if expires_delta:
-            expires_in = datetime.utcnow() + expires_delta
+        if expires:
+            expires_in = datetime.utcnow() + expires
         else:
             # default to 15 minutes expiry times
             expires_in = datetime.utcnow() + timedelta(minutes=15)

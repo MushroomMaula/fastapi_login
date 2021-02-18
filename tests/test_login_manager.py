@@ -21,7 +21,7 @@ async def async_load_user(email):
 async def test_token_expiry(default_data):
     token = manager.create_access_token(
         data=default_data,
-        expires_delta=timedelta(microseconds=1)  # should be invalid instantly
+        expires=timedelta(microseconds=1)  # should be invalid instantly
     )
     time.sleep(1)
     with pytest.raises(HTTPException):
