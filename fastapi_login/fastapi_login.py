@@ -240,7 +240,8 @@ class LoginManager(OAuth2PasswordBearer):
             except Exception as e:
                 # An error occurred while getting the user
                 # as middlewares are called for every incoming request
-                # it's not a good idea to always return the Exception
-                pass
+                # it's not a good idea to return the Exception
+                # so we set the user to None
+                request.state.user = None
             
             return await call_next(request)
