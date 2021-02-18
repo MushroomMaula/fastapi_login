@@ -54,7 +54,7 @@ cookie_manager = LoginManager(SECRET, tokenUrl=TOKEN_URL, use_cookie=True)
 manager.user_loader(load_user)
 cookie_manager.user_loader(load_user)
 
-cookie_manager.useRequest(app)
+manager.useRequest(app)
 
 # routes
 
@@ -91,7 +91,13 @@ def protected(_=Depends(manager)):
 
 @app.get('/protected/request')
 def protected(request: Request):
-    return {'status': False if request.state.user is None else True}
+    try:
+        user = request.state.user
+    except AttributeError:
+        raise InvalidCredentialsException
+    if user:
+        return {'status': 'Success'}
+
 
 @app.get('/protected/cookie')
 def protected_cookie(_=Depends(cookie_manager)):
