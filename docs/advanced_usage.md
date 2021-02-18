@@ -45,3 +45,16 @@ argument in the ``create_access_token`` method.
 ````python
 {!../docs_src/advanced_usage/adv_usage_005.py!}
 ````
+
+## Middleware
+Optionally a ``LoginManager`` instance can also be added as a middleware.
+It's important to note that ```request.state.user``` is set to ``None`` if
+no (valid) token is present in the request.
+````python
+{!../docs_src/advanced_usage/adv_usage_006.py!}
+````
+Using the middleware it's easy to write your own dependencies, that have access
+to the user object
+````python
+{!../docs_src/advanced_usage/adv_usage_007.py!}
+````
