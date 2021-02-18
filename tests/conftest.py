@@ -26,7 +26,8 @@ def invalid_user_token() -> str:
         data={'sub': 'not-a-user-id'}
     )
 
-@pytest.yield_fixture(scope="session")
+
+@pytest.fixture(scope="session")
 def event_loop():
     loop = get_event_loop()
     yield loop
