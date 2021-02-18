@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
+        poetry-version: [1.1.4]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +27,7 @@ jobs:
     - name: Install poetry
       uses: abatilo/actions-poetry@v2.0.0
       with:
-        - poetry-version: 1.1.4
+        - poetry-version: ${{ matrix.poetry-version }}
     - name: Install dependencies
       run: |
           poetry install
