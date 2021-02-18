@@ -81,7 +81,7 @@ class LoginManager(OAuth2PasswordBearer):
             >>> def get_user():
             ...     # get user logic here
 
-        :param Callable or Awaitable callback: The callback which returns the user
+        :param callback: The callback which returns the user
         :return: The callback
         """
         self._user_callback = callback
@@ -92,11 +92,11 @@ class LoginManager(OAuth2PasswordBearer):
         This decodes the jwt based on the secret and on the algorithm
         set on the LoginManager.
         If the token is correctly formatted and the user is found
-        the user is returned else this raises a `fastapi.HTTPException`
+        the user is returned else this raises `fastapi_login.InvalidCredentialsException`
 
         :param str token: The encoded jwt token
         :return: The user object returned by `self._user_callback`
-        :raise: HTTPException if the token is invalid or the user is not found
+        :raises: InvalidCredentialsException if the token is invalid or the user is not found
         """
         try:
             payload = jwt.decode(
@@ -145,7 +145,7 @@ class LoginManager(OAuth2PasswordBearer):
         the provided secret and the algorithm of the LoginManager instance
 
         :param dict data: The data which should be stored in the token
-        :param  timedelta expires: An optional timedelta in which the token expires.
+        :param timedelta expires: An optional timedelta in which the token expires.
             Defaults to 15 minutes
         :return: The encoded JWT with the data and the expiry. The expiry is
             available under the 'exp' key
