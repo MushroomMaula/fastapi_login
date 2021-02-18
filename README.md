@@ -2,6 +2,9 @@
 
 FastAPI-Login tries to provide similar functionality as [Flask-Login](https://github.com/maxcountryman/flask-login) does.
 
+## Documentation
+In-depth documentation can but found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/)
+
 ## Installation
 
 ```shell script
