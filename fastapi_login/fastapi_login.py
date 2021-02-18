@@ -10,6 +10,8 @@ from starlette.datastructures import Secret
 from starlette.requests import Request
 from starlette.responses import Response
 
+from fastapi import FastAPI, HTTPException, Request, Response
+
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
@@ -215,3 +217,13 @@ class LoginManager(OAuth2PasswordBearer):
 
         # No token is present in the request and no Exception has been raised (auto_error=False)
         raise self.not_authenticated_exception
+    
+    def useRequest(self, app: FastAPI):
+        @app.middleware("http")
+        async def user_middleware(request: Request, call_next):
+            try:
+                request.state.user = await self.__call__(request)
+            except:
+                pass
+            
+            return await call_next(request)
