@@ -21,7 +21,7 @@ async def async_load_user(email):
 async def test_token_expiry(default_data):
     token = manager.create_access_token(
         data=default_data,
-        expires_delta=timedelta(microseconds=1)  # should be invalid instantly
+        expires=timedelta(microseconds=1)  # should be invalid instantly
     )
     time.sleep(1)
     with pytest.raises(HTTPException):
@@ -36,6 +36,11 @@ async def test_user_loader(function, client, default_token):
     user = await manager.get_current_user(default_token)
     assert user['email'] == 'john@doe.com'
     assert user == fake_db['john@doe.com']
+
+@pytest.mark.asyncio
+async def test_user_loader_returns_none(client, invalid_user_token):
+    with pytest.raises(HTTPException):
+        await manager.get_current_user(invalid_user_token)
 
 
 @pytest.mark.asyncio
@@ -107,6 +112,22 @@ async def test_not_authenticated_exception(data, client):
     assert resp.json()['data'] == 'redirected'
 
 
+@pytest.mark.asyncio
+async def test_request_state_user_unauthorized(client):
+    resp = await client.get(
+        '/protected/request'
+    )
+    assert resp.json()['status'] == 'Unauthorized'
+
+
+@pytest.mark.asyncio
+async def test_request_state_user(client, default_token):
+    resp = await client.get(
+        '/protected/request',
+        headers={'Authorization': f'Bearer {default_token}'}
+    )
+    assert resp.json()['status'] == 'Success'
+
 def test_token_from_cookie_return():
     m = Mock(cookies={'access-token': ''})
 
@@ -130,3 +151,12 @@ def test_set_cookie(default_token):
 def test_no_cookie_and_no_header_exception():
     with pytest.raises(Exception):
         LoginManager('secret', 'login', use_cookie=False, use_header=False)
+
+@pytest.mark.asyncio
+async def test_cookie_header_fallback(client, default_token):
+    cookie_manager.use_header = True
+    resp = await client.get(
+        '/protected/cookie',
+        headers={'Authorization': f'Bearer {default_token}'}
+    )
+    assert resp.json()['status'] == 'Success'

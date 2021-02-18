@@ -2,6 +2,9 @@
 
 FastAPI-Login tries to provide similar functionality as [Flask-Login](https://github.com/maxcountryman/flask-login) does.
 
+## Documentation
+In-depth documentation can but found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/)
+
 ## Installation
 
 ```shell script
@@ -102,15 +105,15 @@ as it would allow an attacker with the token to use your application as long as 
 ````python
 from datetime import timedelta
 
-data=dict(sub=user.email)
+data = dict(sub=user.email)
 
 # expires after 15 min
 token = manager.create_access_token(
     data=data
 )
-#expires after 12 hours
+# expires after 12 hours
 long_token = manager.create_access_token(
-    data=data, expires_delta=timedelta(hours=12)
+    data=data, expires=timedelta(hours=12)
 )
 ````
 

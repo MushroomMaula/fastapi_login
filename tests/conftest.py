@@ -20,8 +20,14 @@ def default_token(default_data) -> str:
         data=default_data
     )
 
+@pytest.fixture()
+def invalid_user_token() -> str:
+    return manager.create_access_token(
+        data={'sub': 'not-a-user-id'}
+    )
 
-@pytest.yield_fixture(scope="session")
+
+@pytest.fixture(scope="session")
 def event_loop():
     loop = get_event_loop()
     yield loop

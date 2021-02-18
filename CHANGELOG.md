@@ -1,3 +1,7 @@
+#1.5.3
+- Vastly improve documentation
+- Add middleware support [#24](https://github.com/MushroomMaula/fastapi_login/pull/24) (thanks to [zarlo](https://github.com/zarlo))
+
 #1.5.2
 - Update packages to its latest stable version
 - Fix error trying to decode the token, which is a string in newer versions of pyjwt [#21](https://github.com/MushroomMaula/fastapi_login/issues/21)

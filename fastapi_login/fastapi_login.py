@@ -10,6 +10,8 @@ from starlette.datastructures import Secret
 from starlette.requests import Request
 from starlette.responses import Response
 
+from fastapi import FastAPI, HTTPException, Request, Response
+
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
@@ -29,7 +31,7 @@ class LoginManager(OAuth2PasswordBearer):
         self._user_callback = None
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
-        # this is not mandatory as they user may want to user their own
+        # this is not mandatory as the user may want to use their own
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
@@ -81,7 +83,7 @@ class LoginManager(OAuth2PasswordBearer):
             >>> def get_user():
             ...     # get user logic here
 
-        :param Callable or Awaitable callback: The callback which returns the user
+        :param callback: The callback which returns the user
         :return: The callback
         """
         self._user_callback = callback
@@ -92,11 +94,11 @@ class LoginManager(OAuth2PasswordBearer):
         This decodes the jwt based on the secret and on the algorithm
         set on the LoginManager.
         If the token is correctly formatted and the user is found
-        the user is returned else this raises a `fastapi.HTTPException`
+        the user is returned else this raises `fastapi_login.InvalidCredentialsException`
 
         :param str token: The encoded jwt token
         :return: The user object returned by `self._user_callback`
-        :raise: HTTPException if the token is invalid or the user is not found
+        :raises: InvalidCredentialsException if the token is invalid or the user is not found
         """
         try:
             payload = jwt.decode(
@@ -139,13 +141,13 @@ class LoginManager(OAuth2PasswordBearer):
 
         return user
 
-    def create_access_token(self, *, data: dict, expires_delta: timedelta = None) -> str:
+    def create_access_token(self, *, data: dict, expires: timedelta = None) -> str:
         """
         Helper function to create the encoded access token using
         the provided secret and the algorithm of the LoginManager instance
 
         :param dict data: The data which should be stored in the token
-        :param  timedelta expires_delta: An optional timedelta in which the token expires.
+        :param timedelta expires: An optional timedelta in which the token expires.
             Defaults to 15 minutes
         :return: The encoded JWT with the data and the expiry. The expiry is
             available under the 'exp' key
@@ -153,8 +155,8 @@ class LoginManager(OAuth2PasswordBearer):
 
         to_encode = data.copy()
 
-        if expires_delta:
-            expires_in = datetime.utcnow() + expires_delta
+        if expires:
+            expires_in = datetime.utcnow() + expires
         else:
             # default to 15 minutes expiry times
             expires_in = datetime.utcnow() + timedelta(minutes=15)
@@ -204,9 +206,17 @@ class LoginManager(OAuth2PasswordBearer):
         :raises: The not_authenticated_exception if set by the user
         """
         token = None
-        if self.use_cookie:
-            token = self._token_from_cookie(request)
-                
+        try:
+            if self.use_cookie:
+                token = self._token_from_cookie(request)
+        except HTTPException as e:
+            # In case use_cookie and use_header is enabled
+            # headers should be checked if cookie lookup fails
+            if self.use_header:
+                pass
+            else:
+                raise e
+
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
@@ -215,3 +225,23 @@ class LoginManager(OAuth2PasswordBearer):
 
         # No token is present in the request and no Exception has been raised (auto_error=False)
         raise self.not_authenticated_exception
+    
+    def useRequest(self, app: FastAPI):
+        """
+        Add the instance as a middleware, which adds the user object, if present,
+        to the request state
+
+        :param app: A instance of FastAPI
+        """
+        @app.middleware("http")
+        async def user_middleware(request: Request, call_next):
+            try:
+                request.state.user = await self.__call__(request)
+            except Exception as e:
+                # An error occurred while getting the user
+                # as middlewares are called for every incoming request
+                # it's not a good idea to return the Exception
+                # so we set the user to None
+                request.state.user = None
+            
+            return await call_next(request)

@@ -1,0 +1,37 @@
+site_name: FastAPI Login
+theme:
+  name: material
+  palette:
+    primary: light green
+    accent: orange
+
+extra_css:
+  - stylesheets/reference.css
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: restructured-text
+          rendering:
+            show_root_toc_entry: false
+            show_if_no_docstring: true
+            group_by_category: false
+nav:
+  - About: index.md
+  - installation.md
+  - setup.md
+  - usage.md
+  - advanced_usage.md
+  - Reference: reference.md
+
+
+markdown_extensions:
+  - admonition
+  - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - markdown_include.include:
+      base_path: docs

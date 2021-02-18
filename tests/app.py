@@ -4,6 +4,7 @@ from typing import Optional
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.responses import Response, RedirectResponse
+from starlette.requests import Request
 
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
@@ -53,6 +54,7 @@ cookie_manager = LoginManager(SECRET, tokenUrl=TOKEN_URL, use_cookie=True)
 manager.user_loader(load_user)
 cookie_manager.user_loader(load_user)
 
+manager.useRequest(app)
 
 # routes
 
@@ -86,6 +88,14 @@ def redirected_here():
 @app.get('/protected')
 def protected(_=Depends(manager)):
     return {'status': 'Success'}
+
+@app.get('/protected/request')
+def protected(request: Request):
+    user = request.state.user
+    if user is None:
+        return {'status': 'Unauthorized'}
+    if user:
+        return {'status': 'Success'}
 
 
 @app.get('/protected/cookie')

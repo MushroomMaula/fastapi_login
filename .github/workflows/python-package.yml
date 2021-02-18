@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
+        poetry-version: [1.1.4]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,20 +24,33 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install pipenv
-      uses: dschep/install-pipenv-action@v1
+    - name: Install poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
     - name: Install dependencies
       run: |
-          pipenv install --dev
-          # for lintingin
-          pipenv install flake8
+          poetry install
+          # for linting
+          poetry add flake8
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --extend-exclude=docs/,docs_src/
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        pipenv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --extend-exclude=docs/,docs_src/
     - name: Test with pytest
       working-directory: ./tests
       run: |
-        pipenv run pytest
+        poetry run pytest
+
+    - name: Create requirements.txt
+      run:
+        poetry export -o requirements.txt --without-hashes --dev
+
+    - name: Upload requirements.txt
+      uses: actions/upload-artifact@v2
+      with:
+        name: Requirements
+        path: requirements.txt
