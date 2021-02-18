@@ -206,9 +206,17 @@ class LoginManager(OAuth2PasswordBearer):
         :raises: The not_authenticated_exception if set by the user
         """
         token = None
-        if self.use_cookie:
-            token = self._token_from_cookie(request)
-                
+        try:
+            if self.use_cookie:
+                token = self._token_from_cookie(request)
+        except HTTPException as e:
+            # In case use_cookie and use_header is enabled
+            # headers should be checked if cookie lookup fails
+            if self.use_header:
+                pass
+            else:
+                raise e
+
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
