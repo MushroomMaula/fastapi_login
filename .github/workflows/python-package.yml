@@ -27,9 +27,9 @@ jobs:
       uses: abatilo/actions-poetry@v2.0.0
     - name: Install dependencies
       run: |
-          poetry install --dev
+          poetry install
           # for linting
-          poetry install flake8
+          poetry add flake8
 
     - name: Lint with flake8
       run: |
