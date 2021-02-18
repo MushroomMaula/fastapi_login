@@ -1,6 +1,9 @@
 site_name: FastAPI Login
 theme:
   name: material
+  palette:
+    primary: light green
+    accent: orange
 
 nav:
   - About: index.md
