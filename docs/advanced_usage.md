@@ -5,7 +5,7 @@ header. However cookie support can be enabled.
 {!../docs_src/advanced_usage/adv_usage_001.py!}
 ````
 
-For convince as ``set_cookie`` method is provided, which sets the cookie, using
+For convince a ``set_cookie`` method is provided, which sets the cookie, using
 ``LoginManager.cookie_name`` and the recommended ``HTTPOnly`` flag.
 
 ````python hl_lines="7"
@@ -54,7 +54,7 @@ no (valid) token is present in the request.
 {!../docs_src/advanced_usage/adv_usage_006.py!}
 ````
 Using the middleware it's easy to write your own dependencies, that have access
-to the user object
+to your user object
 ````python
 {!../docs_src/advanced_usage/adv_usage_007.py!}
 ````
