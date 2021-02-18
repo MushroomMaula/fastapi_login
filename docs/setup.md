@@ -17,6 +17,10 @@ normally one would store the secret key in some sort of environment variable.
     ````
     python -c "import os; print(os.urandom(24).hex())"
     ````
+!!! warning
+    Most of the time it's better not to store the secret key in a file like this,
+    but rather in an environment variable, in order to avoid committing it to
+    source control.
 
 ## LoginManager
 Now we start setting up ``fastapi-login`` by importing `LoginManager`.
@@ -34,7 +38,7 @@ your application. The url is needed in order to display correctly inside the api
 Thats all you need to setup the ``LoginManager`` object.
 
 !!! note
-    The provided url should be the same your users use to obtain a token.
+    The provided url should be the same your users call to obtain a token.
 
 ## Database
 Now that we have created a new instance of ``LoginManager``, we need to setup
@@ -49,6 +53,7 @@ a dictionary in order to model a database.
 Now that we have our "database" setup, and a way to retrieve a user 
 we need to pass this function to our manager object, this way ``LoginManager``
 automatically can return the user object.
+It's as simple as it gets, you just have to add this decorator to the query function.
 ````python hl_lines="1"
 {!../docs_src/setup/setup_005.py!}
 ````
@@ -56,4 +61,4 @@ automatically can return the user object.
 !!! note 
     ``manager`` in this context is an instance of ``LoginManager`` 
 
-To see how to use ``fastapi-login`` as a dependency continue with [usage](usage.md)
+To see how to use ``fastapi-login`` as a dependency continue with [usage](usage.md).
