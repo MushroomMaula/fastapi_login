@@ -37,3 +37,11 @@ will be raised, and the exception handler will be executed.
 
 More to writing exception handlers can be found in the official [documentation](https://fastapi.tiangolo.com/tutorial/handling-errors/?h=+exce#install-custom-exception-handlers)
 of FastAPI
+
+## Token expiry
+By default token's expire after 15 minutes. This can be changed using the ``expires``
+argument in the ``create_access_token`` method.
+
+````python
+{!../docs_src/advanced_usage/adv_usage_005.py!}
+````
