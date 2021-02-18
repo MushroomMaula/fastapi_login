@@ -37,6 +37,11 @@ async def test_user_loader(function, client, default_token):
     assert user['email'] == 'john@doe.com'
     assert user == fake_db['john@doe.com']
 
+@pytest.mark.asyncio
+async def test_user_loader_returns_none(client, invalid_user_token):
+    with pytest.raises(HTTPException):
+        await manager.get_current_user(invalid_user_token)
+
 
 @pytest.mark.asyncio
 async def test_bad_credentials(client):
