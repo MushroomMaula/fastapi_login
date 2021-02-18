@@ -227,6 +227,12 @@ class LoginManager(OAuth2PasswordBearer):
         raise self.not_authenticated_exception
     
     def useRequest(self, app: FastAPI):
+        """
+        Add the instance as a middleware, which adds the user object, if present,
+        to the request state
+
+        :param app: A instance of FastAPI
+        """
         @app.middleware("http")
         async def user_middleware(request: Request, call_next):
             try:
