@@ -111,6 +111,15 @@ async def test_not_authenticated_exception(data, client):
     )
     assert resp.json()['data'] == 'redirected'
 
+
+@pytest.mark.asyncio
+async def test_request_state_user_unauthorized(client):
+    resp = await client.get(
+        '/protected/request'
+    )
+    assert resp.json()['status'] == 'Unauthorized'
+
+
 @pytest.mark.asyncio
 async def test_request_state_user(client, default_token):
     resp = await client.get(
@@ -118,17 +127,6 @@ async def test_request_state_user(client, default_token):
         headers={'Authorization': f'Bearer {default_token}'}
     )
     assert resp.json()['status'] == 'Success'
-
-@pytest.mark.asyncio
-async def test_request_state_user_unauthorized(client):
-    with pytest.raises(HTTPException):
-        resp = await client.get(
-            '/protected/request'
-        )
-        # pytest has some issues catching http exceptions
-        detail = resp.json().get('detail')
-        if not resp.ok and detail == 'Invalid credentials':
-            raise InvalidCredentialsException
 
 def test_token_from_cookie_return():
     m = Mock(cookies={'access-token': ''})

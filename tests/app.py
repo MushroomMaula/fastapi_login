@@ -91,10 +91,9 @@ def protected(_=Depends(manager)):
 
 @app.get('/protected/request')
 def protected(request: Request):
-    try:
-        user = request.state.user
-    except AttributeError:
-        raise InvalidCredentialsException
+    user = request.state.user
+    if user is None:
+        return {'status': 'Unauthorized'}
     if user:
         return {'status': 'Success'}
 
