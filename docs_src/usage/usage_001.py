@@ -11,7 +11,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
 
     user = query_user(email)
     if not user:
-        # you can also use your own fastapi.HTTPException
+        # you can return any response or error of your choice
         raise InvalidCredentialsException
     elif password != user['password']:
         raise InvalidCredentialsException
