@@ -29,7 +29,7 @@ class LoginManager(OAuth2PasswordBearer):
         self._user_callback = None
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
-        # this is not mandatory as they user may want to user their own
+        # this is not mandatory as the user may want to use their own
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
