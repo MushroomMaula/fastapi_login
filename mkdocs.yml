@@ -25,7 +25,7 @@ nav:
   - setup.md
   - usage.md
   - advanced_usage.md
-  - Reference: fastapi_login-reference.md
+  - Reference: reference.md
 
 
 markdown_extensions:
