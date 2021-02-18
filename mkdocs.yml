@@ -5,12 +5,27 @@ theme:
     primary: light green
     accent: orange
 
+extra_css:
+  - stylesheets/reference.css
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: restructured-text
+          rendering:
+            show_root_toc_entry: false
+            show_if_no_docstring: true
+            group_by_category: false
 nav:
   - About: index.md
   - installation.md
   - setup.md
   - usage.md
   - advanced_usage.md
+  - Reference: fastapi_login-reference.md
 
 
 markdown_extensions:
