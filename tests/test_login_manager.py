@@ -112,20 +112,23 @@ async def test_not_authenticated_exception(data, client):
     assert resp.json()['data'] == 'redirected'
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('data', [
-    (manager, '/protected'),
-    (cookie_manager, '/protected/request')
-])
-async def test_request_state_user(data, client):
-    curr_manager, url = data
-    curr_manager.not_authenticated_exception = NotAuthenticatedException
-    # cookie_jar is persisted from tests before -> clear
-    client.cookie_jar = SimpleCookie()
+async def test_request_state_user(client, default_token):
     resp = await client.get(
-        url
+        '/protected/request',
+        headers={'Authorization': f'Bearer {default_token}'}
     )
-    assert resp.json()['data'] == 'redirected'
+    assert resp.json()['status'] == 'Success'
 
+@pytest.mark.asyncio
+async def test_request_state_user_unauthorized(client):
+    with pytest.raises(HTTPException):
+        resp = await client.get(
+            '/protected/request'
+        )
+        # pytest has some issues catching http exceptions
+        detail = resp.json().get('detail')
+        if not resp.ok and detail == 'Invalid credentials':
+            raise InvalidCredentialsException
 
 def test_token_from_cookie_return():
     m = Mock(cookies={'access-token': ''})
@@ -150,3 +153,12 @@ def test_set_cookie(default_token):
 def test_no_cookie_and_no_header_exception():
     with pytest.raises(Exception):
         LoginManager('secret', 'login', use_cookie=False, use_header=False)
+
+@pytest.mark.asyncio
+async def test_cookie_header_fallback(client, default_token):
+    cookie_manager.use_header = True
+    resp = await client.get(
+        '/protected/cookie',
+        headers={'Authorization': f'Bearer {default_token}'}
+    )
+    assert resp.json()['status'] == 'Success'
