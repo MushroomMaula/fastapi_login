@@ -25,7 +25,7 @@ to false on initialization.
 ````
 
 ## Exception handling
-Sometimes it is need to execute something if a user is not authenticated,
+Sometimes it is needed to run some code if a user is not authenticated,
 this can achieved, by setting a custom ``Exception`` on the ``LoginManager`` instance.
 
 ````python hl_lines="9"
