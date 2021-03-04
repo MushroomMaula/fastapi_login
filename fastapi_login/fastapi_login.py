@@ -35,7 +35,7 @@ class LoginManager(OAuth2PasswordBearer):
         # function to get the token and pass it to the get_current_user method
         self.tokenUrl = tokenUrl
         self.oauth_scheme = None
-        self._not_authenticated_exception = None
+        self._not_authenticated_exception = InvalidCredentialsException
 
         self.use_cookie = use_cookie
         self.use_header = use_header
@@ -78,7 +78,6 @@ class LoginManager(OAuth2PasswordBearer):
 
             >>> manager.user_loader(get_user)
 
-            >>> # this is the preferred way
             >>> @manager.user_loader
             >>> def get_user():
             ...     # get user logic here
@@ -94,11 +93,11 @@ class LoginManager(OAuth2PasswordBearer):
         This decodes the jwt based on the secret and on the algorithm
         set on the LoginManager.
         If the token is correctly formatted and the user is found
-        the user is returned else this raises `fastapi_login.InvalidCredentialsException`
+        the user is returned else this raises `LoginManager.not_authenticated_exception`
 
         :param str token: The encoded jwt token
         :return: The user object returned by `self._user_callback`
-        :raises: InvalidCredentialsException if the token is invalid or the user is not found
+        :raises: LoginManager.not_authenticated_exception if the token is invalid or the user is not found
         """
         try:
             payload = jwt.decode(
@@ -109,7 +108,7 @@ class LoginManager(OAuth2PasswordBearer):
             # the identifier should be stored under the sub (subject) key
             user_identifier = payload.get('sub')
             if user_identifier is None:
-                raise InvalidCredentialsException
+                raise self.not_authenticated_exception
         # This includes all errors raised by pyjwt
         except jwt.PyJWTError:
             raise InvalidCredentialsException
@@ -117,7 +116,7 @@ class LoginManager(OAuth2PasswordBearer):
         user = await self._load_user(user_identifier)
 
         if user is None:
-            raise InvalidCredentialsException
+            raise self.not_authenticated_exception
 
         return user
 
@@ -191,7 +190,7 @@ class LoginManager(OAuth2PasswordBearer):
         if not token and self.auto_error:
             # this is the standard exception as raised
             # by the parent class
-            raise InvalidCredentialsException
+            raise self.not_authenticated_exception
 
         else:
             return token if token else None
@@ -209,7 +208,9 @@ class LoginManager(OAuth2PasswordBearer):
         try:
             if self.use_cookie:
                 token = self._token_from_cookie(request)
-        except HTTPException as e:
+        # The Exception is either a InvalidCredentialsException
+        # or a custom exception set by the user
+        except Exception as e:
             # In case use_cookie and use_header is enabled
             # headers should be checked if cookie lookup fails
             if self.use_header:
