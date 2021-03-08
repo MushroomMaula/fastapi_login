@@ -1,0 +1,13 @@
+click==7.1.2
+fastapi==0.63.0
+fastapi-login==1.5.3
+h11==0.12.0
+passlib==1.7.4
+pydantic==1.8.1
+PyJWT==2.0.1
+python-dotenv==0.15.0
+python-multipart==0.0.5
+six==1.15.0
+starlette==0.13.6
+typing-extensions==3.7.4.3
+uvicorn==0.13.4
