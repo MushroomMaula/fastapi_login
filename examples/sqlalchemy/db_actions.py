@@ -3,9 +3,9 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from crud_models import UserCreate
+from db import DBContext
 from db_models import User
 from security import hash_password, manager
-from db import DBContext
 
 
 @manager.user_loader

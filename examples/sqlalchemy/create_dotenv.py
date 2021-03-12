@@ -1,5 +1,6 @@
 if __name__ == "__main__":
     import os
+
     if os.path.exists(".env"):
         print(".env file already exists. Exiting...")
     else:

@@ -1,18 +1,12 @@
-import uuid
-
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_login import LoginManager
-from fastapi_login.exceptions import InvalidCredentialsException
-from pydantic import BaseModel, UUID4
 
 from config import DEFAULT_SETTINGS
 from crud_models import UserCreate, UserResponse
 from db import get_db, Base, engine
 from db_actions import get_user, create_user
+from fastapi_login.exceptions import InvalidCredentialsException
 from security import manager, verify_password
-
 
 app = FastAPI()
 
@@ -22,6 +16,7 @@ def setup():
     print("Creating db tables...")
     Base.metadata.create_all(bind=engine)
     print(f"Created {len(engine.table_names())} tables: {engine.table_names()}")
+
 
 @app.post("/auth/register")
 def register(user: UserCreate, db=Depends(get_db)):
@@ -42,7 +37,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
         raise InvalidCredentialsException  # you can also use your own HTTPException
     elif not verify_password(password, user.password):
         raise InvalidCredentialsException
-    
+
     access_token = manager.create_access_token(
         data=dict(sub=user.email)
     )
@@ -56,4 +51,5 @@ def private_route(user=Depends(manager)):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app:app")

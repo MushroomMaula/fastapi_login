@@ -3,9 +3,10 @@ import uuid
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseSettings, BaseModel, UUID4
+
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
-from pydantic import BaseSettings, BaseModel, UUID4
 
 
 class Settings(BaseSettings):
@@ -63,7 +64,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
         raise InvalidCredentialsException  # you can also use your own HTTPException
     elif password != user.password:
         raise InvalidCredentialsException
-    
+
     access_token = manager.create_access_token(
         data=dict(sub=email)
     )
@@ -77,4 +78,5 @@ def private_route(user=Depends(manager)):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app:app")
