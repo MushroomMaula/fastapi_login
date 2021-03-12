@@ -3,6 +3,8 @@
 This example shows how to integrate the sqalchemy orm with ``fastapi-login``. However the basic idea should be
 applicable to other ORM frameworks as well.
 
+How to handle the database session can be found in ``db_actions.py`` and ``db.py``
+
 # Run
 
 Install the dependencies
