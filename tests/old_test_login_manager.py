@@ -128,11 +128,13 @@ async def test_request_state_user(client, default_token):
     )
     assert resp.json()['status'] == 'Success'
 
+
 def test_token_from_cookie_return():
     m = Mock(cookies={'access-token': ''})
 
     cookie = manager._token_from_cookie(m)
     assert cookie is None
+
 
 def test_token_from_cookie_exception():
     # reset from tests before, asssume no custom exception has been set
@@ -151,6 +153,7 @@ def test_set_cookie(default_token):
 def test_no_cookie_and_no_header_exception():
     with pytest.raises(Exception):
         LoginManager('secret', 'login', use_cookie=False, use_header=False)
+
 
 @pytest.mark.asyncio
 async def test_cookie_header_fallback(client, default_token):
