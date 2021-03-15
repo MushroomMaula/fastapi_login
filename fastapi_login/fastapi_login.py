@@ -63,7 +63,7 @@ class LoginManager(OAuth2PasswordBearer):
         The function should take an unique identifier like an email
         and return the user object or None.
 
-        Basic usage::
+        Basic usage:
 
             >>> from fastapi import FastAPI
             >>> from fastapi_login import LoginManager
