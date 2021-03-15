@@ -24,8 +24,6 @@ class LoginManager(OAuth2PasswordBearer):
         pwd_context (passlib.CryptContext): Instance of ``passlib.CryptContext`` using bcrypt for
             convenient access to hashing and verifying passwords.
         cookie_name (str): The name of the cookie checked for the token, defaults to `"access-token"`
-        not_authenticated_exception (Exception): Exception raised when no (valid) token is present.
-            Defaults to `fastapi_login.exceptions.InvalidCredentialsException`
     """
 
     def __init__(self, secret: str, token_url: str, algorithm="HS256", use_cookie=False, use_header=True):
@@ -56,12 +54,17 @@ class LoginManager(OAuth2PasswordBearer):
 
     @property
     def not_authenticated_exception(self):
+        """
+        Exception raised when no (valid) token is present.
+        Defaults to `fastapi_login.exceptions.InvalidCredentialsException`
+        """
         return self._not_authenticated_exception
 
     @not_authenticated_exception.setter
     def not_authenticated_exception(self, value: Exception):
         """
-        Setter for the Exception which raises when the user is not authenticated
+        Setter for the Exception which raises when the user is not authenticated.
+        Sets `self.auto_error` to False in order to raise the correct exception.
 
         Args:
             value (Exception): The Exception you want to raise
