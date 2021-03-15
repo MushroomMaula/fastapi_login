@@ -22,7 +22,7 @@ def app():
     yield _app
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def db() -> Dict[str, User]:
     return {
         'john@doe.com': User(
@@ -40,7 +40,7 @@ def db() -> Dict[str, User]:
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def load_user_fn(db: dict) -> Callable[[str], User]:
     def load_user(email: str):
         return db.get(email)
@@ -53,7 +53,7 @@ def secret() -> str:
     return os.urandom(24).hex()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def token_url() -> str:
     return "/auth/token"
 
@@ -63,12 +63,12 @@ def client(app) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def default_data(db) -> dict:
     return {'sub': list(db.keys())[0]}
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def invalid_data() -> dict:
     return {"username": "invalid@e.mail", "password": "invalid-pw"}
 
