@@ -6,6 +6,14 @@ from fastapi_login import LoginManager
 
 
 @pytest.fixture
+def custom_exception():
+    class CustomAuthException(Exception):
+        pass
+
+    return CustomAuthException
+
+
+@pytest.fixture
 def exception_manager(app, secret, token_url, load_user_fn, custom_exception) -> LoginManager:
     instance = LoginManager(secret, token_url)
     instance.user_loader(load_user_fn)
