@@ -111,7 +111,7 @@ class LoginManager(OAuth2PasswordBearer):
                 raise self.not_authenticated_exception
         # This includes all errors raised by pyjwt
         except jwt.PyJWTError:
-            raise InvalidCredentialsException
+            raise self.not_authenticated_exception
 
         user = await self._load_user(user_identifier)
 
