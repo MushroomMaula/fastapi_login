@@ -7,10 +7,8 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
-from starlette.requests import Request
-from starlette.responses import Response
 
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, Request, Response
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
