@@ -165,7 +165,7 @@ class LoginManager(OAuth2PasswordBearer):
 
     def set_cookie(self, response: Response, token: str) -> None:
         """
-        Utility function to handle cookie setting on the response
+        Utility function to set a cookie containing token on the response
 
         :param response: The response which is send back
         :param token: The created JWT
