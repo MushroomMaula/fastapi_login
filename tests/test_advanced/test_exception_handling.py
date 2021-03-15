@@ -33,7 +33,7 @@ def exception_manager(app, secret, token_url, load_user_fn, custom_exception) ->
 
     @app.get("/redirect")
     def redirect():
-        return {"detail": "Success"}
+        return {"detail": "Redirected"}
 
     return instance
 
@@ -46,7 +46,7 @@ async def test_exception_handling(exception_manager, client, invalid_data):
         headers={"Authorization": f"Bearer {invalid_token}"}
     )
 
-    assert resp.status_code == 301
+    assert resp.json()["detail"] == "Redirected"
 
 
 @pytest.mark.asyncio
