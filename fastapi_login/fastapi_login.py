@@ -15,11 +15,11 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 class LoginManager(OAuth2PasswordBearer):
 
-    def __init__(self, secret: str, tokenUrl: str, algorithm="HS256", use_cookie=False, use_header=True):
+    def __init__(self, secret: str, token_url: str, algorithm="HS256", use_cookie=False, use_header=True):
         """
         :param str secret: Secret key used to sign and decrypt the JWT
         :param str algorithm: Should be "HS256" or "RS256" used to decrypt the JWT
-        :param str tokenUrl: The url where the user can login to get the token
+        :param str token_url: The url where the user can login to get the token
         :param bool use_cookie: Set if cookies should be checked for the token
         :param bool use_header: Set if headers should be checked for the token
         """
@@ -31,7 +31,7 @@ class LoginManager(OAuth2PasswordBearer):
         self.pwd_context = CryptContext(schemes=["bcrypt"])
         # this is not mandatory as the user may want to use their own
         # function to get the token and pass it to the get_current_user method
-        self.tokenUrl = tokenUrl
+        self.tokenUrl = token_url
         self.oauth_scheme = None
         self._not_authenticated_exception = InvalidCredentialsException
 
@@ -39,7 +39,7 @@ class LoginManager(OAuth2PasswordBearer):
         self.use_header = use_header
         self.cookie_name = 'access-token'
 
-        super().__init__(tokenUrl=tokenUrl, auto_error=True)
+        super().__init__(tokenUrl=token_url, auto_error=True)
 
     @property
     def not_authenticated_exception(self):
@@ -72,7 +72,7 @@ class LoginManager(OAuth2PasswordBearer):
             >>> # use import os; print(os.urandom(24).hex()) to get a true secret key
             >>> SECRET = "super-secret"
 
-            >>> manager = LoginManager(SECRET, tokenUrl="Login")
+            >>> manager = LoginManager(SECRET, token_url="Login")
 
             >>> manager.user_loader(get_user)
 
