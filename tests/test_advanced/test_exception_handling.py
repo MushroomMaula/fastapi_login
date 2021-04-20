@@ -1,8 +1,11 @@
+from unittest.mock import Mock
+
 import pytest
 from fastapi import Depends
 from starlette.responses import RedirectResponse
 
 from fastapi_login import LoginManager
+from fastapi_login.exceptions import InvalidCredentialsException
 
 
 @pytest.fixture
@@ -28,6 +31,29 @@ def exception_manager(app, secret, token_url, load_user_fn, custom_exception) ->
         return {"detail": "Redirected"}
 
     return instance
+
+
+@pytest.mark.asyncio
+async def test_exception_call_cookie_error_user_header_false(clean_manager):
+    # setup clean_manager
+    clean_manager.use_cookie = True
+    clean_manager.use_header = False
+    response = Mock(cookies={})
+    with pytest.raises(Exception) as exc_info:
+        await clean_manager(response)
+
+    assert exc_info.value == InvalidCredentialsException
+
+
+@pytest.mark.asyncio
+async def test_exception_call_raises_no_token_auto_error_off(clean_manager):
+    clean_manager.auto_error = False
+    # set headers so fastapi internals dont raise an error
+    response = Mock(headers={"abc": "abc"})
+    with pytest.raises(Exception) as exc_info:
+        await clean_manager(response)
+
+    assert exc_info.value == InvalidCredentialsException
 
 
 @pytest.mark.asyncio
