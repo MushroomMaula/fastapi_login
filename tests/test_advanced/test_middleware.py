@@ -5,14 +5,6 @@ from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
-@pytest.fixture
-def custom_exception():
-    class CustomAuthException(Exception):
-        pass
-
-    return CustomAuthException
-
-
 @pytest.fixture(scope="module")
 def middleware_manager(app, token_url, load_user_fn):
     instance = LoginManager("secret", "/auth/token")

@@ -77,3 +77,13 @@ def invalid_data() -> dict:
 def clean_manager(secret, token_url) -> LoginManager:
     """ Return a new LoginManager instance """
     return LoginManager(secret, token_url)
+
+
+class CustomAuthException(Exception):
+    pass
+
+
+@pytest.fixture
+def custom_exception():
+
+    return CustomAuthException
