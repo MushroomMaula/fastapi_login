@@ -268,12 +268,12 @@ class LoginManager(OAuth2PasswordBearer):
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
-        if token is not None:
+        if token is None:
+            # No token is present in the request and no Exception has been raised (auto_error=False)
+            raise self.not_authenticated_exception
+        else:
             return await self.get_current_user(token)
 
-        # No token is present in the request and no Exception has been raised (auto_error=False)
-        raise self.not_authenticated_exception
-    
     def useRequest(self, app: FastAPI):
         """
         Add the instance as a middleware, which adds the user object, if present,
