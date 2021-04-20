@@ -227,8 +227,7 @@ class LoginManager(OAuth2PasswordBearer):
         token = request.cookies.get(self.cookie_name)
 
         if not token and self.auto_error:
-            # this is the standard exception as raised
-            # by the parent class
+            # either default InvalidCredentialsException or set by user
             raise self.not_authenticated_exception
 
         else:
