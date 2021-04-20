@@ -4,6 +4,7 @@ FastAPI-Login tries to provide similar functionality as [Flask-Login](https://gi
 
 ## Documentation
 In-depth documentation can but found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/)
+Some examples can be found [here](https://github.com/MushroomMaula/fastapi_login/tree/master/examples) 
 
 ## Installation
 
@@ -57,6 +58,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
 
+# the python-multipart package is required to use the OAuth2PasswordRequestForm
 @app.post('/auth/token')
 def login(data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
