@@ -1,3 +1,13 @@
+#1.6.0
+- Renamed the ``tokenUrl`` argument to ``token_url``
+ - User set `LoginManager.not_authenticated_exception`` will now also be raised when a token expires, 
+   or the token has an invalid format. (Fixes [#28](https://github.com/MushroomMaula/fastapi_login/issues/28))
+- Examples have been [added](https://github.com/MushroomMaula/fastapi_login/tree/master/examples) showing how to use ``fastapi-login``
+- Rewrote most of the tests
+- Update packages to fix security vulnerability
+- Update README to reflect package changes
+
+
 #1.5.3
 - Vastly improve documentation
 - Add middleware support [#24](https://github.com/MushroomMaula/fastapi_login/pull/24) (thanks to [zarlo](https://github.com/zarlo))
