@@ -56,13 +56,13 @@ async def test_user_loader_returns_none(clean_manager, invalid_data, load_user_f
 
 
 def test_token_from_cookie(clean_manager):
-    request = Mock(cookies={"access-token": "test-value"})
+    request = Mock(cookies={clean_manager.cookie_name: "test-value"})
     token = clean_manager._token_from_cookie(request)
     assert token == "test-value"
 
 
 def test_token_from_cookie_raises(clean_manager):
-    request = Mock(cookies={"access-token": ""})
+    request = Mock(cookies={clean_manager.cookie_name: ""})
     with pytest.raises(HTTPException) as exc_info:
         clean_manager._token_from_cookie(request)
 
@@ -71,7 +71,7 @@ def test_token_from_cookie_raises(clean_manager):
     
 def test_token_from_cookie_returns_none_auto_error_off(clean_manager):
     clean_manager.auto_error = False
-    request = Mock(cookies={"access_token": ""})
+    request = Mock(cookies={clean_manager.cookie_name: ""})
     token = clean_manager._token_from_cookie(request)
     assert token is None
 
