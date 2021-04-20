@@ -66,7 +66,6 @@ async def test_cookie_dependency(client, cookie_manager, default_data):
 
 @pytest.mark.asyncio
 async def test_cookie_header_fallback(client, cookie_header_manager, default_data):
-    # enable header manually
     token = cookie_header_manager.create_access_token(data=default_data)
     resp = await client.get(
         "/private/both",
