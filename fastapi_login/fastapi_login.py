@@ -226,11 +226,14 @@ class LoginManager(OAuth2PasswordBearer):
         """
         token = request.cookies.get(self.cookie_name)
 
+        # we dont use `token is None` in case a cookie with self.cookie_name
+        # exists but is set to "", in which case `token is None` evaluates to False
         if not token and self.auto_error:
             # either default InvalidCredentialsException or set by user
             raise self.not_authenticated_exception
 
         else:
+            # Token may be "" so we convert to None
             return token if token else None
 
     async def __call__(self, request: Request):
