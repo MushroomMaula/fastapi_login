@@ -13,8 +13,6 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          selection:
-            docstring_style: restructured-text
           rendering:
             show_root_toc_entry: false
             show_if_no_docstring: true

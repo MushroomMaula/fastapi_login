@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta content='IE=edge' http-equiv='X-UA-Compatible'>
+  <title>Simple Example</title>
+  <meta content='width=device-width, initial-scale=1' name='viewport'>
+</head>
+<body>
+<form id="registerForm">
+  <h1>Register</h1>
+  <p id="registerStatus"></p>
+  <label for="emailInput">
+    E-Mail
+    <input id="emailInput" name="email" placeholder="E-Mail" type="email">
+  </label>
+  <label for="passwordInput">
+    Password
+    <input id="passwordInput" name="password" placeholder="Password" type="password">
+  </label>
+  <input id="registerSubmit" type="submit" value="Submit">
+</form>
+
+<form id="loginForm">
+  <h1>Login</h1>
+  <p id="loginStatus"></p>
+  <label for="loginEmailInput">
+    E-Mail
+    <input id="loginEmailInput" name="username" placeholder="E-Mail" type="email">
+  </label>
+  <label for="loginPasswordInput">
+    Password
+    <input id="loginPasswordInput" name="password" placeholder="Password" type="password">
+  </label>
+  <input id="loginSubmit" type="submit" value="Submit">
+
+</form>
+<div>
+  <h1>Accessing private routes</h1>
+  <p> Make request to a privte route:</p>
+  <button id="privateRequest">Request</button>
+  <p id="privateStatus"></p>
+</div>
+</body>
+<script>
+  const registerSubmit = document.getElementById("registerSubmit");
+  registerSubmit.onclick = (ev) => {
+    ev.preventDefault();
+    const registerForm = document.getElementById("registerForm");
+    const data = new FormData(registerForm);
+    // convert formdata to json
+    let object = {}
+    data.forEach((value, key) => object[key] = value)
+
+    // send data to the backend route
+    fetch("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(object)
+    }).then((response) => response.json())
+      .then((data) => {
+        const status = document.getElementById("registerStatus");
+        status.innerText = data.detail;
+      })
+      .catch((err) => {
+        console.log("Error: ", err)
+      })
+  }
+
+  let token = undefined;
+  const loginSubmit = document.getElementById("loginSubmit");
+  loginSubmit.onclick = (ev) => {
+    ev.preventDefault();
+    const loginForm = document.getElementById("loginForm")
+    const data = new FormData(loginForm)
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/auth/token", true);
+
+    xhr.onload = (ev) => {
+      const status = document.getElementById("loginStatus")
+      const responseData = JSON.parse(xhr.responseText)
+      if (xhr.status == 200) {
+        status.innerText = "Successfully logged in, token: " + responseData.access_token;
+        token = `${responseData.token_type} ${responseData.access_token}`;
+      } else {
+        status.innerText = "Error logging in: " + responseData.detail
+      }
+    }
+
+    xhr.send(data)
+  }
+
+  const privateRequest = document.getElementById("privateRequest");
+  privateRequest.onclick = (ev) => {
+    fetch("/private", {
+      method: "GET",
+      headers: {
+        "Authorization": token
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        const status = document.getElementById("privateStatus");
+        if (status.ok) {
+          status.innerText = data.detail
+        } else {
+          status.innerText = data.detail
+        }
+
+      })
+  }
+</script>
+</html>

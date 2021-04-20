@@ -4,6 +4,7 @@ FastAPI-Login tries to provide similar functionality as [Flask-Login](https://gi
 
 ## Documentation
 In-depth documentation can but found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/)
+Some examples can be found [here](https://github.com/MushroomMaula/fastapi_login/tree/master/examples) 
 
 ## Installation
 
@@ -28,7 +29,8 @@ encoding and decoding our Json Web Tokens.
 
 ````python
 from fastapi_login import LoginManager
-manager = LoginManager(SECRET, tokenUrl='/auth/token')
+
+manager = LoginManager(SECRET, token_url='/auth/token')
 ````
 For the example we will use a dictionary to represent our user database. In your
 application this could also be a real database like sqlite or Postgres. It does not
@@ -56,6 +58,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
 
+# the python-multipart package is required to use the OAuth2PasswordRequestForm
 @app.post('/auth/token')
 def login(data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
@@ -119,9 +122,11 @@ long_token = manager.create_access_token(
 
 ### Usage with cookies
 Instead of checking the header for the token. ``fastapi-login``  also support access using cookies.
+
 ````python
 from fastapi_login import LoginManager
-manager = LoginManager(SECRET, tokenUrl='/auth/token', use_cookie=True)
+
+manager = LoginManager(SECRET, token_url='/auth/token', use_cookie=True)
 ````
 Now the manager will check the requests cookies the headers for the access token. The name of the cookie can be set using
  ``manager.cookie_name``.

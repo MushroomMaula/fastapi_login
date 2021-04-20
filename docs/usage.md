@@ -32,5 +32,7 @@ can be used as a dependency.
 
 !!! note 
     ``user`` in this case will be whatever ``LoginManager.user_loader`` returns.
-    In case user is ``None`` a ``fastapi_login.exceptions.InvalidCredentialsException``
-    will be thrown, this results into a 401 http status code.
+    In case user is ``None`` the `LoginManager.not_authenticated_exception`
+    will be thrown, this results into a 401 http status code by default.
+    If ```not_authenticated_exception``` has been set by the user it will be
+    raised instead.
