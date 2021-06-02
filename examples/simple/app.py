@@ -10,7 +10,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 
 class Settings(BaseSettings):
-    secret: str  # autmatically taken from environement variable
+    secret: str  # automatically taken from environement variable
 
 
 class UserCreate(BaseModel):
