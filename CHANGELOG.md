@@ -1,3 +1,6 @@
+#1.6.1
+- Updates of dependencies, this fixes several security issues found in the dependencies
+
 #1.6.0
 - Renamed the ``tokenUrl`` argument to ``token_url``
  - User set `LoginManager.not_authenticated_exception`` will now also be raised when a token expires, 
