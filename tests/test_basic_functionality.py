@@ -1,10 +1,11 @@
-from datetime import timedelta
 import time
+from datetime import timedelta
 from http.cookies import SimpleCookie
 from unittest.mock import Mock, AsyncMock
 
 import pytest
 from fastapi import HTTPException
+from fastapi.security import SecurityScopes
 from starlette.responses import Response
 
 from fastapi_login import LoginManager
@@ -94,6 +95,26 @@ def test_config_no_cookie_no_header_raises(secret, token_url):
         LoginManager(secret, token_url, use_cookie=False, use_header=False)
 
     assert "use_cookie and use_header are both False one of them needs to be True" == str(exc_info.value)
+
+
+def test_has_scopes_true(clean_manager, default_data):
+    scopes = ["read"]
+    token = clean_manager.create_access_token(data=default_data, scopes=scopes)
+    required_scopes = SecurityScopes(scopes=scopes)
+    assert clean_manager.has_scopes(token, required_scopes)
+
+
+def test_has_scopes_no_scopes(clean_manager, default_data):
+    scopes = ["read"]
+    token = clean_manager.create_access_token(data=default_data)
+    assert clean_manager.has_scopes(token, SecurityScopes(scopes=scopes)) is False
+
+
+def test_has_scopes_missing_scopes(clean_manager, default_data):
+    scopes = ["read"]
+    token = clean_manager.create_access_token(data=default_data)
+    required_scopes = scopes + ["write"]
+    assert clean_manager.has_scopes(token, SecurityScopes(scopes=required_scopes)) is False
 
 
 

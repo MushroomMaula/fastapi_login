@@ -1,9 +1,9 @@
 import os
-from typing import Callable, Awaitable, Dict
+from typing import Callable, Dict
 
-from fastapi import FastAPI
-from async_asgi_testclient import TestClient
 import pytest
+from async_asgi_testclient import TestClient
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 from fastapi_login import LoginManager
@@ -48,7 +48,7 @@ def load_user_fn(db: dict) -> Callable[[str], User]:
     return load_user
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def secret() -> str:
     return os.urandom(24).hex()
 

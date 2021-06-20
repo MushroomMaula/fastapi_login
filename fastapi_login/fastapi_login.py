@@ -1,14 +1,13 @@
 import inspect
 import typing
 from datetime import timedelta, datetime
-from typing import Callable, Awaitable, Union
+from typing import Callable, Awaitable, Union, Collection, Dict
 
 import jwt
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import FastAPI, Request, Response
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
-
-from fastapi import FastAPI, Request, Response
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
@@ -26,7 +25,14 @@ class LoginManager(OAuth2PasswordBearer):
         cookie_name (str): The name of the cookie checked for the token, defaults to `"access-token"`
     """
 
-    def __init__(self, secret: str, token_url: str, algorithm="HS256", use_cookie=False, use_header=True):
+    def __init__(self,
+                 secret: str,
+                 token_url: str,
+                 algorithm="HS256",
+                 use_cookie=False,
+                 use_header=True,
+                 scopes: Dict[str, str] = None
+                 ):
         """
         Initializes LoginManager
 
@@ -50,7 +56,7 @@ class LoginManager(OAuth2PasswordBearer):
         self.use_header = use_header
         self.cookie_name = 'access-token'
 
-        super().__init__(tokenUrl=token_url, auto_error=True)
+        super().__init__(tokenUrl=token_url, auto_error=True, scopes=scopes)
 
     @property
     def not_authenticated_exception(self):
@@ -106,6 +112,30 @@ class LoginManager(OAuth2PasswordBearer):
         self._user_callback = callback
         return callback
 
+    def _get_payload(self, token: str):
+        """
+        Returns the decoded token payload
+        Args:
+            token: The token to decode
+
+        Returns:
+            Payload of the token
+
+        Raises:
+            LoginManager.not_authenticated_exception: The token is invalid or None was returned by `_load_user`
+        """
+        try:
+            payload = jwt.decode(
+                token,
+                str(self.secret),
+                algorithms=[self.algorithm]
+            )
+            return payload
+
+        # This includes all errors raised by pyjwt
+        except jwt.PyJWTError:
+            raise self.not_authenticated_exception
+
     async def get_current_user(self, token: str):
         """
         This decodes the jwt based on the secret and on the algorithm
@@ -122,18 +152,10 @@ class LoginManager(OAuth2PasswordBearer):
         Raises:
             LoginManager.not_authenticated_exception: The token is invalid or None was returned by `_load_user`
         """
-        try:
-            payload = jwt.decode(
-                token,
-                str(self.secret),
-                algorithms=[self.algorithm]
-            )
-            # the identifier should be stored under the sub (subject) key
-            user_identifier = payload.get('sub')
-            if user_identifier is None:
-                raise self.not_authenticated_exception
-        # This includes all errors raised by pyjwt
-        except jwt.PyJWTError:
+        payload = self._get_payload(token)
+        # the identifier should be stored under the sub (subject) key
+        user_identifier = payload.get('sub')
+        if user_identifier is None:
             raise self.not_authenticated_exception
 
         user = await self._load_user(user_identifier)
@@ -168,7 +190,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         return user
 
-    def create_access_token(self, *, data: dict, expires: timedelta = None) -> str:
+    def create_access_token(self, *, data: dict, expires: timedelta = None, scopes: Collection[str] = None) -> str:
         """
         Helper function to create the encoded access token using
         the provided secret and the algorithm of the LoginManager instance
@@ -177,6 +199,7 @@ class LoginManager(OAuth2PasswordBearer):
             data (dict): The data which should be stored in the token
             expires (datetime.timedelta):  An optional timedelta in which the token expires.
                 Defaults to 15 minutes
+            scopes (Collection): Optional scopes the token user has access to.
 
         Returns:
             The encoded JWT with the data and the expiry. The expiry is
@@ -192,6 +215,11 @@ class LoginManager(OAuth2PasswordBearer):
             expires_in = datetime.utcnow() + timedelta(minutes=15)
 
         to_encode.update({'exp': expires_in})
+
+        if scopes is not None:
+            unique_scopes = set(scopes)
+            to_encode.update({'scopes': list(unique_scopes)})
+
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         # decode here decodes the byte str to a normal str not the token
         return encoded_jwt
@@ -236,20 +264,18 @@ class LoginManager(OAuth2PasswordBearer):
             # Token may be "" so we convert to None
             return token if token else None
 
-    async def __call__(self, request: Request):
+    async def _get_token(self, request: Request):
         """
-        Provides the functionality to act as a Dependency
+        Tries to extract the token from the request, based on self.use_header and self.use_token
 
         Args:
-            request (fastapi.Request):The incoming request, this is set automatically
-                by FastAPI
+            request: The request containing the token
 
         Returns:
-            The user object or None
+            The in the request contained encoded JWT token
 
         Raises:
-            LoginManager.not_authenticated_exception: If set by the user and `self.auto_error` is set to False
-
+            LoginManager.not_authenticated_exception if no token is present
         """
         token = None
         try:
@@ -268,11 +294,62 @@ class LoginManager(OAuth2PasswordBearer):
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
+        return token
+
+    def has_scopes(self, token: str, required_scopes: SecurityScopes):
+        """
+        Returns true if the required scopes are present in the token
+        Args:
+            token: The encoded JWT token
+            required_scopes: The scopes required to access this route
+
+        Returns:
+            True if the required scopes are contained in the tokens payload
+        """
+        try:
+            payload = self._get_payload(token)
+        except self.not_authenticated_exception:
+            # We got an error while decoding the token
+            return False
+
+        scopes = payload.get("scopes", [])
+        # Check if all scopes are present
+        if len(scopes) != len(required_scopes.scopes):
+            return False
+        elif any(scope not in required_scopes.scopes for scope in scopes):
+            return False
+
+        return True
+
+    async def __call__(self, request: Request, security_scopes: SecurityScopes = None):
+        """
+        Provides the functionality to act as a Dependency
+
+        Args:
+            request (fastapi.Request):The incoming request, this is set automatically
+                by FastAPI
+
+        Returns:
+            The user object or None
+
+        Raises:
+            LoginManager.not_authenticated_exception: If set by the user and `self.auto_error` is set to False
+
+        """
+
+        token = await self._get_token(request)
+
         if token is None:
             # No token is present in the request and no Exception has been raised (auto_error=False)
             raise self.not_authenticated_exception
-        else:
-            return await self.get_current_user(token)
+
+        # when the manager was invoked using fastapi.Security(manager, scopes=[...])
+        # we have to check if all required scopes are contained in the token
+        if security_scopes is not None and security_scopes.scopes:
+            if not self.has_scopes(token, security_scopes):
+                raise self.not_authenticated_exception
+
+        return await self.get_current_user(token)
 
     def useRequest(self, app: FastAPI):
         """

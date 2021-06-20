@@ -11,6 +11,7 @@ fastapi-login provides a convenient, simple to use user authentication for FastA
 - Support for token in either request headers or as cookie
 - Usable as a middleware to create your own dependencies
 - Support for callbacks when user is unauthorized
+- Support for OAuth2 scopes
 - OpenAPI support
 
 ## Aim
