@@ -106,6 +106,30 @@ class LoginManager(OAuth2PasswordBearer):
         self._user_callback = callback
         return callback
 
+    def _get_payload(self, token: str):
+        """
+        Returns the decoded token payload
+        Args:
+            token: The token to decode
+
+        Returns:
+            Payload of the token
+
+        Raises:
+            LoginManager.not_authenticated_exception: The token is invalid or None was returned by `_load_user`
+        """
+        try:
+            payload = jwt.decode(
+                token,
+                str(self.secret),
+                algorithms=[self.algorithm]
+            )
+            return payload
+
+        # This includes all errors raised by pyjwt
+        except jwt.PyJWTError:
+            raise self.not_authenticated_exception
+
     async def get_current_user(self, token: str):
         """
         This decodes the jwt based on the secret and on the algorithm
@@ -122,18 +146,10 @@ class LoginManager(OAuth2PasswordBearer):
         Raises:
             LoginManager.not_authenticated_exception: The token is invalid or None was returned by `_load_user`
         """
-        try:
-            payload = jwt.decode(
-                token,
-                str(self.secret),
-                algorithms=[self.algorithm]
-            )
-            # the identifier should be stored under the sub (subject) key
-            user_identifier = payload.get('sub')
-            if user_identifier is None:
-                raise self.not_authenticated_exception
-        # This includes all errors raised by pyjwt
-        except jwt.PyJWTError:
+        payload = self._get_payload(token)
+        # the identifier should be stored under the sub (subject) key
+        user_identifier = payload.get('sub')
+        if user_identifier is None:
             raise self.not_authenticated_exception
 
         user = await self._load_user(user_identifier)
