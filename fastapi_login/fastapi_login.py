@@ -1,7 +1,6 @@
 import inspect
-import typing
 from datetime import timedelta, datetime
-from typing import Callable, Awaitable, Union, Collection
+from typing import Callable, Awaitable, Union, Collection, Dict
 
 import jwt
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -26,7 +25,14 @@ class LoginManager(OAuth2PasswordBearer):
         cookie_name (str): The name of the cookie checked for the token, defaults to `"access-token"`
     """
 
-    def __init__(self, secret: str, token_url: str, algorithm="HS256", use_cookie=False, use_header=True):
+    def __init__(self,
+                 secret: str,
+                 token_url: str,
+                 algorithm="HS256",
+                 use_cookie=False,
+                 use_header=True,
+                 scopes: Dict[str, str] = None
+                 ):
         """
         Initializes LoginManager
 
@@ -50,7 +56,7 @@ class LoginManager(OAuth2PasswordBearer):
         self.use_header = use_header
         self.cookie_name = 'access-token'
 
-        super().__init__(tokenUrl=token_url, auto_error=True)
+        super().__init__(tokenUrl=token_url, auto_error=True, scopes=scopes)
 
     @property
     def not_authenticated_exception(self):

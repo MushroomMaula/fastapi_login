@@ -68,3 +68,5 @@ access to certain routes.
 Notice how instead of the normally used ``fastapi.Depends`` ``fastapi.Security`` is used.
 In order to give your token the required scopes [``LoginManager.create_access_token``](reference.md#fastapi_login.fastapi_login.LoginManager.create_access_token)
 has a ``scopes`` parameter.
+In order for the scopes to show up in the OpenAPI docs, your scopes need to be passed
+as an argument when instantiating LoginManager.
