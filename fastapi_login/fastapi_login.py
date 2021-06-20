@@ -308,7 +308,9 @@ class LoginManager(OAuth2PasswordBearer):
 
         scopes = payload.get("scopes", [])
         # Check if all scopes are present
-        if any(scope not in required_scopes.scopes for scope in scopes):
+        if len(scopes) != len(required_scopes.scopes):
+            return False
+        elif any(scope not in required_scopes.scopes for scope in scopes):
             return False
 
         return True
@@ -337,7 +339,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         # when the manager was invoked using fastapi.Security(manager, scopes=[...])
         # we have to check if all required scopes are contained in the token
-        if security_scopes is not None:
+        if security_scopes is not None and security_scopes.scopes:
             if not self.has_scopes(token, security_scopes):
                 raise self.not_authenticated_exception
 
