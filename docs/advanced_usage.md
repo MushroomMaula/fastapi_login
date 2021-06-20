@@ -66,5 +66,5 @@ access to certain routes.
 {!../docs_src/advanced_usage/adv_usage_008.py!}
 ````
 Notice how instead of the normally used ``fastapi.Depends`` ``fastapi.Security`` is used.
-In order to give your token the required scopes [``LoginManager.create_access_token``](reference.html#fastapi_login.fastapi_login.LoginManager.create_access_token)
+In order to give your token the required scopes [``LoginManager.create_access_token``](reference.md#fastapi_login.fastapi_login.LoginManager.create_access_token)
 has a ``scopes`` parameter.
