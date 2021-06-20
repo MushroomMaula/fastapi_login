@@ -1,14 +1,13 @@
 import inspect
-from datetime import timedelta, datetime
 import typing
+from datetime import timedelta, datetime
 from typing import Callable, Awaitable, Union, Collection, Dict
 
 import jwt
+from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
-
-from fastapi import FastAPI, Request, Response
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
