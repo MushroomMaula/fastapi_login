@@ -1,7 +1,7 @@
 import inspect
 import typing
 from datetime import timedelta, datetime
-from typing import Callable, Awaitable, Union
+from typing import Callable, Awaitable, Union, Collection
 
 import jwt
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -184,7 +184,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         return user
 
-    def create_access_token(self, *, data: dict, expires: timedelta = None) -> str:
+    def create_access_token(self, *, data: dict, expires: timedelta = None, scopes: Collection[str] = None) -> str:
         """
         Helper function to create the encoded access token using
         the provided secret and the algorithm of the LoginManager instance
@@ -193,6 +193,7 @@ class LoginManager(OAuth2PasswordBearer):
             data (dict): The data which should be stored in the token
             expires (datetime.timedelta):  An optional timedelta in which the token expires.
                 Defaults to 15 minutes
+            scopes (Collection): Optional scopes the token user has access to.
 
         Returns:
             The encoded JWT with the data and the expiry. The expiry is
@@ -208,6 +209,11 @@ class LoginManager(OAuth2PasswordBearer):
             expires_in = datetime.utcnow() + timedelta(minutes=15)
 
         to_encode.update({'exp': expires_in})
+
+        if scopes is not None:
+            unique_scopes = set(scopes)
+            to_encode.update({'scopes': list(unique_scopes)})
+
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         # decode here decodes the byte str to a normal str not the token
         return encoded_jwt
