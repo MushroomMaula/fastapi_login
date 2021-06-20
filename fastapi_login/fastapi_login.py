@@ -4,7 +4,7 @@ from datetime import timedelta, datetime
 from typing import Callable, Awaitable, Union
 
 import jwt
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
 from starlette.datastructures import Secret
 
@@ -252,20 +252,18 @@ class LoginManager(OAuth2PasswordBearer):
             # Token may be "" so we convert to None
             return token if token else None
 
-    async def __call__(self, request: Request):
+    async def _get_token(self, request: Request):
         """
-        Provides the functionality to act as a Dependency
+        Tries to extract the token from the request, based on self.use_header and self.use_token
 
         Args:
-            request (fastapi.Request):The incoming request, this is set automatically
-                by FastAPI
+            request: The request containing the token
 
         Returns:
-            The user object or None
+            The in the request contained encoded JWT token
 
         Raises:
-            LoginManager.not_authenticated_exception: If set by the user and `self.auto_error` is set to False
-
+            LoginManager.not_authenticated_exception if no token is present
         """
         token = None
         try:
@@ -284,11 +282,60 @@ class LoginManager(OAuth2PasswordBearer):
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
+        return token
+
+    def has_scopes(self, token: str, required_scopes: SecurityScopes):
+        """
+        Returns true if the required scopes are present in the token
+        Args:
+            token: The encoded JWT token
+            required_scopes: The scopes required to access this route
+
+        Returns:
+            True if the required scopes are contained in the tokens payload
+        """
+        try:
+            payload = self._get_payload(token)
+        except self.not_authenticated_exception:
+            # We got an error while decoding the token
+            return False
+
+        scopes = payload.get("scopes", [])
+        # Check if all scopes are present
+        if any(scope not in required_scopes.scopes for scope in scopes):
+            return False
+
+        return True
+
+    async def __call__(self, request: Request, security_scopes: SecurityScopes = None):
+        """
+        Provides the functionality to act as a Dependency
+
+        Args:
+            request (fastapi.Request):The incoming request, this is set automatically
+                by FastAPI
+
+        Returns:
+            The user object or None
+
+        Raises:
+            LoginManager.not_authenticated_exception: If set by the user and `self.auto_error` is set to False
+
+        """
+
+        token = await self._get_token(request)
+
         if token is None:
             # No token is present in the request and no Exception has been raised (auto_error=False)
             raise self.not_authenticated_exception
-        else:
-            return await self.get_current_user(token)
+
+        # when the manager was invoked using fastapi.Security(manager, scopes=[...])
+        # we have to check if all required scopes are contained in the token
+        if security_scopes is not None:
+            if not self.has_scopes(token, security_scopes):
+                raise self.not_authenticated_exception
+
+        return await self.get_current_user(token)
 
     def useRequest(self, app: FastAPI):
         """
