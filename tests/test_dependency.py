@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi_login import LoginManager
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url)
     instance.user_loader(load_user_fn)
@@ -16,7 +16,7 @@ def header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     return instance
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def cookie_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url, use_cookie=True, use_header=False)
     instance.user_loader(load_user_fn)
@@ -28,7 +28,7 @@ def cookie_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     return instance
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def cookie_header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url, use_cookie=True)
     instance.user_loader(load_user_fn)
