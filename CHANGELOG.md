@@ -1,3 +1,10 @@
+#1.6.2
+- Adds support for OAuth2 scopes.
+  
+    If used with ``fastapi.Security`` instead of ``fastapi.Depends``, token are now
+    check for the required scopes to access the route.
+    For more checkout the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#oauth2-scopes) 
+
 #1.6.1
 - Updates of dependencies, this fixes several security issues found in the dependencies
 
