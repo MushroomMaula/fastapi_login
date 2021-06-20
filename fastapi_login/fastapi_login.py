@@ -1,5 +1,6 @@
 import inspect
 from datetime import timedelta, datetime
+import typing
 from typing import Callable, Awaitable, Union, Collection, Dict
 
 import jwt
