@@ -58,3 +58,13 @@ to your user object
 ````python
 {!../docs_src/advanced_usage/adv_usage_007.py!}
 ````
+
+## OAuth2 scopes
+In addition to normal token authentication, OAuth2 scopes can be used to restrict
+access to certain routes.
+````python hl_lines="2"
+{!../docs_src/advanced_usage/adv_usage_008.py!}
+````
+Notice how instead of the normally used ``fastapi.Depends`` ``fastapi.Security`` is used.
+In order to give your token the required scopes [``LoginManager.create_access_token``](reference.html#fastapi_login.fastapi_login.LoginManager.create_access_token)
+has a ``scopes`` parameter.
