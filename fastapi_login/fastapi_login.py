@@ -308,7 +308,7 @@ class LoginManager(OAuth2PasswordBearer):
         """
         try:
             payload = self._get_payload(token)
-        except self.not_authenticated_exception:
+        except type(self.not_authenticated_exception):
             # We got an error while decoding the token
             return False
 
@@ -369,5 +369,5 @@ class LoginManager(OAuth2PasswordBearer):
                 # it's not a good idea to return the Exception
                 # so we set the user to None
                 request.state.user = None
-            
+
             return await call_next(request)
