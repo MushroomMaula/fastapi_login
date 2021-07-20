@@ -1,29 +1,27 @@
-import setuptools
+# -*- coding: utf-8 -*-
+from setuptools import setup
 
-with open("README.md", 'r') as f:
-    long_description = f.read()
+packages = ["fastapi_login"]
+
+package_data = {"": ["*"]}
+
+install_requires = ["fastapi", "passlib[bcrypt]", "pyjwt"]
+
+setup_kwargs = {
+    "name": "fastapi-login",
+    "version": "1.6.2",
+    "description": "Flask-Login like package for FastAPI",
+    "long_description": "# FastAPI-Login\n\nFastAPI-Login tries to provide similar functionality as [Flask-Login](https://github.com/maxcountryman/flask-login) does.\n\n## Documentation\nIn-depth documentation can but found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/)\nSome examples can be found [here](https://github.com/MushroomMaula/fastapi_login/tree/master/examples) \n\n## Installation\n\n```shell script\n$ pip install fastapi-login\n```\n\n## Usage\n\nTo begin we have to setup our FastAPI app:\n````python\nfrom fastapi import FastAPI\n\nSECRET = \"your-secret-key\"\n\napp = FastAPI()\n````\nTo obtain a suitable secret key you can run ``import os; print(os.urandom(24).hex())``.\n\nNow we can import and setup the LoginManager, which will handle the process of\nencoding and decoding our Json Web Tokens.\n\n````python\nfrom fastapi_login import LoginManager\n\nmanager = LoginManager(SECRET, token_url='/auth/token')\n````\nFor the example we will use a dictionary to represent our user database. In your\napplication this could also be a real database like sqlite or Postgres. It does not\nmatter as you have to provide the function which retrieves the user.\n\n````python\nfake_db = {'johndoe@e.mail': {'password': 'hunter2'}}\n````\n\nNow we have to provide the ``LoginManager`` with a way to load our user. The \n`user_loader` callback should either return your user object or ``None``\n\n````python\n@manager.user_loader\ndef load_user(email: str):  # could also be an asynchronous function\n    user = fake_db.get(email)\n    return user\n````\n\nNow we have to define a way to let the user login in our app. Therefore we will create\na new route:\n\n````python\nfrom fastapi import Depends\nfrom fastapi.security import OAuth2PasswordRequestForm\nfrom fastapi_login.exceptions import InvalidCredentialsException\n\n# the python-multipart package is required to use the OAuth2PasswordRequestForm\n@app.post('/auth/token')\ndef login(data: OAuth2PasswordRequestForm = Depends()):\n    email = data.username\n    password = data.password\n\n    user = load_user(email)  # we are using the same function to retrieve the user\n    if not user:\n        raise InvalidCredentialsException  # you can also use your own HTTPException\n    elif password != user['password']:\n        raise InvalidCredentialsException\n    \n    access_token = manager.create_access_token(\n        data=dict(sub=email)\n    )\n    return {'access_token': access_token, 'token_type': 'bearer'}\n````\n\nNow whenever you want your user to be logged in to use a route, you can simply\nuse your ``LoginManager`` instance as a dependency.\n\n````python\n@app.get('/protected')\ndef protected_route(user=Depends(manager)):\n    ...\n````\n\nIf you also want to handle a not authenticated error, you can add your own subclass of Exception to the LoginManager.\n````python\nfrom starlette.responses import RedirectResponse\n\nclass NotAuthenticatedException(Exception):\n    pass\n\n# these two argument are mandatory\ndef exc_handler(request, exc):\n    return RedirectResponse(url='/login')\n\nmanager.not_authenticated_exception = NotAuthenticatedException\n# You also have to add an exception handler to your app instance\napp.add_exception_handler(NotAuthenticatedException, exc_handler)\n````\n\nTo change the expiration date of the token use the ``expires_delta`` argument of the `create_access_token` method \nwith a timedelta. The default is set 15 min. Please be aware that setting a long expiry date is not considered a good practice\nas it would allow an attacker with the token to use your application as long as he wants.\n\n````python\nfrom datetime import timedelta\n\ndata = dict(sub=user.email)\n\n# expires after 15 min\ntoken = manager.create_access_token(\n    data=data\n)\n# expires after 12 hours\nlong_token = manager.create_access_token(\n    data=data, expires=timedelta(hours=12)\n)\n````\n\n### Usage with cookies\nInstead of checking the header for the token. ``fastapi-login``  also support access using cookies.\n\n````python\nfrom fastapi_login import LoginManager\n\nmanager = LoginManager(SECRET, token_url='/auth/token', use_cookie=True)\n````\nNow the manager will check the requests cookies the headers for the access token. The name of the cookie can be set using\n ``manager.cookie_name``.\nIf you only want to check the requests cookies you can turn the headers off using the ``use_header`` argument\n\nFor convenience the LoginManager also includes the ``set_cookie`` method which sets the cookie to your response,\nwith the recommended HTTPOnly flag and the ``manager.cookie_name`` as the key.\n````python\nfrom fastapi import Depends\nfrom starlette.responses import Response\n\n\n@app.get('/auth')\ndef auth(response: Response, user=Depends(manager)):\n    token = manager.create_access_token(\n        data=dict(sub=user.email)\n    )\n    manager.set_cookie(response, token)\n    return response\n    \n````",
+    "author": "Max Rausch-Dupont",
+    "author_email": "maxrd79@gmail.com",
+    "maintainer": None,
+    "maintainer_email": None,
+    "url": "https://github.com/MushroomMaula/fastapi_login",
+    "packages": packages,
+    "package_data": package_data,
+    "install_requires": install_requires,
+    "python_requires": ">=3.8,<4.0",
+}
 
 
-setuptools.setup(
-    name="fastapi-login",
-    version="1.6.2",
-    author="Max Rausch-Dupont",
-    author_email="maxrd79@gmail.com",
-    descritpion="Flask-Login like package for FastAPI",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/MushroomMaula/fastapi_login",
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent"
-    ],
-    packages=setuptools.find_packages(),
-    install_requires=[
-        "fastapi",
-        "passlib",
-        "pyjwt"
-    ],
-    zip_safe=False,
-    include_package_data=True
-)
+setup(**setup_kwargs)

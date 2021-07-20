@@ -1,9 +1,17 @@
 [tool.poetry]
 name = "fastapi_login"
-version = "1.6.0"
+version = "1.6.2"
 description = "Flask-Login like package for FastAPI"
+readme = "README.md"
 authors = ["Max Rausch-Dupont <maxrd79@gmail.com>"]
 license = "MIT"
+repository = "https://github.com/MushroomMaula/fastapi_login"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
