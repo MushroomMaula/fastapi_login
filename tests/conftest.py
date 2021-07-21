@@ -85,5 +85,4 @@ class CustomAuthException(Exception):
 
 @pytest.fixture
 def custom_exception():
-
     return CustomAuthException

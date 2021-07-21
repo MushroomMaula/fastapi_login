@@ -1,3 +1,6 @@
+# 1.6.3
+- Fixes bug not being able to catch ``LoginManager.not_authenticated_exception`` in ``LoginManager.has_scopes``. ([#47](https://github.com/MushroomMaula/fastapi_login/issues/47) thanks to [kigawas](https://github.com/kigawas))
+
 # 1.6.2
 - Adds support for OAuth2 scopes.
   
