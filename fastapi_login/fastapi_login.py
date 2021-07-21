@@ -283,13 +283,13 @@ class LoginManager(OAuth2PasswordBearer):
                 token = self._token_from_cookie(request)
         # The Exception is either a InvalidCredentialsException
         # or a custom exception set by the user
-        except Exception as e:
+        except type(self.not_authenticated_exception):
             # In case use_cookie and use_header is enabled
             # headers should be checked if cookie lookup fails
             if self.use_header:
                 pass
             else:
-                raise e
+                raise self.not_authenticated_exception
 
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
