@@ -68,8 +68,8 @@ def test_token_from_cookie_raises(clean_manager):
         clean_manager._token_from_cookie(request)
 
     assert exc_info.value == InvalidCredentialsException
-    
-    
+
+
 def test_token_from_cookie_returns_none_auto_error_off(clean_manager):
     clean_manager.auto_error = False
     request = Mock(cookies={clean_manager.cookie_name: ""})
@@ -117,4 +117,6 @@ def test_has_scopes_missing_scopes(clean_manager, default_data):
     assert clean_manager.has_scopes(token, SecurityScopes(scopes=required_scopes)) is False
 
 
-
+def test_has_scopes_invalid_token(clean_manager):
+    token = "invalid-token"
+    assert not clean_manager.has_scopes(token, SecurityScopes(scopes=["test"]))
