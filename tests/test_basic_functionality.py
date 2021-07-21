@@ -116,6 +116,7 @@ def test_has_scopes_missing_scopes(clean_manager, default_data):
     required_scopes = scopes + ["write"]
     assert clean_manager.has_scopes(token, SecurityScopes(scopes=required_scopes)) is False
 
+
 def test_has_scopes_invalid_token(clean_manager):
     token = "invalid-token"
     assert not clean_manager.has_scopes(token, SecurityScopes(scopes=["test"]))
