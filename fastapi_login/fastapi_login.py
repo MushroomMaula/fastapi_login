@@ -1,5 +1,6 @@
 import inspect
 import typing
+import warnings
 from datetime import timedelta, datetime
 from typing import Callable, Awaitable, Union, Collection, Dict
 
@@ -31,6 +32,8 @@ class LoginManager(OAuth2PasswordBearer):
                  algorithm="HS256",
                  use_cookie=False,
                  use_header=True,
+                 cookie_name: str = "access-token",
+                 custom_exception: Exception = None,
                  scopes: Dict[str, str] = None
                  ):
         """
@@ -41,6 +44,12 @@ class LoginManager(OAuth2PasswordBearer):
             token_url (str): The url where the user can login to get the token
             use_cookie (bool): Set if cookies should be checked for the token
             use_header (bool): Set if headers should be checked for the token
+            cookie_name (str): Name of the cookie to check for the token
+            custom_exception (Exception): Exception to raise when the user is not authenticated
+                this defaults to `fastapi_login.exceptions.InvalidCredentialsException`
+            scopes (Dict[str, str]): Scopes argument of OAuth2PasswordBearer for more information see 
+                `https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/#oauth2-security-scheme`
+            
         """
         if use_cookie is False and use_header is False:
             raise Exception("use_cookie and use_header are both False one of them needs to be True")
@@ -50,11 +59,17 @@ class LoginManager(OAuth2PasswordBearer):
         self.pwd_context = CryptContext(schemes=["bcrypt"])
         self.tokenUrl = token_url
         self.oauth_scheme = None
-        self._not_authenticated_exception = InvalidCredentialsException
+        self._not_authenticated_exception = custom_exception or InvalidCredentialsException
+        # When a custom_exception is set we have to make sure it is actually raised
+        # when calling super(LoginManager, self).__call__(request) inside `_get_token`
+        # a HTTPException from fastapi is raised automatically as long as auto_error
+        # is set to true
+        if custom_exception is not None:
+            self.auto_error = False
 
         self.use_cookie = use_cookie
         self.use_header = use_header
-        self.cookie_name = 'access-token'
+        self.cookie_name = cookie_name
 
         super().__init__(tokenUrl=token_url, auto_error=True, scopes=scopes)
 
@@ -79,6 +94,10 @@ class LoginManager(OAuth2PasswordBearer):
         self._not_authenticated_exception = value
         # change auto error setting on OAuth2PasswordBearer
         self.auto_error = False
+        warnings.warn(PendingDeprecationWarning(
+            "Setting a custom exception this way will be deprecated in future releases. "
+            "Have a look at https://fastapi-login.readthedocs.io/advanced_usage/#exception-handling"
+            "for the updated way."))
 
     def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
         """
