@@ -381,6 +381,7 @@ class LoginManager(OAuth2PasswordBearer):
         Args:
             app (fastapi.FastAPI): A instance of FastAPI
         """
+
         @app.middleware("http")
         async def user_middleware(request: Request, call_next):
             try:
