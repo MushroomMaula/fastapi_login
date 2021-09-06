@@ -23,7 +23,6 @@ class LoginManager(OAuth2PasswordBearer):
         use_header (bool): Whether headers should be checked for the token
         pwd_context (passlib.CryptContext): Instance of ``passlib.CryptContext`` using bcrypt for
             convenient access to hashing and verifying passwords.
-        cookie_name (str): The name of the cookie checked for the token, defaults to `"access-token"`
     """
 
     def __init__(self,
