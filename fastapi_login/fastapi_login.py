@@ -34,6 +34,7 @@ class LoginManager(OAuth2PasswordBearer):
                  use_header=True,
                  cookie_name: str = "access-token",
                  custom_exception: Exception = None,
+                 default_expiry: timedelta = timedelta(minutes=15),
                  scopes: Dict[str, str] = None
                  ):
         """
@@ -47,6 +48,7 @@ class LoginManager(OAuth2PasswordBearer):
             cookie_name (str): Name of the cookie to check for the token
             custom_exception (Exception): Exception to raise when the user is not authenticated
                 this defaults to `fastapi_login.exceptions.InvalidCredentialsException`
+            default_expiry (datetime.timedelta): The default expiry time of the token, defaults to 15 minutes
             scopes (Dict[str, str]): Scopes argument of OAuth2PasswordBearer for more information see 
                 `https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/#oauth2-security-scheme`
             
@@ -70,6 +72,7 @@ class LoginManager(OAuth2PasswordBearer):
         self.use_cookie = use_cookie
         self.use_header = use_header
         self.cookie_name = cookie_name
+        self.default_expiry = default_expiry
 
         super().__init__(tokenUrl=token_url, auto_error=True, scopes=scopes)
 
@@ -230,8 +233,7 @@ class LoginManager(OAuth2PasswordBearer):
         if expires:
             expires_in = datetime.utcnow() + expires
         else:
-            # default to 15 minutes expiry times
-            expires_in = datetime.utcnow() + timedelta(minutes=15)
+            expires_in = datetime.utcnow() + self.default_expiry
 
         to_encode.update({'exp': expires_in})
 
