@@ -80,6 +80,8 @@ class LoginManager(OAuth2PasswordBearer):
         """
         Exception raised when no (valid) token is present.
         Defaults to `fastapi_login.exceptions.InvalidCredentialsException`
+        The property will deprecated in the future in favor of the custom_exception argument
+        on initialization
         """
         return self._not_authenticated_exception
 
