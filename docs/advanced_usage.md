@@ -48,6 +48,14 @@ argument in the ``create_access_token`` method.
 ````python
 {!../docs_src/advanced_usage/adv_usage_005.py!}
 ````
+If you want to change the expiry for every token issued the default expiry
+can be set on initialization
+````python
+manager = LoginManager(
+    ...,
+    default_expiry=timedelta(hours=12)
+)
+````
 
 ## Middleware
 Optionally a ``LoginManager`` instance can also be added as a middleware.
