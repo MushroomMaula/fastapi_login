@@ -18,7 +18,7 @@ To begin we have to setup our FastAPI app:
 ````python
 from fastapi import FastAPI
 
-SECRET = "your-secret-key"
+SECRET = 'your-secret-key'
 
 app = FastAPI()
 ````
