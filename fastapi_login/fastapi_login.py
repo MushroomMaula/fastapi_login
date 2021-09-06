@@ -177,7 +177,7 @@ class LoginManager(OAuth2PasswordBearer):
         """
         payload = self._get_payload(token)
         # the identifier should be stored under the sub (subject) key
-        user_identifier = payload.get('sub')
+        user_identifier = payload.get("sub")
         if user_identifier is None:
             raise self.not_authenticated_exception
 
@@ -236,11 +236,11 @@ class LoginManager(OAuth2PasswordBearer):
         else:
             expires_in = datetime.utcnow() + self.default_expiry
 
-        to_encode.update({'exp': expires_in})
+        to_encode.update({"exp": expires_in})
 
         if scopes is not None:
             unique_scopes = set(scopes)
-            to_encode.update({'scopes': list(unique_scopes)})
+            to_encode.update({"scopes": list(unique_scopes)})
 
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
         # decode here decodes the byte str to a normal str not the token
