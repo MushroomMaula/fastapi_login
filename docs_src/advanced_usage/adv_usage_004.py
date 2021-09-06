@@ -5,9 +5,14 @@ from starlette.responses import RedirectResponse
 class NotAuthenticatedException(Exception):
     pass
 
+# Before version 1.6.4
+# manager.not_authenticated_exception = NotAuthenticatedException
 
-manager.not_authenticated_exception = NotAuthenticatedException
-
+# The updated way
+manager = LoginManager(
+    ...,
+    custom_exception=NotAuthenticatedException
+)
 
 @app.exception_handler(NotAuthenticatedException)
 def auth_exception_handler(request: Request, exc: NotAuthenticatedException):
