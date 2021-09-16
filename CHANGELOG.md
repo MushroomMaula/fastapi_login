@@ -1,4 +1,4 @@
-# 1.6.4
+# 1.7.0
 Configuration is now more pythonic using arguments on initialization
     instead of class attributes
 - The recommended way of setting custom exceptions is now using
