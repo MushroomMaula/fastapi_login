@@ -9,7 +9,7 @@ Configuration is now more pythonic using arguments on initialization
 Added ``py.typed`` file for better mypy support.
 
 The ``user_loader`` decorator now takes (keyword) arguments, which will then be used, when
-the declared callback is called. Have a look at the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#oauth2-scopes)
+the declared callback is called. Have a look at the [documentation](https://fastapi-login.readthedocs.io/advanced_usage.html#predefining-additional-user_loader-arguments)
 
 # 1.6.3
 - Fixes bug not being able to catch ``LoginManager.not_authenticated_exception`` in ``LoginManager.has_scopes``. ([#47](https://github.com/MushroomMaula/fastapi_login/issues/47) thanks to [kigawas](https://github.com/kigawas))
