@@ -26,5 +26,5 @@ setuptools.setup(
     ],
     zip_safe=False,
     include_package_data=True,
-    package_data={"fastapi_login", ["py.typed"]}
+    package_data={"fastapi_login": ["py.typed"]}
 )
