@@ -116,7 +116,7 @@ class LoginManager(OAuth2PasswordBearer):
             >>> from fastapi_login import LoginManager
 
             >>> app = FastAPI()
-            >>> # use import os; print(os.urandom(24).hex()) to get a true secret key
+            >>> # use import os; print(os.urandom(24).hex()) to get a suitable secret key
             >>> SECRET = "super-secret"
 
             >>> manager = LoginManager(SECRET, token_url="Login")
