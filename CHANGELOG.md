@@ -5,7 +5,11 @@ Configuration is now more pythonic using arguments on initialization
     the ``custom_exception`` argument on initialization. Thanks to [kigawas](https://github.com/kigawas) for the idea.
 - The default token expiry can now be changed on initialization using the ``default_expiry`` argument
 - The cookie name can now be changed on initialization using the ``cookie_name`` argument.
-- Added ``py.typed`` file for better mypy support
+
+Added ``py.typed`` file for better mypy support.
+
+The ``user_loader`` decorator now takes (keyword) arguments, which will then be used, when
+the declared callback is called. Have a look at the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#oauth2-scopes)
 
 # 1.6.3
 - Fixes bug not being able to catch ``LoginManager.not_authenticated_exception`` in ``LoginManager.has_scopes``. ([#47](https://github.com/MushroomMaula/fastapi_login/issues/47) thanks to [kigawas](https://github.com/kigawas))
