@@ -30,7 +30,7 @@ async def test_token_expiry(clean_manager, default_data):
 async def test_user_loader(loader, clean_manager, default_data, db):
     token = clean_manager.create_access_token(data=default_data)
     loader = Mock()
-    clean_manager.user_loader(loader)
+    clean_manager.user_loader()(loader)
     _ = await clean_manager.get_current_user(token)
 
     loader.assert_called()
@@ -48,7 +48,7 @@ async def test_user_loader_not_set(clean_manager, default_data):
 
 @pytest.mark.asyncio
 async def test_user_loader_returns_none(clean_manager, invalid_data, load_user_fn):
-    clean_manager.user_loader(load_user_fn)
+    clean_manager.user_loader()(load_user_fn)
     token = clean_manager.create_access_token(data={"sub": invalid_data["username"]})
     with pytest.raises(HTTPException) as exc_info:
         await clean_manager.get_current_user(token)

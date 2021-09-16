@@ -11,7 +11,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 @pytest.fixture
 def exception_manager(app, secret, token_url, load_user_fn, custom_exception) -> LoginManager:
     instance = LoginManager(secret, token_url, custom_exception=custom_exception)
-    instance.user_loader(load_user_fn)
+    instance.user_loader()(load_user_fn)
 
     # exception handling setup
 

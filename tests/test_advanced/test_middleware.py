@@ -8,7 +8,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 @pytest.fixture(scope="module")
 def middleware_manager(app, token_url, load_user_fn):
     instance = LoginManager("secret", "/auth/token")
-    instance.user_loader(load_user_fn)
+    instance.user_loader()(load_user_fn)
     instance.useRequest(app)
 
     @app.get("/private/request")
