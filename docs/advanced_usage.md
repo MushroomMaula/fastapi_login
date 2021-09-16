@@ -81,3 +81,11 @@ In order to give your token the required scopes [``LoginManager.create_access_to
 has a ``scopes`` parameter.
 In order for the scopes to show up in the OpenAPI docs, your scopes need to be passed
 as an argument when instantiating LoginManager.
+
+
+## Predefining additional ``user_loader`` arguments
+The ``LoginManager.user_loader`` can also take arguments which will be passed on the 
+callback
+````python hl_lines="1"
+{!../docs_src/advanced_usage/adv_usage_009.py!}
+````
