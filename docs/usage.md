@@ -33,6 +33,15 @@ can be used as a dependency.
 !!! note 
     ``user`` in this case will be whatever ``LoginManager.user_loader`` returns.
     In case user is ``None`` the `LoginManager.not_authenticated_exception`
-    will be thrown, this results into a 401 http status code by default.
-    If ```not_authenticated_exception``` has been set by the user it will be
+    will be thrown, this results by default to 
+    `fastapi_login.exception.InvalidCredentialsException`.
+    If a [custom exception](advanced_usage.md#exception-handling) been set by the user it will be
     raised instead.
+
+!!! attention
+    By default the token is expected to be in the ``Authorization`` header
+    value fo the request and of the following format:
+    ````
+    Bearer <token>
+    ````
+    If your token is sent as a cookie have a look at [Advanced Usage](http://127.0.0.1:8000/advanced_usage.html#cookies)

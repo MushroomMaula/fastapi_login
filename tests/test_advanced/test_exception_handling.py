@@ -10,15 +10,14 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 @pytest.fixture
 def exception_manager(app, secret, token_url, load_user_fn, custom_exception) -> LoginManager:
-    instance = LoginManager(secret, token_url)
-    instance.user_loader(load_user_fn)
+    instance = LoginManager(secret, token_url, custom_exception=custom_exception)
+    instance.user_loader()(load_user_fn)
 
     # exception handling setup
 
     def redirect_on_auth_exc(request, exc):
         return RedirectResponse(url="/redirect")
 
-    instance.not_authenticated_exception = custom_exception
     app.add_exception_handler(custom_exception, redirect_on_auth_exc)
 
     # routes

@@ -7,7 +7,7 @@ from fastapi_login import LoginManager
 @pytest.fixture(scope="module")
 def header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url)
-    instance.user_loader(load_user_fn)
+    instance.user_loader()(load_user_fn)
 
     @app.get("/private/header")
     def private_header_route(_=Depends(instance)):
@@ -19,7 +19,7 @@ def header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
 @pytest.fixture(scope="module")
 def cookie_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url, use_cookie=True, use_header=False)
-    instance.user_loader(load_user_fn)
+    instance.user_loader()(load_user_fn)
 
     @app.get("/private/cookie")
     def private_cookie_route(_=Depends(instance)):
@@ -31,7 +31,7 @@ def cookie_manager(app, secret, token_url, load_user_fn) -> LoginManager:
 @pytest.fixture(scope="module")
 def cookie_header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url, use_cookie=True)
-    instance.user_loader(load_user_fn)
+    instance.user_loader()(load_user_fn)
 
     @app.get("/private/both")
     def private_route(_=Depends(instance)):
@@ -43,7 +43,7 @@ def cookie_header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
 @pytest.fixture(scope="module")
 def scoped_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     instance = LoginManager(secret, token_url)
-    instance.user_loader(load_user_fn)
+    instance.user_loader()(load_user_fn)
 
     @app.get("/private/scoped")
     def private_scoped_route(_=Security(instance, scopes=["read"])):

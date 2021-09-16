@@ -30,7 +30,7 @@ async def test_token_expiry(clean_manager, default_data):
 async def test_user_loader(loader, clean_manager, default_data, db):
     token = clean_manager.create_access_token(data=default_data)
     loader = Mock()
-    clean_manager.user_loader(loader)
+    clean_manager.user_loader()(loader)
     _ = await clean_manager.get_current_user(token)
 
     loader.assert_called()
@@ -48,12 +48,23 @@ async def test_user_loader_not_set(clean_manager, default_data):
 
 @pytest.mark.asyncio
 async def test_user_loader_returns_none(clean_manager, invalid_data, load_user_fn):
-    clean_manager.user_loader(load_user_fn)
+    clean_manager.user_loader()(load_user_fn)
     token = clean_manager.create_access_token(data={"sub": invalid_data["username"]})
     with pytest.raises(HTTPException) as exc_info:
         await clean_manager.get_current_user(token)
 
     assert exc_info.value == InvalidCredentialsException
+
+
+@pytest.mark.asyncio
+async def test_user_loader_with_arguments(clean_manager, default_data, load_user_fn_with_args, db):
+    token = clean_manager.create_access_token(data=default_data)
+    loader = Mock()
+    clean_manager.user_loader(db)(loader)
+    _ = await clean_manager.get_current_user(token)
+
+    loader.assert_called()
+    loader.assert_called_with(default_data['sub'], db)
 
 
 def test_token_from_cookie(clean_manager):
@@ -112,7 +123,10 @@ def test_has_scopes_no_scopes(clean_manager, default_data):
 
 def test_has_scopes_missing_scopes(clean_manager, default_data):
     scopes = ["read"]
+    default_data["scopes"] = scopes
     token = clean_manager.create_access_token(data=default_data)
+    required_scopes = ["write"]
+    assert clean_manager.has_scopes(token, SecurityScopes(scopes=required_scopes)) is False
     required_scopes = scopes + ["write"]
     assert clean_manager.has_scopes(token, SecurityScopes(scopes=required_scopes)) is False
 

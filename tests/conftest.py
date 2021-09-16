@@ -49,6 +49,15 @@ def load_user_fn(db: dict) -> Callable[[str], User]:
 
 
 @pytest.fixture(scope="session")
+def load_user_fn_with_args() -> Callable[[str, Dict[str, User]], User]:
+
+    def load_user(email: str, db: Dict[str, User]):
+        return db.get(email)
+
+    return load_user
+
+
+@pytest.fixture(scope="session")
 def secret() -> str:
     return os.urandom(24).hex()
 
@@ -63,12 +72,12 @@ def client(app) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def default_data(db) -> dict:
     return {'sub': list(db.keys())[0]}
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def invalid_data() -> dict:
     return {"username": "invalid@e.mail", "password": "invalid-pw"}
 
