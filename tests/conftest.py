@@ -63,12 +63,12 @@ def client(app) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def default_data(db) -> dict:
     return {'sub': list(db.keys())[0]}
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def invalid_data() -> dict:
     return {"username": "invalid@e.mail", "password": "invalid-pw"}
 
