@@ -11,6 +11,7 @@ from passlib.context import CryptContext
 from starlette.datastructures import Secret
 
 from fastapi_login.exceptions import InvalidCredentialsException
+from fastapi_login.utils import ordered_partial
 
 
 class LoginManager(OAuth2PasswordBearer):
@@ -103,7 +104,7 @@ class LoginManager(OAuth2PasswordBearer):
             "Have a look at https://fastapi-login.readthedocs.io/advanced_usage/#exception-handling"
             "for the updated way."))
 
-    def user_loader(self, callback: Union[Callable, Awaitable]) -> Union[Callable, Awaitable]:
+    def user_loader(self, *args, **kwargs) -> Union[Callable, Awaitable]:
         """
         This sets the callback to retrieve the user.
         The function should take an unique identifier like an email
@@ -120,20 +121,32 @@ class LoginManager(OAuth2PasswordBearer):
 
             >>> manager = LoginManager(SECRET, token_url="Login")
 
-            >>> manager.user_loader(get_user)
+            >>> manager.user_loader()(get_user)
 
-            >>> @manager.user_loader
-            >>> def get_user():
+            >>> @manager.user_loader(...)  # Arguments and keyword arguments declared here are passed on
+            >>> def get_user(user_identifier, ...):
             ...     # get user logic here
 
         Args:
-            callback (Callable or Awaitable): The callback which returns the user
+            args: Positional arguments to pass on to the decorated method
+            kwargs: Keyword arguments to pass on to the decorated method
 
         Returns:
             The callback
         """
-        self._user_callback = callback
-        return callback
+
+        def decorator(callback: Union[Callable, Awaitable]):
+            """
+            The actual setter of the load_user callback
+            Args:
+                callback (Callable or Awaitable): The callback which returns the user
+
+            Returns:
+                Partial of the callback with given args and keyword arguments already set
+            """
+            self._user_callback = ordered_partial(callback, *args, **kwargs)
+
+        return decorator
 
     def _get_payload(self, token: str):
         """
