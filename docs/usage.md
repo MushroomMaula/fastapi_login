@@ -8,7 +8,7 @@ First we need to create a login route for our users.
 ````
 
 !!! note
-    We use the same url(``"/login"``) we have used as the ``tokenUrl`` argument,
+    We use the same url(``"/login"``) we have used as the ``token_url`` argument,
     when initiating our ``LoginManager`` instance
 
 ## Returning token
@@ -44,4 +44,4 @@ can be used as a dependency.
     ````
     Bearer <token>
     ````
-    If your token is sent as a cookie have a look at [Advanced Usage](http://127.0.0.1:8000/advanced_usage.html#cookies)
+    If your token is sent as a cookie have a look at [Advanced Usage](https://fastapi-login.readthedocs.io/advanced_usage/#cookies)
