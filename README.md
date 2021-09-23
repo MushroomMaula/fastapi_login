@@ -44,7 +44,7 @@ Now we have to provide the ``LoginManager`` with a way to load our user. The
 `user_loader` callback should either return your user object or ``None``
 
 ````python
-@manager.user_loader
+@manager.user_loader()
 def load_user(email: str):  # could also be an asynchronous function
     user = fake_db.get(email)
     return user
@@ -96,6 +96,9 @@ class NotAuthenticatedException(Exception):
 def exc_handler(request, exc):
     return RedirectResponse(url='/login')
 
+# This will be deprecated in the future
+# set your exception when initiating the instance
+# manager = LoginManager(..., custom_exception=NotAuthenticatedException)
 manager.not_authenticated_exception = NotAuthenticatedException
 # You also have to add an exception handler to your app instance
 app.add_exception_handler(NotAuthenticatedException, exc_handler)
