@@ -145,6 +145,7 @@ class LoginManager(OAuth2PasswordBearer):
                 Partial of the callback with given args and keyword arguments already set
             """
             self._user_callback = ordered_partial(callback, *args, **kwargs)
+            return callback
 
         # If the only argument is also a callable this will lead to errors
         if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
@@ -160,7 +161,9 @@ class LoginManager(OAuth2PasswordBearer):
                 "Please add empty parentheses like this @manager.user_loader() if you don't"
                 "which to pass additional arguments to your callback."
             ))
-            return decorator(fn)
+
+            decorator(fn)
+            return fn
 
         return decorator
 
