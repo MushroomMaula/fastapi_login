@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse
 class NotAuthenticatedException(Exception):
     pass
 
-# Before version 1.6.4
+# Before version 1.7.0
 # manager.not_authenticated_exception = NotAuthenticatedException
 
 # The updated way
