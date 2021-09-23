@@ -89,3 +89,23 @@ callback
 ````python hl_lines="1"
 {!../docs_src/advanced_usage/adv_usage_009.py!}
 ````
+!!! bug "Callable as extra argument" 
+    Before version 1.7.0 empty parentheses were not needed after the decorator. 
+    To provide backwards compatibility it's still possible to omit them as of v1.7.1.
+    Because of this it's however not possible to pass a callable object as the 
+    first extra argument.
+
+    This will not work:
+    ````py
+    def some_callable_object(...):
+        ...
+
+    @manager.user_loader(some_callable_object)
+    def load_user(email, some_callable):
+        ...
+    ````
+    If you need this functionality you need to use keyword arguments:
+    ```py
+    @manager.user_loader(some_callable=some_callable_object)
+    def load_user(email, some_callable)
+    ```
