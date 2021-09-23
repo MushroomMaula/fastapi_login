@@ -59,6 +59,27 @@ It's as simple as it gets, you just have to add this decorator to the query func
 ````
 
 !!! note 
-    ``manager`` in this context is an instance of ``LoginManager`` 
+    ``manager`` in this context is an instance of ``LoginManager``
+
+!!! bug "Callable as extra argument" 
+    Before version 1.7.0 the empty parentheses were not needed after the decorator. 
+    To provide backwards compatibility it's still possible to omit them as of v1.7.1.
+    Because of this it's however not possible to pass a callable object as the 
+    first extra argument.
+
+    This will not work:
+    ````py
+    def some_callable_object(...):
+        ...
+
+    @manager.user_loader(some_callable_object)
+    def load_user(email, some_callable):
+        ...
+    ````
+    If you need this functionality you need to use keyword arguments:
+    ```py
+    @manager.user_loader(some_callable=some_callable_object)
+    def load_user(email, some_callable)
+    ```
 
 To see how to use ``fastapi-login`` as a dependency continue with [usage](usage.md).
