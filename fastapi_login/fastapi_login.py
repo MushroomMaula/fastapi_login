@@ -158,8 +158,8 @@ class LoginManager(OAuth2PasswordBearer):
 
             warnings.warn(SyntaxWarning(
                 "As of version 1.7.0 decorating your callback like this is not recommended anymore.\n"
-                "Please add empty parentheses like this @manager.user_loader() if you don't"
-                "which to pass additional arguments to your callback."
+                "Please add empty parentheses like this @manager.user_loader() if you don't "
+                "wish to pass additional arguments to your callback."
             ))
 
             decorator(fn)
