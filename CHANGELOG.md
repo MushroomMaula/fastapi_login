@@ -1,3 +1,8 @@
+# 1.7.2
+Fixes not being able to call your decorated function on its own anymore.
+This was caused because the decorator did not return the function.
+
+
 # 1.7.1
 Fixes backwards compatibility ([#58](https://github.com/MushroomMaula/fastapi_login/issues/58)) of the ``LoginManager.user_loader`` decorator.
 In version 1.7.0 it was not possible to do the following anymore:
