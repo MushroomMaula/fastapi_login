@@ -1,3 +1,25 @@
+# 1.7.1
+Fixes backwards compatibility ([#58](https://github.com/MushroomMaula/fastapi_login/issues/58)) of the ``LoginManager.user_loader`` decorator.
+In version 1.7.0 it was not possible to do the following anymore:
+```py
+@manager.user_loader
+def load_user(email):
+    ...
+```
+This has been fixed now.
+
+It is however recommended to just add empty parentheses after the decorator
+if you don't wish to pass extra arguments to your callback. 
+````python
+@manager.user_loader()
+def load_user(email):
+    ...
+````
+Because of the backwards compatibility it is not possible to pass a 
+callable object as the first argument to the decorator.
+If this is needed it has to be passed as a keyword argument.
+This is detailed more in depth in the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#predefining-additional-user_loader-arguments).
+
 # 1.7.0
 Configuration is now more pythonic using arguments on initialization
     instead of class attributes
