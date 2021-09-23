@@ -146,6 +146,22 @@ class LoginManager(OAuth2PasswordBearer):
             """
             self._user_callback = ordered_partial(callback, *args, **kwargs)
 
+        # If the only argument is also a callable this will lead to errors
+        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
+            # No arguments have been passed and no empty parentheses have been used
+            # this was the old way (before 1.7.0) of decorating the method.
+            # Thus we assume the first argument is the actual callback.
+            fn = args[0]
+            # If we dont empty args the callback will be passed twice to ordered_partial
+            args = ()
+
+            warnings.warn(SyntaxWarning(
+                "As of version 1.7.0 decorating your callback like this is not recommended anymore.\n"
+                "Please add empty parentheses like this @manager.user_loader() if you don't"
+                "which to pass additional arguments to your callback."
+            ))
+            return decorator(fn)
+
         return decorator
 
     def _get_payload(self, token: str):
