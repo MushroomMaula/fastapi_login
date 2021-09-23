@@ -103,6 +103,19 @@ def test_user_loader_backwards_compatible_syntax_warns(clean_manager, load_user_
     assert len(record) == 2
 
 
+def test_user_loader_still_callable(clean_manager, load_user_fn):
+    @clean_manager.user_loader
+    def fn():
+        return
+    assert callable(fn)
+
+    @clean_manager.user_loader()
+    def fn():
+        return
+
+    assert callable(fn)
+
+
 def test_token_from_cookie(clean_manager):
     request = Mock(cookies={clean_manager.cookie_name: "test-value"})
     token = clean_manager._token_from_cookie(request)
