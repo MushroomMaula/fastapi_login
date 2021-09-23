@@ -261,7 +261,7 @@ mkdocs = ">=1.1,<2.0"
 
 [[package]]
 name = "mkdocs-material"
-version = "7.2.6"
+version = "7.3.0"
 description = "A Material Design theme for MkDocs"
 category = "dev"
 optional = false
@@ -284,20 +284,20 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "mkdocstrings"
-version = "0.15.2"
+version = "0.16.0"
 description = "Automatic documentation from sources, for MkDocs."
 category = "dev"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6"
 
 [package.dependencies]
 Jinja2 = ">=2.11.1,<4.0"
 Markdown = ">=3.3,<4.0"
 MarkupSafe = ">=1.1,<3.0"
-mkdocs = ">=1.1.1,<2.0.0"
-mkdocs-autorefs = ">=0.1,<0.3"
+mkdocs = ">=1.2,<2.0"
+mkdocs-autorefs = ">=0.1,<0.4"
 pymdown-extensions = ">=6.3,<9.0"
-pytkdocs = ">=0.2.0,<0.12.0"
+pytkdocs = ">=0.2.0,<0.13.0"
 
 [[package]]
 name = "multidict"
@@ -779,16 +779,16 @@ mkdocs-autorefs = [
     {file = "mkdocs_autorefs-0.2.1-py3-none-any.whl", hash = "sha256:f301b983a34259df90b3fcf7edc234b5e6c7065bd578781e66fd90b8cfbe76be"},
 ]
 mkdocs-material = [
-    {file = "mkdocs-material-7.2.6.tar.gz", hash = "sha256:4bdeff63904680865676ceb3193216934de0b33fa5b2446e0a84ade60929ee54"},
-    {file = "mkdocs_material-7.2.6-py2.py3-none-any.whl", hash = "sha256:4c6939b9d7d5c6db948ab02df8525c64211828ddf33286acea8b9d2115cec369"},
+    {file = "mkdocs-material-7.3.0.tar.gz", hash = "sha256:07db0580fa96c3473aee99ec3fb4606a1a5a1e4f4467e64c0cd1ba8da5b6476e"},
+    {file = "mkdocs_material-7.3.0-py2.py3-none-any.whl", hash = "sha256:b183c27dc0f44e631bbc32c51057f61a3e2ba8b3c1080e59f944167eeba9ff1d"},
 ]
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},
     {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
 ]
 mkdocstrings = [
-    {file = "mkdocstrings-0.15.2-py3-none-any.whl", hash = "sha256:8d6cbe64c07ae66739010979ca01d49dd2f64d1a45009f089d217b9cd2a65e36"},
-    {file = "mkdocstrings-0.15.2.tar.gz", hash = "sha256:c2fee9a3a644647c06eb2044fdfede1073adfd1a55bf6752005d3db10705fe73"},
+    {file = "mkdocstrings-0.16.0-py3-none-any.whl", hash = "sha256:cfc99bc7850fb2ae00519c33f7ae5274609857631822eda561d8a9fb8adb6d79"},
+    {file = "mkdocstrings-0.16.0.tar.gz", hash = "sha256:58016945a348e03cc92bbd11cbacb3e41b064ddfc33d4b02ff4304fb45eab104"},
 ]
 multidict = [
     {file = "multidict-5.1.0-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:b7993704f1a4b204e71debe6095150d43b2ee6150fa4f44d6d966ec356a8d61f"},

@@ -67,6 +67,42 @@ async def test_user_loader_with_arguments(clean_manager, default_data, load_user
     loader.assert_called_with(default_data['sub'], db)
 
 
+@pytest.mark.asyncio
+async def test_user_loader_decorator_syntax_no_args(clean_manager, default_data):
+
+    @clean_manager.user_loader()
+    def load_user(email: str):
+        return default_data["sub"]
+
+    token = clean_manager.create_access_token(data=default_data)
+    result = await clean_manager.get_current_user(token)
+    assert result == default_data["sub"]
+
+
+@pytest.mark.asyncio
+async def test_user_loader_decorator_syntax_no_args_backwards_compatible(clean_manager, default_data):
+
+    @clean_manager.user_loader
+    def load_user(email: str):
+        return default_data["sub"]
+
+    token = clean_manager.create_access_token(data=default_data)
+    result = await clean_manager.get_current_user(token)
+    assert result == default_data["sub"]
+
+
+def test_user_loader_backwards_compatible_syntax_warns(clean_manager, load_user_fn):
+    with pytest.warns(SyntaxWarning) as record:
+        @clean_manager.user_loader
+        def fn(sub):
+            pass
+
+        clean_manager.user_loader(load_user_fn)
+
+    # A SyntaxWarning should be issued both times
+    assert len(record) == 2
+
+
 def test_token_from_cookie(clean_manager):
     request = Mock(cookies={clean_manager.cookie_name: "test-value"})
     token = clean_manager._token_from_cookie(request)

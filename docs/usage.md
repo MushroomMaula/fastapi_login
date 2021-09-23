@@ -8,7 +8,7 @@ First we need to create a login route for our users.
 ````
 
 !!! note
-    We use the same url(``"/login"``) we have used as the ``tokenUrl`` argument,
+    We use the same url(``"/login"``) we have used as the ``token_url`` argument,
     when initiating our ``LoginManager`` instance
 
 ## Returning token
@@ -31,11 +31,11 @@ can be used as a dependency.
 ````
 
 !!! note 
-    ``user`` in this case will be whatever ``LoginManager.user_loader`` returns.
+    ``user`` in this case will be whatever the with ``LoginManager.user_loader`` decorated function returns.
     In case user is ``None`` the `LoginManager.not_authenticated_exception`
     will be thrown, this results by default to 
-    `fastapi_login.exception.InvalidCredentialsException`.
-    If a [custom exception](advanced_usage.md#exception-handling) been set by the user it will be
+    `fastapi_login.exceptions.InvalidCredentialsException`.
+    If a [custom exception](advanced_usage.md#exception-handling) has been set by the user it will be
     raised instead.
 
 !!! attention
@@ -44,4 +44,4 @@ can be used as a dependency.
     ````
     Bearer <token>
     ````
-    If your token is sent as a cookie have a look at [Advanced Usage](http://127.0.0.1:8000/advanced_usage.html#cookies)
+    If your token is sent as a cookie have a look at [Advanced Usage](https://fastapi-login.readthedocs.io/advanced_usage/#cookies)

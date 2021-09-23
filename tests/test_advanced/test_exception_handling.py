@@ -32,6 +32,11 @@ def exception_manager(app, secret, token_url, load_user_fn, custom_exception) ->
     return instance
 
 
+def test_exception_setter_deprecated_warns(clean_manager, custom_exception):
+    with pytest.deprecated_call():
+        clean_manager.not_authenticated_exception = custom_exception
+
+
 @pytest.mark.asyncio
 async def test_exception_call_cookie_error_user_header_false(clean_manager):
     # setup clean_manager
