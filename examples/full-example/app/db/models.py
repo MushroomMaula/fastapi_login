@@ -14,6 +14,9 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
     posts = relationship("Posts", back_populates="owner")
 
+    def __repr__(self) -> str:
+        return f"User(username={self.username}, is_admin={self.is_admin})"
+
 
 class Posts(Base):
     __tablename__ = "posts"
@@ -23,3 +26,6 @@ class Posts(Base):
     owner = relationship("User", back_populates="posts")
     owner_id = Column(Integer, ForeignKey('users.id'))
     created_at = Column(DateTime, server_default=func.now())
+
+    def __repr__(self) -> str:
+        return f"Post(text={self.text[:min(50, len(self.text))]})"
