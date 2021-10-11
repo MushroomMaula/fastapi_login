@@ -1,6 +1,7 @@
 import os
 import argparse
 from dotenv import dotenv_values
+from app.db import create_tables
 
 
 def create_secret(_args):
@@ -35,6 +36,9 @@ subparsers = parser.add_subparsers()
 secret_parser = subparsers.add_parser('create-secret', help="Writes a suitable secret key to a .env file in the current working directory.")
 secret_parser.add_argument('--overwrite', action='store_true', help="Overwrite the present secret value.")
 secret_parser.set_defaults(func=create_secret)
+
+db_parser = subparsers.add_parser('create-db', help="Creates the tables and the databses for the project")
+db_parser.set_defaults(func=create_tables)
 
 admin_parser = subparsers.add_parser('create-admin', help="Creates a admin user with the given password and username.")
 admin_parser.add_argument('username', help="Username of the admin.")
