@@ -1,6 +1,6 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, ForeignKey
 
 from app.db import Base
 
@@ -21,4 +21,5 @@ class Posts(Base):
     id = Column(Integer, primary_key=True)
     text = Column(Text)
     owner = relationship("User", back_populates="posts")
+    owner_id = Column(Integer, ForeignKey('users.id'))
     created_at = Column(DateTime, server_default=func.now())
