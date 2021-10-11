@@ -37,6 +37,12 @@ def create_admin(_args):
     print("Admin created.")
 
 
+def run(_args):
+    import uvicorn
+    from app.app import app
+    uvicorn.run(app)
+
+
 parser = argparse.ArgumentParser(description='CLI to setup our blogging API.')
 subparsers = parser.add_subparsers()
 
@@ -51,6 +57,9 @@ admin_parser = subparsers.add_parser('create-admin', help="Creates a admin user 
 admin_parser.add_argument('username', help="Username of the admin.")
 admin_parser.add_argument('password', help="Password of the amdin.")
 admin_parser.set_defaults(func=create_admin)
+
+start_parser = subparsers.add_parser('start', help="Starts the API")
+start_parser.set_defaults(func=run)
 
 if __name__ == '__main__':
     args = parser.parse_args()
