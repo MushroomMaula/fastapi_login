@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.db.actions import get_user_by_name
+from app.models.auth import Token
 from app.security import verify_password, manager
 
 router = APIRouter(
@@ -12,8 +13,8 @@ router = APIRouter(
 )
 
 
-@router.get('/login')
-def login(form_data: OAuth2PasswordRequestForm, db: Session = Depends(get_session)):
+@router.post('/login', response_model=Token)
+def login(form_data: OAuth2PasswordRequestForm, db: Session = Depends(get_session)) -> Token:
     """
     Logs in the user provided by form_data.username and form_data.password
     """
