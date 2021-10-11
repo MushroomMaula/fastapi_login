@@ -31,9 +31,8 @@ def get_user_by_name(
     if db is None:
         db = next(session_provider())
 
-    query = select(User).where(User.username == name)
-    result = db.execute(query)
-    return result.fetchone()
+    user = db.query(User).where(User.username == name).first()
+    return user
 
 
 def create_user(name: str, password: str, db: Session, is_admin: bool = False) -> User:
