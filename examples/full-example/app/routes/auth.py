@@ -14,11 +14,11 @@ router = APIRouter(
 
 
 @router.post('/login', response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm, db: Session = Depends(get_session)) -> Token:
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)) -> Token:
     """
     Logs in the user provided by form_data.username and form_data.password
     """
-    user = get_user_by_name(form_data.username)
+    user = get_user_by_name(form_data.username, db)
     if user is None:
         raise InvalidCredentialsException
 
@@ -26,4 +26,4 @@ def login(form_data: OAuth2PasswordRequestForm, db: Session = Depends(get_sessio
         raise InvalidCredentialsException
 
     token = manager.create_access_token(data={'sub': user.username})
-    return {'token': f"Bearer {token}"}
+    return {'access_token': token, 'token_type': 'bearer'}
