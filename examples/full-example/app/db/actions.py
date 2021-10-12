@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_session
-from app.db.models import User
+from app.db.models import Post, User
 from app.security import hash_password, manager
 
 
@@ -53,3 +53,10 @@ def create_user(name: str, password: str, db: Session, is_admin: bool = False) -
     db.add(user)
     db.commit()
     return user
+
+
+def create_post(text: str, owner: User, db: Session) -> Post:
+    post = Post(text=text, owner=owner)
+    db.add(post)
+    db.commit()
+    return post
