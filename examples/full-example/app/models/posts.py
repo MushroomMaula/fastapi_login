@@ -8,7 +8,7 @@ class PostCreate(BaseModel):
 
 class PostResponse(PostCreate):
 
-    create_at: datetime.datetime
+    created_at: datetime.datetime
 
     class Config:
-        from_orm = True
+        orm_mode = True
