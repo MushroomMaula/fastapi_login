@@ -20,7 +20,7 @@ def register(user: UserCreate, db=Depends(get_session)) -> UserReponse:
     """
     try:
         user = create_user(user.username, user.password, db)
-        return user
+        return UserReponse.from_orm(user)
     except IntegrityError:
         raise UsernameAlreadyTaken
 
@@ -34,6 +34,5 @@ def read_user(username, active_user=Depends(manager), db=Depends(get_session)) -
     # Only allow admins and oneself to access this information
     if user.username != active_user.username and not active_user.is_admin:
         raise InvalidPermissions
-    
-    return user
-    
+
+    return UserReponse.from_orm(user)
