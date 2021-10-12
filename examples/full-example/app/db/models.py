@@ -12,13 +12,13 @@ class User(Base):
     username = Column(String(32), unique=True)
     password = Column(String(80))
     is_admin = Column(Boolean, default=False)
-    posts = relationship("Posts", back_populates="owner")
+    posts = relationship("Post", back_populates="owner")
 
     def __repr__(self) -> str:
         return f"User(username={self.username}, is_admin={self.is_admin})"
 
 
-class Posts(Base):
+class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True)

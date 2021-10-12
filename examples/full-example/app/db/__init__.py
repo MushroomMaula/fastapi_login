@@ -16,7 +16,7 @@ def create_tables(_args=None):
         _args: Arguments parsed from the command line when used from the cli
     """
     # Needed for the models to be discovered
-    from app.db.models import User, Posts  # noqa F401
+    from app.db.models import User, Post  # noqa F401
     print(f"Creating database at: {engine.url}")
     Base.metadata.create_all(engine)
 
