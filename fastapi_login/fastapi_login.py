@@ -345,12 +345,13 @@ class LoginManager(OAuth2PasswordBearer):
             else:
                 raise self.not_authenticated_exception
 
+        # Tries to grab the token from the header
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
         return token
 
-    def has_scopes(self, token: str, required_scopes: SecurityScopes):
+    def has_scopes(self, token: str, required_scopes: SecurityScopes) -> bool:
         """
         Returns true if the required scopes are present in the token
         Args:
