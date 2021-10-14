@@ -366,11 +366,12 @@ class LoginManager(OAuth2PasswordBearer):
             # We got an error while decoding the token
             return False
 
-        scopes = payload.get("scopes", [])
-        # Check if all scopes are present
-        if len(scopes) != len(required_scopes.scopes):
+        provided_scopes = payload.get("scopes", [])
+        # Check if enough scopes are present
+        if len(provided_scopes) < len(required_scopes.scopes):
             return False
-        elif any(scope not in required_scopes.scopes for scope in scopes):
+        # Check if all required scopes are present
+        elif any(scope not in provided_scopes for scope in required_scopes.scopes):
             return False
 
         return True
