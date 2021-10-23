@@ -8,7 +8,11 @@ class ordered_partial(functools.partial):
     to the function
     """
 
-    def __call__(self, /, *args, **keywords):
+    def __call__(*args, **keywords):
+        # This is the old way (before 3.8) of using only positional arguments
+        if not args:
+            raise TypeError("descriptor '__call__' of partial needs an argument")
+        self, *args = args
         # allow overwriting the declared keywords
         keywords = {**self.keywords, **keywords}
         return self.func(*args, *self.args, **keywords)

@@ -55,6 +55,7 @@ class LoginManager(OAuth2PasswordBearer):
         """
         if use_cookie is False and use_header is False:
             raise Exception("use_cookie and use_header are both False one of them needs to be True")
+
         self.secret = Secret(secret)
         self._user_callback = None
         self.algorithm = algorithm
@@ -62,10 +63,11 @@ class LoginManager(OAuth2PasswordBearer):
         self.tokenUrl = token_url
         self.oauth_scheme = None
         self._not_authenticated_exception = custom_exception or InvalidCredentialsException
+
         # When a custom_exception is set we have to make sure it is actually raised
         # when calling super(LoginManager, self).__call__(request) inside `_get_token`
         # a HTTPException from fastapi is raised automatically as long as auto_error
-        # is set to true
+        # is set to True
         if custom_exception is not None:
             self.auto_error = False
 
@@ -158,8 +160,8 @@ class LoginManager(OAuth2PasswordBearer):
 
             warnings.warn(SyntaxWarning(
                 "As of version 1.7.0 decorating your callback like this is not recommended anymore.\n"
-                "Please add empty parentheses like this @manager.user_loader() if you don't"
-                "which to pass additional arguments to your callback."
+                "Please add empty parentheses like this @manager.user_loader() if you don't "
+                "wish to pass additional arguments to your callback."
             ))
 
             decorator(fn)
@@ -193,10 +195,9 @@ class LoginManager(OAuth2PasswordBearer):
 
     async def get_current_user(self, token: str):
         """
-        This decodes the jwt based on the secret and on the algorithm
-        set on the LoginManager.
-        If the token is correctly formatted and the user is found
-        the user is returned else this raises `LoginManager.not_authenticated_exception`
+        This decodes the jwt based on the secret and the algorithm set on the instance.
+        If the token is correctly formatted and the user is found the user object
+        is returned else this raises `LoginManager.not_authenticated_exception`
 
         Args:
             token (str): The encoded jwt token
@@ -231,7 +232,7 @@ class LoginManager(OAuth2PasswordBearer):
             The user object returned by `_user_callback` or None
 
         Raises:
-            Exception: The user_loader has not been set
+            Exception: When no ``user_loader`` has been set
         """
         if self._user_callback is None:
             raise Exception(
@@ -275,7 +276,6 @@ class LoginManager(OAuth2PasswordBearer):
             to_encode.update({"scopes": list(unique_scopes)})
 
         encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
-        # decode here decodes the byte str to a normal str not the token
         return encoded_jwt
 
     def set_cookie(self, response: Response, token: str) -> None:
@@ -294,7 +294,7 @@ class LoginManager(OAuth2PasswordBearer):
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
         """
-        Checks the requests cookies for cookies with the name `self.cookie_name`
+        Checks the requests cookies for cookies with the value of`self.cookie_name` as name
 
         Args:
             request (fastapi.Request):  The request to the route, normally filled in automatically
@@ -303,7 +303,7 @@ class LoginManager(OAuth2PasswordBearer):
             The access token found in the cookies of the request or None
 
         Raises:
-            LoginManager.not_authenticated_exception: No cookie with name ``LoginManager.cookie_name``
+            LoginManager.not_authenticated_exception: When no cookie with name ``LoginManager.cookie_name``
                 is set on the Request
         """
         token = request.cookies.get(self.cookie_name)
@@ -320,7 +320,7 @@ class LoginManager(OAuth2PasswordBearer):
 
     async def _get_token(self, request: Request):
         """
-        Tries to extract the token from the request, based on self.use_header and self.use_token
+        Tries to extract the token from the request, based on self.use_header and self.use_cookie
 
         Args:
             request: The request containing the token
@@ -345,12 +345,13 @@ class LoginManager(OAuth2PasswordBearer):
             else:
                 raise self.not_authenticated_exception
 
+        # Tries to grab the token from the header
         if token is None and self.use_header:
             token = await super(LoginManager, self).__call__(request)
 
         return token
 
-    def has_scopes(self, token: str, required_scopes: SecurityScopes):
+    def has_scopes(self, token: str, required_scopes: SecurityScopes) -> bool:
         """
         Returns true if the required scopes are present in the token
         Args:
@@ -366,11 +367,12 @@ class LoginManager(OAuth2PasswordBearer):
             # We got an error while decoding the token
             return False
 
-        scopes = payload.get("scopes", [])
-        # Check if all scopes are present
-        if len(scopes) != len(required_scopes.scopes):
+        provided_scopes = payload.get("scopes", [])
+        # Check if enough scopes are present
+        if len(provided_scopes) < len(required_scopes.scopes):
             return False
-        elif any(scope not in required_scopes.scopes for scope in scopes):
+        # Check if all required scopes are present
+        elif any(scope not in provided_scopes for scope in required_scopes.scopes):
             return False
 
         return True

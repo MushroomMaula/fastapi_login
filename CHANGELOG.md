@@ -1,3 +1,10 @@
+# 1.7.3
+Fixes not being able to import LoginManager in Python versions < 3.8. ([#61](https://github.com/MushroomMaula/fastapi_login/issues/61))
+
+Fixes bug not authenticating user when more than the required scopes are present ([#63](https://github.com/MushroomMaula/fastapi_login/issues/63))
+
+Adds a new example project (work still in progress).
+
 # 1.7.2
 Fixes not being able to call your decorated function on its own anymore.
 This was caused because the decorator did not return the function.
