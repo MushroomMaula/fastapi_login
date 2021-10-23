@@ -18,7 +18,7 @@ def get_user_by_name(
 
     Args:
         name: The name of the user
-        db: The currently active database sesssion
+        db: The currently active database session
         session_provider: Optional method to retrieve a session if db is None (provided by our LoginManager)
 
     Returns:
@@ -43,7 +43,7 @@ def create_user(name: str, password: str, db: Session, is_admin: bool = False) -
         name: The name of the user
         password: The plaintext password
         db: The active db session
-        is_admin: Wether the user is a admin, defaults to false
+        is_admin: Whether the user is a admin, defaults to false
 
     Returns:
         The newly created user.

@@ -55,7 +55,7 @@ db_parser.set_defaults(func=create_tables)
 
 admin_parser = subparsers.add_parser('create-admin', help="Creates a admin user with the given password and username.")
 admin_parser.add_argument('username', help="Username of the admin.")
-admin_parser.add_argument('password', help="Password of the amdin.")
+admin_parser.add_argument('password', help="Password of the admin.")
 admin_parser.set_defaults(func=create_admin)
 
 start_parser = subparsers.add_parser('start', help="Starts the API")

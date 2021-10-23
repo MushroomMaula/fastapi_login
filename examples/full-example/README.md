@@ -14,6 +14,7 @@ After activating the newly created environement we can install the project's dep
 Before we can run the webapp we need to create a suitable secret key and a admin user:
 
 `python main.py create-secret`
+
 `python main.py create-admin <username> <password>`
 
 Now we can start running the application
