@@ -5,7 +5,7 @@ header. However cookie support can be enabled.
 {!../docs_src/advanced_usage/adv_usage_001.py!}
 ````
 
-For convince a ``set_cookie`` method is provided, which sets the cookie, using
+For convenince a ``set_cookie`` method is provided, which sets the cookie, using
 ``LoginManager.cookie_name`` and the recommended ``HTTPOnly`` flag.
 
 ````python hl_lines="7"
