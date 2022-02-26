@@ -54,11 +54,27 @@ class AsymmetricSecret(BaseModel):
             private_key=private_key_pem_bytes, public_key=public_key_pem_bytes
         )
 
+    @property
+    def secret_for_decode(self):
+        return self.secret.public_key.get_secret_value()
+
+    @property
+    def secret_for_encode(self):
+        return self.secret.private_key.get_secret_value()
+
 
 class SymmetricSecret(BaseModel):
 
     algorithms: Literal["HS256"] = "HS256"
     secret: SecretBytes
+
+    @property
+    def secret_for_decode(self):
+        return self.secret.get_secret_value()
+
+    @property
+    def secret_for_encode(self):
+        return self.secret.get_secret_value()
 
 
 Secret = Annotated[

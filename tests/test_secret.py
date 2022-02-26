@@ -4,20 +4,7 @@ import pytest
 import secrets
 
 
-def generate_rsa_key(key_size=2048):
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from cryptography.hazmat.backends import default_backend
-
-    key = rsa.generate_private_key(
-        backend=default_backend(), public_exponent=65537, key_size=key_size
-    )
-    private_key = key.private_bytes(
-        serialization.Encoding.PEM,
-        serialization.PrivateFormat.PKCS8,
-        serialization.NoEncryption(),
-    )
-    return private_key
+from .conftest import generate_rsa_key
 
 
 @pytest.mark.parametrize(
