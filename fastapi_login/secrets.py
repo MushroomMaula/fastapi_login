@@ -5,7 +5,9 @@ try:
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.backends import default_backend
 except ImportError:
-    pass
+    _has_cryptography = False
+else:
+    _has_cryptography = True
 
 
 class RawPrivateSecret(BaseModel):
@@ -34,15 +36,13 @@ class AsymmetricSecret(BaseModel):
 
     @validator("secret", pre=True)
     def secret_must_be_asymmetric_private_key(cls, secret):
+        if not _has_cryptography:
+            raise ImportError("Cryptography not installed.")
 
         secret_in = AsymmetricSecretIn(data=secret)
-
-        try:
-            private_key = serialization.load_pem_private_key(
-                secret_in.private_key, None, backend=default_backend()
-            )
-        except Exception as e:
-            raise ValueError("Secret is not an asymmetric key.")
+        private_key = serialization.load_pem_private_key(
+            secret_in.private_key, None, backend=default_backend()
+        )
 
         private_key_pem_bytes = private_key.private_bytes(
             serialization.Encoding.PEM,

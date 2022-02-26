@@ -29,13 +29,23 @@ def test_secret_parsing_happypath(secret_type, alg, secret):
 
 
 def test_secret_parsing_case_mismatched_1():
-    with pytest.raises(ValidationError, match="Secret is not an asymmetric key."):
+    with pytest.raises(ValidationError):
         parse_obj_as(Secret, {"algorithms": "RS256", "secret": secrets.token_hex(16)})
 
 
 def test_secret_parsing_case_mismatched_2():
-    with pytest.raises(ValidationError, match="Secret is not an asymmetric key."):
+    with pytest.raises(ValidationError):
         parse_obj_as(
             Secret,
             {"algorithms": "RS256", "secret": {"private_key": secrets.token_hex(16)}},
         )
+
+
+def test_secret_parsing_case_invalid_input_1():
+    with pytest.raises(ValidationError):
+        parse_obj_as(Secret, {"algorithms": "HS256", "secret": {"private_key": ""}})
+
+
+def test_secret_parsing_case_invalid_input_2():
+    with pytest.raises(ValidationError):
+        parse_obj_as(Secret, {"algorithm": "RS256", "secret": None})
