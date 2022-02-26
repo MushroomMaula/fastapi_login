@@ -43,8 +43,6 @@ class AsymmetricSecret(BaseModel):
 
     @validator("secret", pre=True)
     def secret_must_be_asymmetric_private_key(cls, secret):
-        if not _has_cryptography:  # pragma: no cover
-            raise ImportError("Cryptography not installed.")
 
         secret_in = AsymmetricSecretIn(data=secret)
         private_key = serialization.load_pem_private_key(
@@ -90,6 +88,12 @@ class SymmetricSecret(BaseModel):
         return self.secret.get_secret_value()
 
 
-Secret = Annotated[
-    Union[SymmetricSecret, AsymmetricSecret], Field(discriminator="algorithms")
-]
+if _has_cryptography:
+
+    Secret = Annotated[
+        Union[SymmetricSecret, AsymmetricSecret], Field(discriminator="algorithms")
+    ]
+
+else:
+
+    Secret = SymmetricSecret
