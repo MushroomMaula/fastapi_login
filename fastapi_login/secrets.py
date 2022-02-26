@@ -1,7 +1,11 @@
 from pydantic import BaseModel, SecretBytes, Field, validator
 from typing import Literal, Annotated, Union
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
+
+try:
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.backends import default_backend
+except ImportError:
+    pass
 
 
 class RawPrivateSecret(BaseModel):

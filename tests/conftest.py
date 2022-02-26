@@ -1,4 +1,3 @@
-import os
 from typing import Callable, Dict
 
 import pytest
@@ -9,21 +8,27 @@ from pydantic import BaseModel
 from fastapi_login import LoginManager
 import secrets
 
-
-def generate_rsa_key(key_size=2048):
+try:
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.backends import default_backend
 
-    key = rsa.generate_private_key(
-        backend=default_backend(), public_exponent=65537, key_size=key_size
-    )
-    private_key = key.private_bytes(
-        serialization.Encoding.PEM,
-        serialization.PrivateFormat.PKCS8,
-        serialization.NoEncryption(),
-    )
-    return private_key
+    def generate_rsa_key(key_size=2048):
+
+        key = rsa.generate_private_key(
+            backend=default_backend(), public_exponent=65537, key_size=key_size
+        )
+        private_key = key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+        return private_key
+
+except ImportError:
+    _has_cryptography = False
+else:
+    _has_cryptography = True
 
 
 class User(BaseModel):
@@ -75,9 +80,16 @@ def secret():
     return secrets.token_hex(16)
 
 
+secret_and_algorithm_params = [(secrets.token_hex(16), "HS256")]
+if _has_cryptography:
+    secret_and_algorithm_params.append(
+        (generate_rsa_key(512), "RS256"),
+    )
+
+
 @pytest.fixture(
     scope="session",
-    params=[(secrets.token_hex(16), "HS256"), (generate_rsa_key(512), "RS256")],
+    params=secret_and_algorithm_params,
 )
 def secret_and_algorithm(request) -> str:
     return request.param
