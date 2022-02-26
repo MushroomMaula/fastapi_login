@@ -1,18 +1,17 @@
 import inspect
 import typing
 import warnings
-from datetime import timedelta, datetime
-from typing import Callable, Awaitable, Union, Collection, Dict
+from datetime import datetime, timedelta
+from typing import Awaitable, Callable, Collection, Dict, Union
 
 import jwt
 from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
-
-from fastapi_login.secrets import Secret
 from pydantic import parse_obj_as
 
 from fastapi_login.exceptions import InvalidCredentialsException
+from fastapi_login.secrets import Secret
 from fastapi_login.utils import ordered_partial
 
 SECRET_TYPE = Union[str, bytes]

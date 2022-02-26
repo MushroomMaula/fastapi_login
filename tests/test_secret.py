@@ -1,10 +1,11 @@
-from fastapi_login.secrets import Secret, SymmetricSecret, AsymmetricSecret
-from pydantic import parse_obj_as, ValidationError
-import pytest
 import secrets
 
-from .conftest import generate_rsa_key, require_cryptography
+import pytest
+from pydantic import ValidationError, parse_obj_as
 
+from fastapi_login.secrets import AsymmetricSecret, Secret, SymmetricSecret
+
+from .conftest import generate_rsa_key, require_cryptography
 
 happypath_parametrize_argvalues = [
     pytest.param(

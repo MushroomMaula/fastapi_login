@@ -1,9 +1,10 @@
-from pydantic import BaseModel, SecretBytes, Field, validator
-from typing import Literal, Annotated, Union, Optional
+from typing import Annotated, Literal, Optional, Union
+
+from pydantic import BaseModel, Field, SecretBytes, validator
 
 try:
-    from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
 except ImportError:  # pragma: no cover
     _has_cryptography = False
 else:
