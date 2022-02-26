@@ -16,6 +16,14 @@ if _has_cryptography:
         (SymmetricSecret, "HS256", secrets.token_hex(16)),
         (AsymmetricSecret, "RS256", generate_rsa_key(512).decode()),
         (AsymmetricSecret, "RS256", {"private_key": generate_rsa_key(512)}),
+        (
+            AsymmetricSecret,
+            "RS256",
+            {
+                "private_key": generate_rsa_key(512, b"qwer1234"),
+                "password": b"qwer1234",
+            },
+        ),
         #
         # Treat rsa-private-key as secret
         (SymmetricSecret, "HS256", generate_rsa_key(512)),

@@ -1,10 +1,10 @@
 from pydantic import BaseModel, SecretBytes, Field, validator
-from typing import Literal, Annotated, Union
+from typing import Literal, Annotated, Union, Optional
 
 try:
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.backends import default_backend
-except ImportError:
+except ImportError:  # pragma: no cover
     _has_cryptography = False
 else:
     _has_cryptography = True
@@ -12,6 +12,7 @@ else:
 
 class RawPrivateSecret(BaseModel):
     private_key: SecretBytes
+    password: Optional[bytes] = None
 
 
 class AsymmetricSecretIn(BaseModel):
@@ -22,6 +23,12 @@ class AsymmetricSecretIn(BaseModel):
         if isinstance(self.data, RawPrivateSecret):
             return self.data.private_key.get_secret_value()
         return self.data.get_secret_value()
+
+    @property
+    def password(self):
+        if isinstance(self.data, RawPrivateSecret):
+            return self.data.password
+        return None
 
 
 class AsymmetricPairKey(BaseModel):
@@ -36,12 +43,14 @@ class AsymmetricSecret(BaseModel):
 
     @validator("secret", pre=True)
     def secret_must_be_asymmetric_private_key(cls, secret):
-        if not _has_cryptography:
+        if not _has_cryptography:  # pragma: no cover
             raise ImportError("Cryptography not installed.")
 
         secret_in = AsymmetricSecretIn(data=secret)
         private_key = serialization.load_pem_private_key(
-            secret_in.private_key, None, backend=default_backend()
+            secret_in.private_key,
+            secret_in.password,
+            backend=default_backend(),
         )
 
         private_key_pem_bytes = private_key.private_bytes(
