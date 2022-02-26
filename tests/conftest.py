@@ -13,6 +13,8 @@ try:
     from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.backends import default_backend
 
+    _has_cryptography = True
+
     def generate_rsa_key(key_size=2048, password=None):
 
         key = rsa.generate_private_key(
@@ -29,8 +31,12 @@ try:
 
 except ImportError:
     _has_cryptography = False
-else:
-    _has_cryptography = True
+    generate_rsa_key = lambda *args, **kwargs: b""
+
+
+require_cryptography = pytest.mark.skipif(
+    not _has_cryptography, reason="Cryptography Not Installed."
+)
 
 
 class User(BaseModel):
@@ -82,16 +88,12 @@ def secret():
     return secrets.token_hex(16)
 
 
-secret_and_algorithm_params = [(secrets.token_hex(16), "HS256")]
-if _has_cryptography:
-    secret_and_algorithm_params.append(
-        (generate_rsa_key(512), "RS256"),
-    )
-
-
 @pytest.fixture(
     scope="session",
-    params=secret_and_algorithm_params,
+    params=[
+        pytest.param((secrets.token_hex(16), "HS256")),
+        pytest.param((generate_rsa_key(512), "RS256"), marks=require_cryptography),
+    ],
 )
 def secret_and_algorithm(request) -> str:
     return request.param
