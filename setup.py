@@ -22,7 +22,8 @@ setuptools.setup(
     install_requires=[
         "fastapi",
         "passlib",
-        "pyjwt"
+        "pyjwt",
+        "cryptography"
     ],
     zip_safe=False,
     include_package_data=True,
