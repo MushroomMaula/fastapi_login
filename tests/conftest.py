@@ -24,7 +24,7 @@ try:
             serialization.Encoding.PEM,
             serialization.PrivateFormat.PKCS8,
             serialization.BestAvailableEncryption(password)
-            if password != None
+            if password is not None
             else serialization.NoEncryption(),
         )
         return private_key
