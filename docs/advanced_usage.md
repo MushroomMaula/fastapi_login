@@ -109,3 +109,37 @@ callback
     @manager.user_loader(some_callable=some_callable_object)
     def load_user(email, some_callable)
     ```
+
+## Asymmetric algorithms
+Thanks to [filwaline](https://github.com/filwaline) in addition to symmetric keys, RSA can also
+be used to sign the tokens.
+!!!note "Required dependencies"
+    The cryptography packages is required for this.
+    Run the following command to install all the required dependencies. 
+    ````
+    pip install fastapi-login[asymmetric]
+    ````
+??? help "Supported algorithms"
+    Currently ```RS256``` is the only asymmetric algorithm supported by the package.
+    If you need another algorithm, please open an 
+    [issue](https://github.com/MushroomMaula/fastapi_login/issues/new) and I will
+    consider adding it.
+To use the asymmetric algorithm choose ``algorithm="RS256"`` when initiating `LoginManager`.
+````python hl_lines="3"
+LoginManager(
+    secret="...", token="...",
+    algorithm="RS256"
+)
+````
+
+
+If your private key is not password protected the usage of the package stays exactly the same.
+!!!hint
+    You don't need to pass your public key explicitly, as it can be derived from the private key.
+
+However, if you used a password during the key generation the syntax changes slightly.
+````python hl_lines="2 4"
+{!../docs_src/advanced_usage/adv_usage_010.py!}
+````
+Note how instead of just using the key, we now have to pass a dictionary with the 
+`private_key` and the `password` fields set.
