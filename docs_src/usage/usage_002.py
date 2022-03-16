@@ -13,4 +13,4 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     access_token = manager.create_access_token(
         data={'sub': email}
     )
-    return {'token': access_token}
+    return {'access_token': access_token}
