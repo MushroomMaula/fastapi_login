@@ -22,8 +22,13 @@ setuptools.setup(
     install_requires=[
         "fastapi",
         "passlib",
-        "pyjwt"
+        "pyjwt",
+        "typing_extensions"
     ],
+    extra_requires={
+        "asymmetric": ["cryptography"]
+    },
+
     zip_safe=False,
     include_package_data=True,
     package_data={"fastapi_login": ["py.typed"]}

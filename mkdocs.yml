@@ -31,5 +31,6 @@ markdown_extensions:
   - pymdownx.tabbed
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.details
   - markdown_include.include:
       base_path: docs
