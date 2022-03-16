@@ -1,3 +1,12 @@
+# 1.8.0
+- Adds support for asymmetric key algorithms thanks to [filwaline](https://github.com/filwaline).
+Documentation for this feature can be found 
+[here](https://fastapi-login.readthedocs.io/advanced_usage/#asymmetric-algorithms).
+
+- Fixes syntax of ``__all__`` inside `fastapi_login/__init__.py`. (Thanks to [kigawas](https://github.com/kigawas))
+- Fixes multiple issues in the documentation. (Thanks to [alwye](https://github.com/alwye))
+- Bumps version of ``mkdocs`` to fix a security issue. As this is a dev dependency it shouldn't have affected any user. 
+
 # 1.7.3
 Fixes not being able to import LoginManager in Python versions < 3.8. ([#61](https://github.com/MushroomMaula/fastapi_login/issues/61))
 

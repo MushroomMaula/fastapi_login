@@ -1,17 +1,20 @@
 import inspect
 import typing
 import warnings
-from datetime import timedelta, datetime
-from typing import Callable, Awaitable, Union, Collection, Dict
+from datetime import datetime, timedelta
+from typing import Awaitable, Callable, Collection, Dict, Union
 
 import jwt
 from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
-from starlette.datastructures import Secret
+from pydantic import parse_obj_as
 
 from fastapi_login.exceptions import InvalidCredentialsException
+from fastapi_login.secrets import Secret
 from fastapi_login.utils import ordered_partial
+
+SECRET_TYPE = Union[str, bytes]
 
 
 class LoginManager(OAuth2PasswordBearer):
@@ -26,17 +29,18 @@ class LoginManager(OAuth2PasswordBearer):
             convenient access to hashing and verifying passwords.
     """
 
-    def __init__(self,
-                 secret: str,
-                 token_url: str,
-                 algorithm="HS256",
-                 use_cookie=False,
-                 use_header=True,
-                 cookie_name: str = "access-token",
-                 custom_exception: Exception = None,
-                 default_expiry: timedelta = timedelta(minutes=15),
-                 scopes: Dict[str, str] = None
-                 ):
+    def __init__(
+        self,
+        secret: Union[SECRET_TYPE, Dict[str, SECRET_TYPE]],
+        token_url: str,
+        algorithm="HS256",
+        use_cookie=False,
+        use_header=True,
+        cookie_name: str = "access-token",
+        custom_exception: Exception = None,
+        default_expiry: timedelta = timedelta(minutes=15),
+        scopes: Dict[str, str] = None,
+    ):
         """
         Initializes LoginManager
 
@@ -49,20 +53,24 @@ class LoginManager(OAuth2PasswordBearer):
             custom_exception (Exception): Exception to raise when the user is not authenticated
                 this defaults to `fastapi_login.exceptions.InvalidCredentialsException`
             default_expiry (datetime.timedelta): The default expiry time of the token, defaults to 15 minutes
-            scopes (Dict[str, str]): Scopes argument of OAuth2PasswordBearer for more information see 
+            scopes (Dict[str, str]): Scopes argument of OAuth2PasswordBearer for more information see
                 `https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/#oauth2-security-scheme`
-            
+
         """
         if use_cookie is False and use_header is False:
-            raise Exception("use_cookie and use_header are both False one of them needs to be True")
+            raise Exception(
+                "use_cookie and use_header are both False one of them needs to be True"
+            )
 
-        self.secret = Secret(secret)
+        self.secret = parse_obj_as(Secret, {"algorithms": algorithm, "secret": secret})
         self._user_callback = None
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
         self.tokenUrl = token_url
         self.oauth_scheme = None
-        self._not_authenticated_exception = custom_exception or InvalidCredentialsException
+        self._not_authenticated_exception = (
+            custom_exception or InvalidCredentialsException
+        )
 
         # When a custom_exception is set we have to make sure it is actually raised
         # when calling super(LoginManager, self).__call__(request) inside `_get_token`
@@ -101,10 +109,13 @@ class LoginManager(OAuth2PasswordBearer):
         self._not_authenticated_exception = value
         # change auto error setting on OAuth2PasswordBearer
         self.auto_error = False
-        warnings.warn(PendingDeprecationWarning(
-            "Setting a custom exception this way will be deprecated in future releases. "
-            "Have a look at https://fastapi-login.readthedocs.io/advanced_usage/#exception-handling"
-            "for the updated way."))
+        warnings.warn(
+            PendingDeprecationWarning(
+                "Setting a custom exception this way will be deprecated in future releases. "
+                "Have a look at https://fastapi-login.readthedocs.io/advanced_usage/#exception-handling"
+                "for the updated way."
+            )
+        )
 
     def user_loader(self, *args, **kwargs) -> Union[Callable, Awaitable]:
         """
@@ -158,11 +169,13 @@ class LoginManager(OAuth2PasswordBearer):
             # If we dont empty args the callback will be passed twice to ordered_partial
             args = ()
 
-            warnings.warn(SyntaxWarning(
-                "As of version 1.7.0 decorating your callback like this is not recommended anymore.\n"
-                "Please add empty parentheses like this @manager.user_loader() if you don't "
-                "wish to pass additional arguments to your callback."
-            ))
+            warnings.warn(
+                SyntaxWarning(
+                    "As of version 1.7.0 decorating your callback like this is not recommended anymore.\n"
+                    "Please add empty parentheses like this @manager.user_loader() if you don't "
+                    "wish to pass additional arguments to your callback."
+                )
+            )
 
             decorator(fn)
             return fn
@@ -183,9 +196,7 @@ class LoginManager(OAuth2PasswordBearer):
         """
         try:
             payload = jwt.decode(
-                token,
-                str(self.secret),
-                algorithms=[self.algorithm]
+                token, self.secret.secret_for_decode, algorithms=[self.algorithm]
             )
             return payload
 
@@ -235,9 +246,7 @@ class LoginManager(OAuth2PasswordBearer):
             Exception: When no ``user_loader`` has been set
         """
         if self._user_callback is None:
-            raise Exception(
-                "Missing user_loader callback"
-            )
+            raise Exception("Missing user_loader callback")
 
         if inspect.iscoroutinefunction(self._user_callback):
             user = await self._user_callback(identifier)
@@ -246,7 +255,9 @@ class LoginManager(OAuth2PasswordBearer):
 
         return user
 
-    def create_access_token(self, *, data: dict, expires: timedelta = None, scopes: Collection[str] = None) -> str:
+    def create_access_token(
+        self, *, data: dict, expires: timedelta = None, scopes: Collection[str] = None
+    ) -> str:
         """
         Helper function to create the encoded access token using
         the provided secret and the algorithm of the LoginManager instance
@@ -275,7 +286,9 @@ class LoginManager(OAuth2PasswordBearer):
             unique_scopes = set(scopes)
             to_encode.update({"scopes": list(unique_scopes)})
 
-        encoded_jwt = jwt.encode(to_encode, str(self.secret), self.algorithm)
+        encoded_jwt = jwt.encode(
+            to_encode, self.secret.secret_for_encode, self.algorithm
+        )
         return encoded_jwt
 
     def set_cookie(self, response: Response, token: str) -> None:
@@ -286,11 +299,7 @@ class LoginManager(OAuth2PasswordBearer):
             response (fastapi.Response): The response which is send back
             token (str): The created JWT
         """
-        response.set_cookie(
-            key=self.cookie_name,
-            value=token,
-            httponly=True
-        )
+        response.set_cookie(key=self.cookie_name, value=token, httponly=True)
 
     def _token_from_cookie(self, request: Request) -> typing.Optional[str]:
         """
