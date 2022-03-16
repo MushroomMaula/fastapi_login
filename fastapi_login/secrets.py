@@ -1,4 +1,5 @@
-from typing import Annotated, Literal, Optional, Union
+from typing_extensions import Annotated, Literal
+from typing import Optional, Union
 
 from pydantic import BaseModel, Field, SecretBytes, validator
 

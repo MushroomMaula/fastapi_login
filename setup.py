@@ -22,7 +22,8 @@ setuptools.setup(
     install_requires=[
         "fastapi",
         "passlib",
-        "pyjwt"
+        "pyjwt",
+        "typing_extensions"
     ],
     extra_requires={
         "asymmetric": ["cryptography"]

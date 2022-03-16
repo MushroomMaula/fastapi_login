@@ -11,6 +11,7 @@ fastapi = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "*"
 cryptography = "^36.0.1"
+typing-extensions = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
