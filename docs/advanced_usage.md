@@ -127,7 +127,7 @@ be used to sign the tokens.
 To use the asymmetric algorithm choose ``algorithm="RS256"`` when initiating `LoginManager`.
 ````python hl_lines="3"
 LoginManager(
-    secret="...", token="...",
+    secret="...", token_url="...",
     algorithm="RS256"
 )
 ````
