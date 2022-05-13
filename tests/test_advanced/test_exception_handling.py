@@ -15,12 +15,13 @@ def exception_manager(app, secret, token_url, load_user_fn, custom_exception) ->
 
     # exception handling setup
 
+    @app.exception_handler(custom_exception)
     def redirect_on_auth_exc(request, exc):
         return RedirectResponse(url="/redirect")
 
-    app.add_exception_handler(custom_exception, redirect_on_auth_exc)
-
     # routes
+    # Should raise the custom exception when encountering
+    # a non-authenticated user and redirect
     @app.get("/private/exception")
     def raise_exception(_=Depends(instance)):
         return {"detail": "error"}
