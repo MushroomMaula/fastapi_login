@@ -72,19 +72,19 @@ class LoginManager(OAuth2PasswordBearer):
             custom_exception or InvalidCredentialsException
         )
 
-        # When a custom_exception is set we have to make sure it is actually raised
-        # when calling super(LoginManager, self).__call__(request) inside `_get_token`
-        # a HTTPException from fastapi is raised automatically as long as auto_error
-        # is set to True
-        if custom_exception is not None:
-            self.auto_error = False
-
         self.use_cookie = use_cookie
         self.use_header = use_header
         self.cookie_name = cookie_name
         self.default_expiry = default_expiry
 
-        super().__init__(tokenUrl=token_url, auto_error=True, scopes=scopes)
+        # When a custom_exception is set we have to make sure it is actually raised
+        # when calling super(LoginManager, self).__call__(request) inside `_get_token`
+        # a HTTPException from fastapi is raised automatically as long as auto_error
+        # is set to True
+        if custom_exception is not None:
+            super().__init__(tokenUrl=token_url, auto_error=False, scopes=scopes)
+        else:
+            super().__init__(tokenUrl=token_url, auto_error=True, scopes=scopes)
 
     @property
     def not_authenticated_exception(self):
