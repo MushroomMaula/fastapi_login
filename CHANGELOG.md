@@ -1,3 +1,6 @@
+# 1.8.1
+Fixes [#78](https://github.com/MushroomMaula/fastapi_login/issues/78)
+
 # 1.8.0
 - Adds support for asymmetric key algorithms thanks to [filwaline](https://github.com/filwaline).
 Documentation for this feature can be found 
