@@ -58,6 +58,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         """
         if use_cookie is False and use_header is False:
+            # TODO: change this to AttributeError
             raise Exception(
                 "use_cookie and use_header are both False one of them needs to be True"
             )
@@ -317,7 +318,7 @@ class LoginManager(OAuth2PasswordBearer):
         """
         token = request.cookies.get(self.cookie_name)
 
-        # we dont use `token is None` in case a cookie with self.cookie_name
+        # we don't use `token is None` in case a cookie with self.cookie_name
         # exists but is set to "", in which case `token is None` evaluates to False
         if not token and self.auto_error:
             # either default InvalidCredentialsException or set by user
@@ -346,7 +347,7 @@ class LoginManager(OAuth2PasswordBearer):
                 token = self._token_from_cookie(request)
         # The Exception is either a InvalidCredentialsException
         # or a custom exception set by the user
-        except type(self.not_authenticated_exception):
+        except Exception as _e:
             # In case use_cookie and use_header is enabled
             # headers should be checked if cookie lookup fails
             if self.use_header:
@@ -372,7 +373,7 @@ class LoginManager(OAuth2PasswordBearer):
         """
         try:
             payload = self._get_payload(token)
-        except type(self.not_authenticated_exception):
+        except Exception as _e:
             # We got an error while decoding the token
             return False
 
@@ -429,7 +430,7 @@ class LoginManager(OAuth2PasswordBearer):
         async def user_middleware(request: Request, call_next):
             try:
                 request.state.user = await self.__call__(request)
-            except Exception as e:
+            except Exception as _e:
                 # An error occurred while getting the user
                 # as middlewares are called for every incoming request
                 # it's not a good idea to return the Exception

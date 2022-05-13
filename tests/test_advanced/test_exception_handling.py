@@ -73,6 +73,16 @@ async def test_exception_handling(exception_manager, client, invalid_data):
 
 
 @pytest.mark.asyncio
+async def test_exception_handling_with_no_token(exception_manager, client, invalid_data):
+    # Set use cookie true for this test to check all possible ways to raise an error
+    exception_manager.use_cookie = True
+    resp = await client.get(
+        "/private/exception"
+    )
+    assert resp.json()["detail"] == "Redirected"
+
+
+@pytest.mark.asyncio
 async def test_exception_changes_no_sub(exception_manager, custom_exception):
     no_sub_token = exception_manager.create_access_token(data={"id": "something"})
     with pytest.raises(custom_exception) as exc_info:
