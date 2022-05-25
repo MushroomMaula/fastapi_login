@@ -4,7 +4,7 @@ fastapi-login==1.5.3
 h11==0.12.0
 passlib==1.7.4
 pydantic==1.8.2
-PyJWT==2.0.1
+PyJWT==2.4.0
 python-dotenv==0.15.0
 python-multipart==0.0.5
 six==1.15.0
