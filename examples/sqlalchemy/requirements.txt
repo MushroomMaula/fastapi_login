@@ -15,7 +15,7 @@ mccabe==0.6.1
 passlib==1.7.4
 pycparser==2.20
 pydantic==1.8.2
-PyJWT==2.0.1
+PyJWT==2.4.0
 pylint==2.7.2
 python-dotenv==0.15.0
 python-multipart==0.0.5
