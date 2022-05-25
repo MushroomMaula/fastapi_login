@@ -32,7 +32,7 @@ py==1.10.0; python_version >= "3.6" and python_full_version < "3.0.0" or python_
 pycparser==2.20; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.4.0" and python_version >= "3.6"
 pydantic==1.8.2; python_full_version >= "3.6.1" and python_version >= "3.6"
 pygments==2.10.0; python_version >= "3.5"
-pyjwt==2.1.0; python_version >= "3.6"
+pyjwt==2.4.0; python_version >= "3.6"
 pymdown-extensions==8.2; python_version >= "3.6"
 pyparsing==2.4.7; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.3.0" and python_version >= "3.6"
 pytest-asyncio==0.15.1; python_version >= "3.6"
