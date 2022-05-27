@@ -1,3 +1,6 @@
+# 1.8.1
+Update `pyjwt` to version 2.4.0, to fix a security issue in version 2.1.0
+
 # 1.8.0
 - Adds support for asymmetric key algorithms thanks to [filwaline](https://github.com/filwaline).
 Documentation for this feature can be found 
