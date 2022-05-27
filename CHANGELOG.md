@@ -1,3 +1,6 @@
+# 1.8.2
+Update pyjwt to version 2.4.0, to fix a security issue in version 2.1.0
+
 # 1.8.1
 Fixes [#78](https://github.com/MushroomMaula/fastapi_login/issues/78)
 
