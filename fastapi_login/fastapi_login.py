@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from typing import Awaitable, Callable, Collection, Dict, Type, Union
 
 import jwt
+from anyio.to_thread import run_sync
 from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
@@ -252,7 +253,7 @@ class LoginManager(OAuth2PasswordBearer):
         if inspect.iscoroutinefunction(self._user_callback):
             user = await self._user_callback(identifier)
         else:
-            user = self._user_callback(identifier)
+            user = await run_sync(self._user_callback, identifier)
 
         return user
 
