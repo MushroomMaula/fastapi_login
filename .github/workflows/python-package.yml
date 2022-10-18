@@ -45,13 +45,3 @@ jobs:
       working-directory: ./tests
       run: |
         poetry run pytest
-
-    - name: Create requirements.txt
-      run:
-        poetry export -o requirements.txt --without-hashes --dev
-
-    - name: Upload requirements.txt
-      uses: actions/upload-artifact@v2
-      with:
-        name: Requirements
-        path: requirements.txt
