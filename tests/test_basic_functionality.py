@@ -81,10 +81,10 @@ async def test_user_loader_decorator_syntax_no_args(clean_manager, default_data)
 
 @pytest.mark.asyncio
 async def test_user_loader_decorator_syntax_no_args_backwards_compatible(clean_manager, default_data):
-
-    @clean_manager.user_loader
-    def load_user(email: str):
-        return default_data["sub"]
+    with pytest.warns(SyntaxWarning):
+        @clean_manager.user_loader
+        def load_user(email: str):
+            return default_data["sub"]
 
     token = clean_manager.create_access_token(data=default_data)
     result = await clean_manager.get_current_user(token)
@@ -105,12 +105,12 @@ def test_user_loader_backwards_compatible_syntax_warns(clean_manager, load_user_
 
 def test_user_loader_still_callable(clean_manager):
     checker = Mock()
-
-    @clean_manager.user_loader
-    def fn():
-        checker()
-        return
-    assert callable(fn)
+    with pytest.warns(SyntaxWarning):
+        @clean_manager.user_loader
+        def fn():
+            checker()
+            return
+        assert callable(fn)
     # assure that the method we return is actually the same
     fn()
     assert checker.call_count == 1
