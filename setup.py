@@ -6,7 +6,7 @@ with open("README.md", 'r') as f:
 
 setuptools.setup(
     name="fastapi-login",
-    version="1.8.2",
+    version="1.8.3",
     author="Max Rausch-Dupont",
     author_email="maxrd79@gmail.com",
     descritpion="Flask-Login like package for FastAPI",
@@ -22,7 +22,7 @@ setuptools.setup(
     install_requires=[
         "fastapi",
         "passlib",
-        "pyjwt",
+        "pyjwt>=2.4.0",
         "typing_extensions"
     ],
     extra_requires={
