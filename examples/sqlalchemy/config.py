@@ -2,7 +2,7 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    secret: str  # autmatically taken from environement variable
+    secret: str  # automatically taken from environment variable
     database_uri: str = "sqlite:///app.db"
     token_url: str = "/auth/token"
 

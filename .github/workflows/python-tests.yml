@@ -8,7 +8,7 @@ on:
     branches: [ master ]
   push:
     branches: [ master, development ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   test:
@@ -17,7 +17,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
-        poetry-version: [1.1.4]
 
     steps:
     - uses: actions/checkout@v2
@@ -27,8 +26,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install poetry
       uses: abatilo/actions-poetry@v2.0.0
-      with:
-        poetry-version: ${{ matrix.poetry-version }}
     - name: Install dependencies
       run: |
           poetry install
@@ -45,13 +42,3 @@ jobs:
       working-directory: ./tests
       run: |
         poetry run pytest
-
-    - name: Create requirements.txt
-      run:
-        poetry export -o requirements.txt --without-hashes --dev
-
-    - name: Upload requirements.txt
-      uses: actions/upload-artifact@v2
-      with:
-        name: Requirements
-        path: requirements.txt

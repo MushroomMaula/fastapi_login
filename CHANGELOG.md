@@ -1,3 +1,10 @@
+# 1.8.3
+- Pin pyjwt dependency (Fixes [#94](https://github.com/MushroomMaula/fastapi_login/issues/94))
+- Switched from `setup.py` based publishing to using `pyproject.toml` together with poetry
+- Switched publishing to poetry
+- Update requirements in the examples projects
+- Added correct header in `/examples/simples/templates/index.html` (Fixes [#93](https://github.com/MushroomMaula/fastapi_login/issues/93) and [#95](https://github.com/MushroomMaula/fastapi_login/issues/95)) 
+
 # 1.8.2
 Update pyjwt to version 2.4.0, to fix a security issue in version 2.1.0
 
