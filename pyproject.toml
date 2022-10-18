@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8"
 fastapi = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
-pyjwt = "*"
+pyjwt = "^2.4"
 cryptography = "^36.0.1"
 typing-extensions = "^4.1.1"
 
