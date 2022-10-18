@@ -21,6 +21,9 @@ jobs:
     - name: Install poetry
       uses: abatilo/actions-poetry@v2.0.0
     - name: Setup poetry
-      run: poetry config pypi-token.pypi "${{ secrets.PYPI_TOKEN }}"
+      shell: bash
+      env:
+        TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: poetry config pypi-token.pypi "$TOKEN"
     - name: Build and publish
       run: poetry publish --build
