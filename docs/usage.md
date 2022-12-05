@@ -31,7 +31,7 @@ can be used as a dependency.
 ````
 
 !!! note 
-    ``user`` in this case will be whatever the with ``LoginManager.user_loader`` decorated function returns.
+    ``user`` in this case will be whatever the ``LoginManager.user_loader`` decorated function returns.
     In case user is ``None`` the `LoginManager.not_authenticated_exception`
     will be thrown, this results by default to 
     `fastapi_login.exceptions.InvalidCredentialsException`.
