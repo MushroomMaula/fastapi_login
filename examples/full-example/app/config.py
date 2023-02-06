@@ -12,7 +12,7 @@ load_dotenv(env_file)
 class Settings(BaseSettings):
 
     project_root: pathlib.Path = root
-    secret: str = os.getenv('SECRET', 'not-created-yet')
+    secret: str = os.getenv('SECRET', 'elf-of-era')
     db_uri: str = "sqlite+pysqlite:///app.db"
     token_url: str = "/auth/login"
 
