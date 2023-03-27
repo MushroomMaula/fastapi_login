@@ -418,6 +418,17 @@ class LoginManager(OAuth2PasswordBearer):
 
         return await self.get_current_user(token)
 
+    async def optional(self, request: Request, security_scopes: SecurityScopes = None):
+        """
+        Acts as a dependency which catches all errors, i.e. `NotAuthenticatedException` and returns None instead
+        """
+        try:
+            user = await self.__call__(request, security_scopes)
+        except Exception as _e:
+            return None
+        else:
+            return user
+
     def useRequest(self, app: FastAPI):
         """
         Add the instance as a middleware, which adds the user object, if present,

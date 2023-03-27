@@ -13,7 +13,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          rendering:
+          options:
             show_root_toc_entry: false
             show_if_no_docstring: true
             group_by_category: false

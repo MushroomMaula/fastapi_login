@@ -39,6 +39,10 @@ pymdown-extensions = "*"
 markdown-include = "*"
 mkdocstrings = "*"
 
+[tool.poetry.group.dev.dependencies]
+pytest-lazy-fixture = "^0.6.3"
+mkdocstrings = {version = "^0.20.0", extras = ["python"]}
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
