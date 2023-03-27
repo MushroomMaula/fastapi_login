@@ -1,3 +1,11 @@
+# 1.9.0
+- User callback is now run asynchronous without blocking the worker thread [#92](https://github.com/MushroomMaula/fastapi_login/pull/97)
+- ``custom_exception`` argument has now correct type [#97](https://github.com/MushroomMaula/fastapi_login/pull/97)
+- Fixed some minor security issues by updating packages
+- Now includes ``LoginManager.optional`` which will return `None` instead of raising an exception.
+  An [example](https://fastapi-login.readthedocs.io/usage/#returning-none-instead-of-raising-an-exception) has been added to the documentation.
+
+
 # 1.8.3
 - Pin pyjwt dependency (Fixes [#94](https://github.com/MushroomMaula/fastapi_login/issues/94))
 - Switched from `setup.py` based publishing to using `pyproject.toml` together with poetry
