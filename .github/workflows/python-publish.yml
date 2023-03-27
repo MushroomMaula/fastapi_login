@@ -4,8 +4,10 @@
 name: Upload Python Package
 
 on:
+  workflow_dispatch:
   release:
     types: [created]
+  
 
 jobs:
   deploy:
@@ -17,10 +19,13 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.8'
     - name: Install poetry
       uses: abatilo/actions-poetry@v2.0.0
     - name: Setup poetry
-      run: poetry config pypi-token.pypi "${{ secrets.PYPI_TOKEN }}$
+      shell: bash
+      env:
+        TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: poetry config pypi-token.pypi "$TOKEN"
     - name: Build and publish
       run: poetry publish --build

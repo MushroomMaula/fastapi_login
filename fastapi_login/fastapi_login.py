@@ -2,7 +2,7 @@ import inspect
 import typing
 import warnings
 from datetime import datetime, timedelta
-from typing import Awaitable, Callable, Collection, Dict, Union
+from typing import Awaitable, Callable, Collection, Dict, Type, Union
 
 import jwt
 from fastapi import FastAPI, Request, Response
@@ -37,7 +37,7 @@ class LoginManager(OAuth2PasswordBearer):
         use_cookie=False,
         use_header=True,
         cookie_name: str = "access-token",
-        custom_exception: Exception = None,
+        custom_exception: Type[Exception] = None,
         default_expiry: timedelta = timedelta(minutes=15),
         scopes: Dict[str, str] = None,
     ):
