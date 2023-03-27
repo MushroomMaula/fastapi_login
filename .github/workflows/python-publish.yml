@@ -21,7 +21,7 @@ jobs:
       with:
         python-version: '3.8'
     - name: Install poetry
-      uses: abatilo/actions-poetry@v2.0.0
+      uses: abatilo/actions-poetry@v2
     - name: Setup poetry
       shell: bash
       env:
