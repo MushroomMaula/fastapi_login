@@ -18,7 +18,7 @@ packages = [
 include = ["fastapi_login/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 fastapi = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "^2.4"
