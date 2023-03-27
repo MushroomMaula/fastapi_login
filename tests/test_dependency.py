@@ -1,5 +1,6 @@
 import pytest
 from fastapi import Depends, Security
+from pytest_lazyfixture import lazy_fixture
 
 from fastapi_login import LoginManager
 
@@ -36,6 +37,15 @@ def cookie_header_manager(app, secret, token_url, load_user_fn) -> LoginManager:
     @app.get("/private/both")
     def private_route(_=Depends(instance)):
         return {"detail": "Success"}
+
+    @app.get("/private/optional")
+    def optional_user_route(user=Depends(instance.optional), invalid: int = 0):
+        if user is None and invalid == 1:
+            return {"detail": "Success"}
+        elif user is not None and invalid == 0:
+            return {"detail": "Success"}
+        else:
+            return {"detail": "Error"}
 
     return instance
 
@@ -112,3 +122,20 @@ async def test_scoped_dependency_raises(client, scoped_manager, default_data):
     )
 
     assert resp.status_code == 401
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("data, is_invalid", [
+    (lazy_fixture("default_data"), 0),
+    (lazy_fixture("invalid_data"), 1)
+])
+async def test_optional_dependency(client, cookie_header_manager, data, is_invalid):
+    token = cookie_header_manager.create_access_token(data=data)
+    resp = await client.get(
+        "/private/optional",
+        headers={"Authorization": f"Bearer {token}"},
+        query_string={"invalid": is_invalid}
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["detail"] == "Success"
