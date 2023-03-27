@@ -24,6 +24,7 @@ passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "^2.4"
 cryptography = {version="^39.0.1", optional=true}
 typing-extensions = "^4.1.1"
+anyio = {version = "^3.6.2", extras = ["trio"]}
 
 [tool.poetry.extras]
 asymmetric = ["cryptography"]
