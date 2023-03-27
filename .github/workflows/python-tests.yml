@@ -30,7 +30,7 @@ jobs:
       run: |
           poetry install
           # for linting
-          poetry add flake8
+          poetry add flake8@^5.0.0   # Version 6.x.x requires python 3.8.1
 
     - name: Lint with flake8
       run: |
