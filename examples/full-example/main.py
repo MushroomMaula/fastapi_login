@@ -33,6 +33,7 @@ def create_secret(_args):
 
 def create_admin(_args):
     session = next(get_session())
+    create_tables()
     create_user(args.username, args.password, session, is_admin=True)
     print("Admin created.")
 
