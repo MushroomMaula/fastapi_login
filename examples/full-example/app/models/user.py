@@ -1,7 +1,7 @@
 from typing import List
-from pydantic import BaseModel
 
 from app.models.posts import PostResponse
+from pydantic import BaseModel, ConfigDict
 
 
 class UserCreate(BaseModel):
@@ -9,9 +9,7 @@ class UserCreate(BaseModel):
     password: str
 
 
-class UserReponse(UserCreate):
+class UserResponse(UserCreate):
 
     posts: List[PostResponse]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

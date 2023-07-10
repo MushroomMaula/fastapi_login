@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 
 
 class PostCreate(BaseModel):
@@ -9,6 +9,4 @@ class PostCreate(BaseModel):
 class PostResponse(PostCreate):
 
     created_at: datetime.datetime
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

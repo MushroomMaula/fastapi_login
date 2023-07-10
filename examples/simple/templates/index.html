@@ -48,7 +48,7 @@
     ev.preventDefault();
     const registerForm = document.getElementById("registerForm");
     const data = new FormData(registerForm);
-    // convert formdata to json
+    // convert form data to json
     let object = {}
     data.forEach((value, key) => object[key] = value)
 

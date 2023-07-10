@@ -1,3 +1,9 @@
+# 1.9.1
+- Update examples to support Pydantic v2.
+- Fix potential type error against Pydantic v2.
+- Add example dependencies in `pyproject.toml`.
+- Remove `setup.py`
+
 # 1.9.0
 - User callback is now run asynchronous without blocking the worker thread [#92](https://github.com/MushroomMaula/fastapi_login/pull/97)
 - ``custom_exception`` argument has now correct type [#97](https://github.com/MushroomMaula/fastapi_login/pull/97)
@@ -11,7 +17,7 @@
 - Switched from `setup.py` based publishing to using `pyproject.toml` together with poetry
 - Switched publishing to poetry
 - Update requirements in the examples projects
-- Added correct header in `/examples/simples/templates/index.html` (Fixes [#93](https://github.com/MushroomMaula/fastapi_login/issues/93) and [#95](https://github.com/MushroomMaula/fastapi_login/issues/95)) 
+- Added correct header in `/examples/simples/templates/index.html` (Fixes [#93](https://github.com/MushroomMaula/fastapi_login/issues/93) and [#95](https://github.com/MushroomMaula/fastapi_login/issues/95))
 
 # 1.8.2
 Update pyjwt to version 2.4.0, to fix a security issue in version 2.1.0
@@ -21,12 +27,12 @@ Fixes [#78](https://github.com/MushroomMaula/fastapi_login/issues/78)
 
 # 1.8.0
 - Adds support for asymmetric key algorithms thanks to [filwaline](https://github.com/filwaline).
-Documentation for this feature can be found 
+Documentation for this feature can be found
 [here](https://fastapi-login.readthedocs.io/advanced_usage/#asymmetric-algorithms).
 
 - Fixes syntax of ``__all__`` inside `fastapi_login/__init__.py`. (Thanks to [kigawas](https://github.com/kigawas))
 - Fixes multiple issues in the documentation. (Thanks to [alwye](https://github.com/alwye))
-- Bumps version of ``mkdocs`` to fix a security issue. As this is a dev dependency it shouldn't have affected any user. 
+- Bumps version of ``mkdocs`` to fix a security issue. As this is a dev dependency it shouldn't have affected any user.
 
 # 1.7.3
 Fixes not being able to import LoginManager in Python versions < 3.8. ([#61](https://github.com/MushroomMaula/fastapi_login/issues/61))
@@ -51,13 +57,13 @@ def load_user(email):
 This has been fixed now.
 
 It is however recommended to just add empty parentheses after the decorator
-if you don't wish to pass extra arguments to your callback. 
+if you don't wish to pass extra arguments to your callback.
 ````python
 @manager.user_loader()
 def load_user(email):
     ...
 ````
-Because of the backwards compatibility it is not possible to pass a 
+Because of the backwards compatibility it is not possible to pass a
 callable object as the first argument to the decorator.
 If this is needed it has to be passed as a keyword argument.
 This is detailed more in depth in the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#predefining-additional-user_loader-arguments).
@@ -80,17 +86,17 @@ the declared callback is called. Have a look at the [documentation](https://fast
 
 # 1.6.2
 - Adds support for OAuth2 scopes.
-  
+
     If used with ``fastapi.Security`` instead of ``fastapi.Depends``, token are now
     check for the required scopes to access the route.
-    For more checkout the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#oauth2-scopes) 
+    For more checkout the [documentation](https://fastapi-login.readthedocs.io/advanced_usage/#oauth2-scopes)
 
 # 1.6.1
 - Updates of dependencies, this fixes several security issues found in the dependencies
 
 # 1.6.0
 - Renamed the ``tokenUrl`` argument to ``token_url``
- - User set `LoginManager.not_authenticated_exception`` will now also be raised when a token expires, 
+ - User set `LoginManager.not_authenticated_exception`` will now also be raised when a token expires,
    or the token has an invalid format. (Fixes [#28](https://github.com/MushroomMaula/fastapi_login/issues/28))
 - Examples have been [added](https://github.com/MushroomMaula/fastapi_login/tree/master/examples) showing how to use ``fastapi-login``
 - Rewrote most of the tests

@@ -50,7 +50,7 @@ secret_parser = subparsers.add_parser('create-secret', help="Writes a suitable s
 secret_parser.add_argument('--overwrite', action='store_true', help="Overwrite the present secret value.")
 secret_parser.set_defaults(func=create_secret)
 
-db_parser = subparsers.add_parser('create-db', help="Creates the tables and the databses for the project")
+db_parser = subparsers.add_parser('create-db', help="Creates the tables and the databases for the project")
 db_parser.set_defaults(func=create_tables)
 
 admin_parser = subparsers.add_parser('create-admin', help="Creates a admin user with the given password and username.")

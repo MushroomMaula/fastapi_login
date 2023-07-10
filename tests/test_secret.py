@@ -11,12 +11,12 @@ happypath_parametrize_argvalues = [
     pytest.param(
         SymmetricSecret,
         "HS256",
-        secrets.token_hex(16),
+        secrets.token_hex(16).encode(),
     ),
     pytest.param(
         AsymmetricSecret,
         "RS256",
-        generate_rsa_key(512).decode(),
+        generate_rsa_key(512),
         marks=require_cryptography,
     ),
     pytest.param(
@@ -57,11 +57,14 @@ invalid_parametrize_argvalues = [
         "HS256", {"private_key": generate_rsa_key(512)}, marks=require_cryptography
     ),
     pytest.param("RS256", None),
-    pytest.param("RS256", secrets.token_hex(16)),
+    pytest.param("RS256", secrets.token_hex(16).encode()),
     pytest.param("RS256", {"private_key": secrets.token_hex(16)}),
     pytest.param(
         "RS256",
-        {"private_key": generate_rsa_key(512, b"password")},
+        {
+            "private_key": generate_rsa_key(512, b"password"),
+            "password": b"wrong-password"
+        },
         marks=require_cryptography,
     ),
 ]
