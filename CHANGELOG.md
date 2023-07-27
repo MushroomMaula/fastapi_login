@@ -1,8 +1,11 @@
 # 1.9.1
+Mostly fixes and updates in regard to Pydantic v2. Thanks to [kigawas](https://github.com/kigawas). 
 - Update examples to support Pydantic v2.
 - Fix potential type error against Pydantic v2.
 - Add example dependencies in `pyproject.toml`.
 - Remove `setup.py`
+- Fixed example (Thanks [Lexachoc](https://github.com/Lexachoc))
+- Fixed return type of user_loader (Thanks [kazunorimiura](https://github.com/kazunorimiura))
 
 # 1.9.0
 - User callback is now run asynchronous without blocking the worker thread [#92](https://github.com/MushroomMaula/fastapi_login/pull/97)
