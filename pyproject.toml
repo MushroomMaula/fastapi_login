@@ -22,27 +22,34 @@ python = "^3.8"
 fastapi = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "^2.4"
-cryptography = {version="^39.0.1", optional=true}
+cryptography = {version = "^39.0.1", optional = true}
 typing-extensions = "^4.1.1"
 anyio = {version = "^3.6.2", extras = ["trio"]}
 
 [tool.poetry.extras]
 asymmetric = ["cryptography"]
 
-[tool.poetry.dev-dependencies]
-pytest = "*"
-pytest-asyncio = "*"
+[tool.poetry.group.dev.dependencies]
 async-asgi-testclient = "*"
+markdown-include = "*"
 mkdocs = "*"
 mkdocs-material = "*"
 pymdown-extensions = "*"
-markdown-include = "*"
-mkdocstrings = "*"
-
-[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
 pytest-lazy-fixture = "^0.6.3"
 mkdocstrings = {version = "^0.20.0", extras = ["python"]}
 
+[tool.poetry.group.example.dependencies]
+pydantic = ">=2.0.1"
+pydantic_settings = ">=2.0.1"
+python-dotenv = "^1.0.0"
+sqlalchemy = "^2.0.18"
+uvicorn = "^0.22.0"
+python-multipart = "^0.0.6"
+email-validator = "^2.0.0.post2"
+sqlalchemy-stubs = "^0.4"
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]

@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from config import DEFAULT_SETTINGS
 
 engine = create_engine(DEFAULT_SETTINGS.database_uri, connect_args={"check_same_thread": False})
-Base = declarative_base(bind=engine)
+Base = declarative_base()
 db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

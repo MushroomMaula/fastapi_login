@@ -1,11 +1,12 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_login.exceptions import InvalidCredentialsException
+from sqlalchemy import inspect
 
 from config import DEFAULT_SETTINGS
 from crud_models import UserCreate, UserResponse
 from db import get_db, Base, engine
 from db_actions import get_user, create_user
-from fastapi_login.exceptions import InvalidCredentialsException
 from security import manager, verify_password
 
 app = FastAPI()
@@ -15,7 +16,8 @@ app = FastAPI()
 def setup():
     print("Creating db tables...")
     Base.metadata.create_all(bind=engine)
-    print(f"Created {len(engine.table_names())} tables: {engine.table_names()}")
+    inspection = inspect(engine)
+    print(f"Created {len(inspection.get_table_names())} tables: {inspection.get_table_names()}")
 
 
 @app.post("/auth/register")

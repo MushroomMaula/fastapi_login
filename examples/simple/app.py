@@ -3,19 +3,22 @@ import uuid
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseSettings, BaseModel, UUID4
+from pydantic import UUID4, BaseModel, ConfigDict
+from pydantic_settings import BaseSettings
 
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
 class Settings(BaseSettings):
-    secret: str  # automatically taken from environment variable
+    secret: str = "" # automatically taken from environment variable
 
 
 class UserCreate(BaseModel):
     email: str
     password: str
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 class User(UserCreate):
@@ -32,7 +35,7 @@ app = FastAPI()
 manager = LoginManager(DEFAULT_SETTINGS.secret, TOKEN_URL)
 
 
-@manager.user_loader
+@manager.user_loader()
 def get_user(email: str):
     return DB["users"].get(email)
 
@@ -51,7 +54,7 @@ def register(user: UserCreate):
         db_user = User(**user.dict(), id=uuid.uuid4())
         # PLEASE hash your passwords in real world applications
         DB["users"][db_user.email] = db_user
-        return {"detail": "Successfull registered"}
+        return {"detail": "Successful registered"}
 
 
 @app.post(TOKEN_URL)

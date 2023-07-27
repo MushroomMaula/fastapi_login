@@ -63,6 +63,8 @@ class LoginManager(OAuth2PasswordBearer):
             raise Exception(
                 "use_cookie and use_header are both False one of them needs to be True"
             )
+        if isinstance(secret, str):
+            secret = secret.encode()
 
         self.secret = parse_obj_as(Secret, {"algorithms": algorithm, "secret": secret})
         self._user_callback = None
