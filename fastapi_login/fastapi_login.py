@@ -119,7 +119,7 @@ class LoginManager(OAuth2PasswordBearer):
             )
         )
 
-    def user_loader(self, *args, **kwargs) -> Union[Callable, Awaitable]:
+    def user_loader(self, *args, **kwargs) -> Union[Callable, Callable[..., Awaitable]]:
         """
         This sets the callback to retrieve the user.
         The function should take an unique identifier like an email
@@ -150,7 +150,7 @@ class LoginManager(OAuth2PasswordBearer):
             The callback
         """
 
-        def decorator(callback: Union[Callable, Awaitable]):
+        def decorator(callback: Union[Callable, Callable[..., Awaitable]]):
             """
             The actual setter of the load_user callback
             Args:
