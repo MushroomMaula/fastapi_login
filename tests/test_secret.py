@@ -1,7 +1,7 @@
 import secrets
 
 import pytest
-from pydantic import ValidationError, parse_obj_as
+from pydantic import ValidationError, TypeAdapter
 
 from fastapi_login.secrets import AsymmetricSecret, Secret, SymmetricSecret
 
@@ -46,7 +46,7 @@ happypath_parametrize_argvalues = [
     ("secret_type", "alg", "secret"), happypath_parametrize_argvalues
 )
 def test_secret_parsing_happypath(secret_type, alg, secret):
-    s = parse_obj_as(Secret, {"algorithms": alg, "secret": secret})
+    s = TypeAdapter(Secret).validate_python({"algorithms": alg, "secret": secret})
     assert isinstance(s, secret_type)
 
 
@@ -73,4 +73,4 @@ invalid_parametrize_argvalues = [
 @pytest.mark.parametrize(("alg", "secret"), invalid_parametrize_argvalues)
 def test_secret_parsing_case_invalid_input(alg, secret):
     with pytest.raises(ValidationError):
-        parse_obj_as(Secret, {"algorithms": alg, "secret": secret})
+        TypeAdapter(Secret).validate_python({"algorithms": alg, "secret": secret})

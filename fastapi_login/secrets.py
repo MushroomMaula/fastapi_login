@@ -1,7 +1,7 @@
 from typing_extensions import Annotated, Literal
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, SecretBytes, validator
+from pydantic import BaseModel, Field, SecretBytes, field_validator
 
 try:
     from cryptography.hazmat.backends import default_backend
@@ -43,7 +43,7 @@ class AsymmetricSecret(BaseModel):
     algorithms: Literal["RS256"] = "RS256"
     secret: AsymmetricPairKey
 
-    @validator("secret", pre=True)
+    @field_validator("secret", mode="before")
     def secret_must_be_asymmetric_private_key(cls, secret):
 
         secret_in = AsymmetricSecretIn(data=secret)
