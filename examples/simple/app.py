@@ -11,14 +11,13 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 
 class Settings(BaseSettings):
-    secret: str = "" # automatically taken from environment variable
+    secret: str = ""  # automatically taken from environment variable
 
 
 class UserCreate(BaseModel):
     email: str
     password: str
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class User(UserCreate):

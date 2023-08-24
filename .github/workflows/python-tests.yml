@@ -5,40 +5,42 @@ name: Python package
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
   push:
-    branches: [ master, development ]
+    branches: [master, development]
   workflow_dispatch:
 
 jobs:
   test:
-
-    runs-on: ubuntu-20.04  # Python 3.6 is no longer available on ubuntu 22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install poetry
-      uses: abatilo/actions-poetry@v2
-    - name: Install dependencies
-      run: |
-          poetry install --all-extras # also tests asymmetric with cryptography
-          # for linting
-          pip install 'flake8<6.0.0' # Version 6.x.x requires python 3.8.1
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+      - name: Install dependencies
+        run: |
+          poetry install --all-extras  # also tests asymmetric with cryptography
+          pip install flake8  # for linting
 
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --extend-exclude=docs/,docs_src/
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --extend-exclude=docs/,docs_src/
-    - name: Test with pytest
-      working-directory: ./tests
-      run: |
-        poetry run pytest
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          poetry run flake8 fastapi_login examples tests --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          poetry run flake8 fastapi_login examples tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        working-directory: ./tests
+        run: poetry run pytest
+
+      - name: Test pydantic v1 compatibility
+        working-directory: ./tests
+        run: poetry run pip install 'pydantic==1.10' && poetry run pytest
