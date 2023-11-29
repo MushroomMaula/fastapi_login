@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-login"
-version = "1.9.1"
+version = "1.9.2"
 description = "Flask-Login like package for FastAPI"
 authors = ["Max Rausch-Dupont <maxrd79@gmail.com>"]
 license = "MIT"
