@@ -1,5 +1,4 @@
 from typing import Callable, Iterator, Optional
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_session

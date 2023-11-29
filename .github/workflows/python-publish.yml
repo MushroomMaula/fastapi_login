@@ -7,25 +7,25 @@ on:
   workflow_dispatch:
   release:
     types: [created]
-  
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-    - name: Install poetry
-      uses: abatilo/actions-poetry@v2
-    - name: Setup poetry
-      shell: bash
-      env:
-        TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: poetry config pypi-token.pypi "$TOKEN"
-    - name: Build and publish
-      run: poetry publish --build
+      - uses: actions/checkout@v3
+
+      - run: pipx install poetry
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: "poetry"
+
+      - name: Setup poetry
+        shell: bash
+        env:
+          TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: poetry config pypi-token.pypi "$TOKEN"
+      - name: Build and publish
+        run: poetry publish --build

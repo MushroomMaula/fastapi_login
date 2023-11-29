@@ -1,7 +1,18 @@
-from typing_extensions import Annotated, Literal
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, SecretBytes, validator
+from pydantic import BaseModel, Field, SecretBytes
+from typing_extensions import Annotated, Literal
+
+try:
+    from pydantic import field_validator
+except ImportError:  # pragma: no cover
+    from pydantic import validator
+
+    def field_validator(*args, **kwargs):
+        mode = kwargs.pop("mode", "after")
+        pre = True if mode == "before" else False
+        return validator(*args, pre=pre, **kwargs)
+
 
 try:
     from cryptography.hazmat.backends import default_backend
@@ -39,13 +50,12 @@ class AsymmetricPairKey(BaseModel):
 
 
 class AsymmetricSecret(BaseModel):
-
     algorithms: Literal["RS256"] = "RS256"
     secret: AsymmetricPairKey
 
-    @validator("secret", pre=True)
+    @field_validator("secret", mode="before")
+    @classmethod
     def secret_must_be_asymmetric_private_key(cls, secret):
-
         secret_in = AsymmetricSecretIn(data=secret)
         private_key = serialization.load_pem_private_key(
             secret_in.private_key,
@@ -77,7 +87,6 @@ class AsymmetricSecret(BaseModel):
 
 
 class SymmetricSecret(BaseModel):
-
     algorithms: Literal["HS256"] = "HS256"
     secret: SecretBytes
 
@@ -91,11 +100,19 @@ class SymmetricSecret(BaseModel):
 
 
 if _has_cryptography:
-
     Secret = Annotated[
         Union[SymmetricSecret, AsymmetricSecret], Field(discriminator="algorithms")
     ]
-
 else:
-
     Secret = SymmetricSecret
+
+
+def to_secret(obj: dict):
+    try:
+        from pydantic import TypeAdapter
+
+        return TypeAdapter(Secret).validate_python(obj)
+    except ImportError:  # pragma: no cover
+        from pydantic import parse_obj_as
+
+        return parse_obj_as(Secret, obj)

@@ -9,11 +9,10 @@ from anyio.to_thread import run_sync
 from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from passlib.context import CryptContext
-from pydantic import parse_obj_as
 
-from fastapi_login.exceptions import InvalidCredentialsException
-from fastapi_login.secrets import Secret
-from fastapi_login.utils import ordered_partial
+from .exceptions import InvalidCredentialsException
+from .secrets import to_secret
+from .utils import ordered_partial
 
 SECRET_TYPE = Union[str, bytes]
 
@@ -66,7 +65,7 @@ class LoginManager(OAuth2PasswordBearer):
         if isinstance(secret, str):
             secret = secret.encode()
 
-        self.secret = parse_obj_as(Secret, {"algorithms": algorithm, "secret": secret})
+        self.secret = to_secret({"algorithms": algorithm, "secret": secret})
         self._user_callback = None
         self.algorithm = algorithm
         self.pwd_context = CryptContext(schemes=["bcrypt"])
