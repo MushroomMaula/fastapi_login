@@ -14,12 +14,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+
+      - run: pipx install poetry
+
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v2
+          python-version: "3.12"
+          cache: "poetry"
+
       - name: Setup poetry
         shell: bash
         env:
