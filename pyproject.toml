@@ -1,30 +1,30 @@
 [tool.poetry]
-name = "fastapi-login"
-version = "1.9.2"
-description = "Flask-Login like package for FastAPI"
 authors = ["Max Rausch-Dupont <maxrd79@gmail.com>"]
-license = "MIT"
-readme="README.md"
-homepage="https://github.com/MushroomMaula/fastapi_login"
-documentation="https://fastapi-login.readthedocs.io/"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent"
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
-packages = [
-    {include = "fastapi_login"},
-]
+description = "Flask-Login like package for FastAPI"
+documentation = "https://fastapi-login.readthedocs.io/"
+homepage = "https://github.com/MushroomMaula/fastapi_login"
 include = ["fastapi_login/py.typed"]
+license = "MIT"
+name = "fastapi-login"
+packages = [
+  {include = "fastapi_login"},
+]
+readme = "README.md"
+version = "1.10.0"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-fastapi = "*"
-passlib = {extras = ["bcrypt"], version = "*"}
-pyjwt = "^2.4"
-cryptography = {version=">=39.0.1,<42.0.0", optional = true}
 typing-extensions = "^4.1.1"
+
 anyio = {version = "^3.6.2", extras = ["trio"]}
+cryptography = {version = ">=39.0.1,<42.0.0", optional = true}
+fastapi = "*"
+pyjwt = "^2.4"
 
 [tool.poetry.extras]
 asymmetric = ["cryptography"]
@@ -34,21 +34,22 @@ async-asgi-testclient = "*"
 markdown-include = "*"
 mkdocs = "*"
 mkdocs-material = "*"
+mkdocstrings = {version = "^0.20.0", extras = ["python"]}
 pymdown-extensions = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-lazy-fixture = "^0.6.3"
-mkdocstrings = {version = "^0.20.0", extras = ["python"]}
 
 [tool.poetry.group.example.dependencies]
+email-validator = "^2.0.0.post2"
+passlib = {extras = ["bcrypt"], version = "*"}
 pydantic = ">=2.0.1"
 pydantic_settings = ">=2.0.1"
 python-dotenv = "^1.0.0"
-sqlalchemy = "^2.0.18"
-uvicorn = "^0.22.0"
 python-multipart = "^0.0.6"
-email-validator = "^2.0.0.post2"
+sqlalchemy = "^2.0.18"
 sqlalchemy-stubs = "^0.4"
+uvicorn = "^0.22.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

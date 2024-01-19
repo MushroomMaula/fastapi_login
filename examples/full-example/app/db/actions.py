@@ -1,37 +1,30 @@
-from typing import Callable, Iterator, Optional
-from sqlalchemy.orm import Session
+from typing import Optional
 
-from app.db import get_session
+from app.db import SessionLocal
 from app.db.models import Post, User
 from app.security import hash_password, manager
+from sqlalchemy.orm import Session
 
 
-@manager.user_loader(session_provider=get_session)
-def get_user_by_name(
-    name: str,
-    db: Optional[Session] = None,
-    session_provider: Callable[[], Iterator[Session]] = None
-) -> Optional[User]:
+def get_user_by_name(name: str, db: Session) -> Optional[User]:
     """
     Queries the database for a user with the given name
 
     Args:
         name: The name of the user
         db: The currently active database session
-        session_provider: Optional method to retrieve a session if db is None (provided by our LoginManager)
 
     Returns:
         The user object or none
     """
-
-    if db is None and session_provider is None:
-        raise ValueError("db and session_provider cannot both be None.")
-
-    if db is None:
-        db = next(session_provider())
-
     user = db.query(User).where(User.username == name).first()
     return user
+
+
+@manager.user_loader()
+def get_user(name: str):
+    with SessionLocal() as db:
+        return get_user_by_name(name, db)
 
 
 def create_user(name: str, password: str, db: Session, is_admin: bool = False) -> User:

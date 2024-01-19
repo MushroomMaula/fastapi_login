@@ -1,8 +1,11 @@
+from passlib.context import CryptContext
+
 from fastapi_login import LoginManager
 
-from app.config import Config
+from .config import Config
 
 manager = LoginManager(Config.secret, Config.token_url)
+pwd_context = CryptContext(schemes=["bcrypt"])
 
 
 def hash_password(plaintext: str):
@@ -15,7 +18,7 @@ def hash_password(plaintext: str):
     Returns:
         The hashed password, including salt and algorithm information
     """
-    return manager.pwd_context.hash(plaintext)
+    return pwd_context.hash(plaintext)
 
 
 def verify_password(plaintext: str, hashed: str):
@@ -30,4 +33,4 @@ def verify_password(plaintext: str, hashed: str):
         True if the passwords match
     """
 
-    return manager.pwd_context.verify(plaintext, hashed)
+    return pwd_context.verify(plaintext, hashed)
