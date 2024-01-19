@@ -8,7 +8,6 @@ import jwt
 from anyio.to_thread import run_sync
 from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from passlib.context import CryptContext
 
 from .exceptions import InvalidCredentialsException
 from .secrets import to_secret
@@ -25,8 +24,6 @@ class LoginManager(OAuth2PasswordBearer):
         token_url (str): The url where the user can login to get the token
         use_cookie (bool): Whether cookies should be checked for the token
         use_header (bool): Whether headers should be checked for the token
-        pwd_context (passlib.CryptContext): Instance of ``passlib.CryptContext`` using bcrypt for
-            convenient access to hashing and verifying passwords.
     """
 
     def __init__(
@@ -68,7 +65,7 @@ class LoginManager(OAuth2PasswordBearer):
         self.secret = to_secret({"algorithms": algorithm, "secret": secret})
         self._user_callback = None
         self.algorithm = algorithm
-        self.pwd_context = CryptContext(schemes=["bcrypt"])
+
         self.tokenUrl = token_url
         self.oauth_scheme = None
         self._not_authenticated_exception = (

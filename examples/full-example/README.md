@@ -1,10 +1,13 @@
 # About
+
 This project implements a simple blogging platform with user accounts, to showcase how to work with `fastapi-login`.
 
-# Getting started
+## Getting started
+
 First you have to download this project, there are various methods how to download only this folder.
- - https://download-directory.github.io/ Downloads the folder as a zip file.
- - Clone the complete project and enter the examples folder by hand.
+
+- <https://download-directory.github.io/> Downloads the folder as a zip file.
+- Clone the complete project and enter the examples folder by hand.
 
 Next we have to create a virtual environment to install the dependencies
 `python3 -m venv .venv && source .venv/bin/activate`
@@ -27,7 +30,8 @@ This will start the application on [127.0.0.1:8000](127.0.0.1:8000).
 
 Visit [127.0.0.1:8000/docs](127.0.0.1:8000/docs) to try out the API.
 
-# Technical information
+## Technical information
+
 We will use `fastapi-login` for authentication and `sqlalchemy` together with `sqlite` as our database.
 `python-dotenv` is used in combination with pydantics `BaseConfig` for config management.
 All code concerning `fastapi-login` is contained inside the `app/auth` folder.
