@@ -130,11 +130,13 @@ def test_token_from_cookie(clean_manager):
     token = clean_manager._token_from_cookie(request)
     assert token == "test-value"
 
-
-def test_token_from_cookie_raises(clean_manager):
+@pytest.mark.asyncio
+async def test_token_from_cookie_raises(clean_manager):
     request = Mock(cookies={clean_manager.cookie_name: ""})
+    clean_manager.use_cookie = True
+    clean_manager.use_header = False
     with pytest.raises(HTTPException) as exc_info:
-        clean_manager._token_from_cookie(request)
+        await clean_manager._get_token(request)
 
     assert exc_info.value == InvalidCredentialsException
 
@@ -191,8 +193,11 @@ def test_has_scopes_missing_scopes(clean_manager, default_data):
 
 def test_has_scopes_invalid_token(clean_manager):
     token = "invalid-token"
-    assert not clean_manager.has_scopes(token, SecurityScopes(scopes=["test"]))
 
+    with pytest.raises(HTTPException) as exc_info:
+        clean_manager.has_scopes(token, SecurityScopes(scopes=["test"]))
+
+    assert exc_info.value == InvalidCredentialsException
 
 def test_has_scopes_which_are_not_required(clean_manager, default_data):
     scopes = ["read", "write"]

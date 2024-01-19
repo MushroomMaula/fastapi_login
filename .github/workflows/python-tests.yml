@@ -4,11 +4,11 @@
 name: Python package
 
 on:
+  push:
+    branches: [master]
+
   pull_request:
     branches: [master]
-  push:
-    branches: [master, development]
-  workflow_dispatch:
 
 jobs:
   test:
