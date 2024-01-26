@@ -1,11 +1,10 @@
 # About
 
-
 **Source Code: [https://github.com/MushroomMaula/fastapi_login](https://github.com/MushroomMaula/fastapi_login)**
 
 fastapi-login provides a convenient, simple to use user authentication for FastAPI.
 
-## Features:
+## Features
 
 - Provides a simple authorization dependency
 - Support for token in either request headers or as cookie
@@ -15,10 +14,10 @@ fastapi-login provides a convenient, simple to use user authentication for FastA
 - OpenAPI support
 
 ## Aim
+
 The idea of ``fastapi-login`` is to provide an easy to use and setup authorization system for your routes
-while being as barebone and customizable as possible. Therefore, no default database user model or 
+while being as barebone and customizable as possible. Therefore, no default database user model or
 login/registration routes are provided in the packages.
 
-If thats what you need there are other packages which provide more functionality out of the box such as 
+If thats what you need there are other packages which provide more functionality out of the box such as
 [fastapi-users](https://github.com/frankie567/fastapi-users).
-

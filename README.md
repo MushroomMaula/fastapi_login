@@ -1,11 +1,17 @@
 # FastAPI-Login
 
+[![CI](https://img.shields.io/github/actions/workflow/status/MushroomMaula/fastapi_login/python-tests.yml?branch=master)](https://github.com/MushroomMaula/fastapi_login/actions)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fastapi-login.svg)](https://pypi.org/project/fastapi-login/)
+[![PyPI](https://img.shields.io/pypi/v/fastapi-login.svg)](https://pypi.org/project/fastapi-login/)
+[![License](https://img.shields.io/github/license/MushroomMaula/fastapi_login.svg)](https://github.com/MushroomMaula/fastapi_login)
+
 FastAPI-Login tries to provide similar functionality as [Flask-Login](https://github.com/maxcountryman/flask-login) does.
 
 ## Documentation
 
-In-depth documentation can be found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/)
-Some examples can be found [here](https://github.com/MushroomMaula/fastapi_login/tree/master/examples)
+In-depth documentation can be found at [fastapi-login.readthedocs.io](https://fastapi-login.readthedocs.io/).
+
+Some examples can be found [here](https://github.com/MushroomMaula/fastapi_login/tree/master/examples).
 
 ## Installation
 
@@ -17,47 +23,47 @@ pip install fastapi-login
 
 To begin we have to setup our FastAPI app:
 
-````python
+```python
 from fastapi import FastAPI
 
 SECRET = 'your-secret-key'
 
 app = FastAPI()
-````
+```
 
 To obtain a suitable secret key you can run ``import os; print(os.urandom(24).hex())``.
 
 Now we can import and setup the LoginManager, which will handle the process of
 encoding and decoding our Json Web Tokens.
 
-````python
+```python
 from fastapi_login import LoginManager
 
 manager = LoginManager(SECRET, token_url='/auth/token')
-````
+```
 
 For the example we will use a dictionary to represent our user database. In your
 application this could also be a real database like sqlite or Postgres. It does not
 matter as you have to provide the function which retrieves the user.
 
-````python
+```python
 fake_db = {'johndoe@e.mail': {'password': 'hunter2'}}
-````
+```
 
 Now we have to provide the ``LoginManager`` with a way to load our user. The
 `user_loader` callback should either return your user object or ``None``
 
-````python
+```python
 @manager.user_loader()
 def load_user(email: str):  # could also be an asynchronous function
     user = fake_db.get(email)
     return user
-````
+```
 
 Now we have to define a way to let the user login in our app. Therefore we will create
 a new route:
 
-````python
+```python
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
@@ -78,20 +84,20 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
         data=dict(sub=email)
     )
     return {'access_token': access_token, 'token_type': 'bearer'}
-````
+```
 
 Now whenever you want your user to be logged in to use a route, you can simply
 use your ``LoginManager`` instance as a dependency.
 
-````python
+```python
 @app.get('/protected')
 def protected_route(user=Depends(manager)):
     ...
-````
+```
 
 If you also want to handle a not authenticated error, you can add your own subclass of Exception to the LoginManager.
 
-````python
+```python
 from starlette.responses import RedirectResponse
 
 class NotAuthenticatedException(Exception):
@@ -101,19 +107,17 @@ class NotAuthenticatedException(Exception):
 def exc_handler(request, exc):
     return RedirectResponse(url='/login')
 
-# This will be deprecated in the future
-# set your exception when initiating the instance
-# manager = LoginManager(..., custom_exception=NotAuthenticatedException)
-manager.not_authenticated_exception = NotAuthenticatedException
+
+manager = LoginManager(..., custom_exception=NotAuthenticatedException)
 # You also have to add an exception handler to your app instance
 app.add_exception_handler(NotAuthenticatedException, exc_handler)
-````
+```
 
 To change the expiration date of the token use the ``expires_delta`` argument of the `create_access_token` method
 with a timedelta. The default is set 15 min. Please be aware that setting a long expiry date is not considered a good practice
 as it would allow an attacker with the token to use your application as long as he wants.
 
-````python
+```python
 from datetime import timedelta
 
 data = dict(sub=user.email)
@@ -126,17 +130,17 @@ token = manager.create_access_token(
 long_token = manager.create_access_token(
     data=data, expires=timedelta(hours=12)
 )
-````
+```
 
 ### Usage with cookies
 
 Instead of checking the header for the token. ``fastapi-login``  also support access using cookies.
 
-````python
+```python
 from fastapi_login import LoginManager
 
 manager = LoginManager(SECRET, token_url='/auth/token', use_cookie=True)
-````
+```
 
 Now the manager will check the requests cookies the headers for the access token. The name of the cookie can be set using
  ``manager.cookie_name``.
@@ -145,7 +149,7 @@ If you only want to check the requests cookies you can turn the headers off usin
 For convenience the LoginManager also includes the ``set_cookie`` method which sets the cookie to your response,
 with the recommended HTTPOnly flag and the ``manager.cookie_name`` as the key.
 
-````python
+```python
 from fastapi import Depends
 from starlette.responses import Response
 
@@ -158,4 +162,4 @@ def auth(response: Response, user=Depends(manager)):
     manager.set_cookie(response, token)
     return response
 
-````
+```

@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.10.0
+
+- Add custom out-of-scope exception, defaults to `fastapi_login.exceptions.InsufficientScopeException`
+- Remove deprecated APIs
+
+From version 1.10.0, the following usages will be no longer available:
+
+```py
+manager.not_authenticated_exception = NotAuthenticatedException
+manager.useRequest(app)
+
+@manager.user_loader
+def load_user(email):
+    ...
+```
+
+Use these instead:
+
+```py
+manager = LoginManager(..., custom_exception=NotAuthenticatedException)
+manager.attach_middleware(app)
+
+@manager.user_loader()
+def load_user(email):
+    ...
+```
+
 ## 1.9.3
 
 - Refactor decoding token
@@ -8,15 +35,15 @@
 
 ## 1.9.2
 
-- Revamp compatibility with Pydantic
+- Revamp compatibility with `Pydantic`
 - Bump dependencies
 
 ## 1.9.1
 
-Mostly fixes and updates in regard to Pydantic v2. Thanks to [kigawas](https://github.com/kigawas).
+Mostly fixes and updates in regard to `Pydantic` v2. Thanks to [kigawas](https://github.com/kigawas).
 
-- Update examples to support Pydantic v2.
-- Fix potential type error against Pydantic v2.
+- Update examples to support `Pydantic` v2.
+- Fix potential type error against `Pydantic` v2.
 - Add example dependencies in `pyproject.toml`.
 - Remove `setup.py`
 - Fixed example (Thanks [Lexachoc](https://github.com/Lexachoc))
@@ -72,6 +99,7 @@ This was caused because the decorator did not return the function.
 ## 1.7.1
 
 Fixes backwards compatibility ([#58](https://github.com/MushroomMaula/fastapi_login/issues/58)) of the ``LoginManager.user_loader`` decorator.
+
 In version 1.7.0 it was not possible to do the following anymore:
 
 ```py
@@ -85,11 +113,11 @@ This has been fixed now.
 It is however recommended to just add empty parentheses after the decorator
 if you don't wish to pass extra arguments to your callback.
 
-````python
+```python
 @manager.user_loader()
 def load_user(email):
     ...
-````
+```
 
 Because of the backwards compatibility it is not possible to pass a
 callable object as the first argument to the decorator.

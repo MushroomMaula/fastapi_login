@@ -9,7 +9,9 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 
 @pytest.fixture
-def exception_manager(app, secret, token_url, load_user_fn, custom_exception) -> LoginManager:
+def exception_manager(
+    app, secret, token_url, load_user_fn, custom_exception
+) -> LoginManager:
     instance = LoginManager(secret, token_url, custom_exception=custom_exception)
     instance.user_loader()(load_user_fn)
 
@@ -33,18 +35,15 @@ def exception_manager(app, secret, token_url, load_user_fn, custom_exception) ->
     return instance
 
 
-def test_exception_setter_deprecated_warns(clean_manager, custom_exception):
-    with pytest.deprecated_call():
-        clean_manager.not_authenticated_exception = custom_exception
-
-
 @pytest.mark.asyncio
 async def test_exception_call_cookie_error_user_header_false(clean_manager):
     # setup clean_manager
     clean_manager.use_cookie = True
     clean_manager.use_header = False
     response = Mock(cookies={})
-    with pytest.raises(Exception) as exc_info:  # HTTPExceptions cannot be used with pytest.raises
+    with pytest.raises(
+        Exception
+    ) as exc_info:  # HTTPExceptions cannot be used with pytest.raises
         await clean_manager(response)
 
     assert exc_info.value is InvalidCredentialsException
@@ -55,7 +54,9 @@ async def test_exception_call_raises_no_token_auto_error_off(clean_manager):
     clean_manager.auto_error = False
     # set headers so fastapi internals dont raise an error
     response = Mock(headers={"abc": "abc"})
-    with pytest.raises(Exception) as exc_info:   # HTTPExceptions cannot be used with pytest.raises
+    with pytest.raises(
+        Exception
+    ) as exc_info:  # HTTPExceptions cannot be used with pytest.raises
         await clean_manager(response)
 
     assert exc_info.value is InvalidCredentialsException
@@ -63,22 +64,23 @@ async def test_exception_call_raises_no_token_auto_error_off(clean_manager):
 
 @pytest.mark.asyncio
 async def test_exception_handling(exception_manager, client, invalid_data):
-    invalid_token = exception_manager.create_access_token(data={"sub": invalid_data["username"]})
+    invalid_token = exception_manager.create_access_token(
+        data={"sub": invalid_data["username"]}
+    )
     resp = await client.get(
-        "/private/exception",
-        headers={"Authorization": f"Bearer {invalid_token}"}
+        "/private/exception", headers={"Authorization": f"Bearer {invalid_token}"}
     )
 
     assert resp.json()["detail"] == "Redirected"
 
 
 @pytest.mark.asyncio
-async def test_exception_handling_with_no_token(exception_manager, client, invalid_data):
+async def test_exception_handling_with_no_token(
+    exception_manager, client, invalid_data
+):
     # Set use cookie true for this test to check all possible ways to raise an error
     exception_manager.use_cookie = True
-    resp = await client.get(
-        "/private/exception"
-    )
+    resp = await client.get("/private/exception")
     assert resp.json()["detail"] == "Redirected"
 
 
@@ -101,7 +103,11 @@ async def test_exception_changes_invalid_token(exception_manager, custom_excepti
 
 
 @pytest.mark.asyncio
-async def test_exception_changes_user_is_none(exception_manager, custom_exception, invalid_data):
-    invalid_user_token = exception_manager.create_access_token(data={"sub": invalid_data["username"]})
+async def test_exception_changes_user_is_none(
+    exception_manager, custom_exception, invalid_data
+):
+    invalid_user_token = exception_manager.create_access_token(
+        data={"sub": invalid_data["username"]}
+    )
     with pytest.raises(custom_exception) as exc_info:
         await exception_manager.get_current_user(invalid_user_token)

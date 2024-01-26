@@ -16,7 +16,6 @@ try:
     _has_cryptography = True
 
     def generate_rsa_key(key_size=2048, password=None):
-
         key = rsa.generate_private_key(
             backend=default_backend(), public_exponent=65537, key_size=key_size
         )

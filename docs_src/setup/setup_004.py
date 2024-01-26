@@ -1,11 +1,4 @@
-DB = {
-    'users': {
-        'johndoe@mail.com': {
-            'name': 'John Doe',
-            'password': 'hunter2'
-        }
-    }
-}
+DB = {"users": {"johndoe@mail.com": {"name": "John Doe", "password": "hunter2"}}}
 
 
 def query_user(user_id: str):
@@ -14,5 +7,4 @@ def query_user(user_id: str):
     :param user_id: E-Mail of the user
     :return: None or the user object
     """
-    return DB['users'].get(user_id)
-
+    return DB["users"].get(user_id)
