@@ -1,8 +1,9 @@
 from fastapi.requests import Request
 
-manager.useRequest(app)
+manager.attach_middleware(app)
 
-@app.route('/showcase')
+
+@app.route("/showcase")
 def showcase(request: Request):
     # None if unauthorized
     user = request.state.user

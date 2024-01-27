@@ -1,5 +1,11 @@
 [tool.poetry]
-authors = ["Max Rausch-Dupont <maxrd79@gmail.com>"]
+name = "fastapi-login"
+version = "1.10.0"
+# metadata
+authors = [
+  "Max Rausch-Dupont <maxrd79@gmail.com>",
+  "Weiliang Li <to.be.impressive@gmail.com>",
+]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
@@ -10,19 +16,17 @@ documentation = "https://fastapi-login.readthedocs.io/"
 homepage = "https://github.com/MushroomMaula/fastapi_login"
 include = ["fastapi_login/py.typed"]
 license = "MIT"
-name = "fastapi-login"
 packages = [
   {include = "fastapi_login"},
 ]
 readme = "README.md"
-version = "1.9.3"
 
 [tool.poetry.dependencies]
 python = "^3.8"
 typing-extensions = "^4.1.1"
 
 anyio = {version = "^3.6.2", extras = ["trio"]}
-cryptography = {version = ">=39.0.1,<42.0.0", optional = true}
+cryptography = {version = ">=39.0.1,<43.0.0", optional = true}
 fastapi = "*"
 pyjwt = "^2.4"
 
@@ -34,7 +38,7 @@ async-asgi-testclient = "*"
 markdown-include = "*"
 mkdocs = "*"
 mkdocs-material = "*"
-mkdocstrings = {version = "^0.20.0", extras = ["python"]}
+mkdocstrings = {version = "^0.24.0", extras = ["python"]}
 pymdown-extensions = "*"
 pytest = "*"
 pytest-asyncio = "*"
@@ -49,7 +53,7 @@ python-dotenv = "^1.0.0"
 python-multipart = "^0.0.6"
 sqlalchemy = "^2.0.18"
 sqlalchemy-stubs = "^0.4"
-uvicorn = "^0.22.0"
+uvicorn = "^0.27.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

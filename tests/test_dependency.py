@@ -66,8 +66,7 @@ def scoped_manager(app, secret, token_url, load_user_fn) -> LoginManager:
 async def test_header_dependency(client, header_manager, default_data):
     token = header_manager.create_access_token(data=default_data)
     resp = await client.get(
-        "/private/header",
-        headers={"Authorization": f"Bearer {token}"}
+        "/private/header", headers={"Authorization": f"Bearer {token}"}
     )
 
     assert resp.status_code == 200
@@ -78,8 +77,7 @@ async def test_header_dependency(client, header_manager, default_data):
 async def test_cookie_dependency(client, cookie_manager, default_data):
     token = cookie_manager.create_access_token(data=default_data)
     resp = await client.get(
-        "/private/cookie",
-        cookies={cookie_manager.cookie_name: token}
+        "/private/cookie", cookies={cookie_manager.cookie_name: token}
     )
 
     assert resp.status_code == 200
@@ -90,9 +88,7 @@ async def test_cookie_dependency(client, cookie_manager, default_data):
 async def test_cookie_header_fallback(client, cookie_header_manager, default_data):
     token = cookie_header_manager.create_access_token(data=default_data)
     resp = await client.get(
-        "/private/both",
-        headers={"Authorization": f"Bearer {token}"},
-        cookies={}
+        "/private/both", headers={"Authorization": f"Bearer {token}"}, cookies={}
     )
 
     # even tough no valid access cookie is present,
@@ -105,8 +101,7 @@ async def test_cookie_header_fallback(client, cookie_header_manager, default_dat
 async def test_scoped_dependency(client, scoped_manager, default_data):
     token = scoped_manager.create_access_token(data=default_data, scopes=["read"])
     resp = await client.get(
-        "/private/scoped",
-        headers={"Authorization": f"Bearer {token}"}
+        "/private/scoped", headers={"Authorization": f"Bearer {token}"}
     )
 
     assert resp.status_code == 200
@@ -117,24 +112,23 @@ async def test_scoped_dependency(client, scoped_manager, default_data):
 async def test_scoped_dependency_raises(client, scoped_manager, default_data):
     token = scoped_manager.create_access_token(data=default_data)
     resp = await client.get(
-        "/private/scoped",
-        headers={"Authorization": f"Bearer {token}"}
+        "/private/scoped", headers={"Authorization": f"Bearer {token}"}
     )
 
-    assert resp.status_code == 401
+    assert resp.status_code == 400
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("data, is_invalid", [
-    (lazy_fixture("default_data"), 0),
-    (lazy_fixture("invalid_data"), 1)
-])
+@pytest.mark.parametrize(
+    "data, is_invalid",
+    [(lazy_fixture("default_data"), 0), (lazy_fixture("invalid_data"), 1)],
+)
 async def test_optional_dependency(client, cookie_header_manager, data, is_invalid):
     token = cookie_header_manager.create_access_token(data=data)
     resp = await client.get(
         "/private/optional",
         headers={"Authorization": f"Bearer {token}"},
-        query_string={"invalid": is_invalid}
+        query_string={"invalid": is_invalid},
     )
 
     assert resp.status_code == 200

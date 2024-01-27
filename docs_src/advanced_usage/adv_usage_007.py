@@ -1,5 +1,6 @@
-from fastapi.requests import Request
 from fastapi.exceptions import HTTPException
+from fastapi.requests import Request
+
 
 def is_admin(request: Request):
     user = request.state.user

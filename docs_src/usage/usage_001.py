@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
 
 
-@app.post('/login')
+@app.post("/login")
 def login(data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
     password = data.password
@@ -13,7 +13,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     if not user:
         # you can return any response or error of your choice
         raise InvalidCredentialsException
-    elif password != user['password']:
+    elif password != user["password"]:
         raise InvalidCredentialsException
 
-    return {'status': 'Success'}
+    return {"status": "Success"}
