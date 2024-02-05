@@ -114,7 +114,6 @@ async def test_scoped_dependency_raises(client, scoped_manager, default_data):
     resp = await client.get(
         "/private/scoped", headers={"Authorization": f"Bearer {token}"}
     )
-
     assert resp.status_code == 400
 
 

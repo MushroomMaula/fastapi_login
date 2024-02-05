@@ -11,8 +11,11 @@ class NotAuthenticatedException(Exception):
 # Before version 1.7.0
 # manager.not_authenticated_exception = NotAuthenticatedException
 
+# Before version 1.10.0
+# manager = LoginManager(..., custom_exception=NotAuthenticatedException)
+
 # The updated way
-manager = LoginManager(..., custom_exception=NotAuthenticatedException)
+manager = LoginManager(..., not_authenticated_exception=NotAuthenticatedException)
 
 
 @app.exception_handler(NotAuthenticatedException)

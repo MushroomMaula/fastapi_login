@@ -25,7 +25,7 @@ class LoginManager(OAuth2PasswordBearer):
         use_cookie=False,
         use_header=True,
         cookie_name: str = "access-token",
-        custom_exception: CUSTOM_EXCEPTION = InvalidCredentialsException,
+        not_authenticated_exception: CUSTOM_EXCEPTION = InvalidCredentialsException,
         default_expiry: timedelta = timedelta(minutes=15),
         scopes: Optional[Dict[str, str]] = None,
         out_of_scope_exception: CUSTOM_EXCEPTION = InsufficientScopeException,
@@ -39,7 +39,7 @@ class LoginManager(OAuth2PasswordBearer):
             use_cookie (bool): Set if cookies should be checked for the token
             use_header (bool): Set if headers should be checked for the token
             cookie_name (str): Name of the cookie to check for the token
-            custom_exception (Union[Type[Exception], Exception]): Exception to raise when the user is not authenticated
+            not_authenticated_exception (Union[Type[Exception], Exception]): Exception to raise when the user is not authenticated
                 this defaults to `fastapi_login.exceptions.InvalidCredentialsException`
             default_expiry (datetime.timedelta): The default expiry time of the token, defaults to 15 minutes
             scopes (Dict[str, str]): Scopes argument of OAuth2PasswordBearer for more information see
@@ -64,7 +64,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         # private
         self._user_callback: Optional[ordered_partial] = None
-        self._not_authenticated_exception = custom_exception
+        self._not_authenticated_exception = not_authenticated_exception
         self._out_of_scope_exception = out_of_scope_exception
 
         # we take over the exception raised possibly by setting auto_error to False
@@ -83,8 +83,6 @@ class LoginManager(OAuth2PasswordBearer):
         """
         Exception raised when no (valid) token is present.
         Defaults to `fastapi_login.exceptions.InvalidCredentialsException`
-        The property will deprecated in the future in favor of the custom_exception argument
-        on initialization
         """
         return self._not_authenticated_exception
 

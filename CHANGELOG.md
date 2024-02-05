@@ -3,12 +3,19 @@
 ## 1.10.0
 
 - Add custom out-of-scope exception, defaults to `fastapi_login.exceptions.InsufficientScopeException`
+
+```py
+manager = LoginManager(..., out_of_scope_exception=OutOfScopeException)
+```
+
 - Remove deprecated APIs
 
 From version 1.10.0, the following usages will be no longer available:
 
 ```py
 manager.not_authenticated_exception = NotAuthenticatedException
+manager = LoginManager(..., custom_exception=NotAuthenticatedException)
+
 manager.useRequest(app)
 
 @manager.user_loader
@@ -19,7 +26,8 @@ def load_user(email):
 Use these instead:
 
 ```py
-manager = LoginManager(..., custom_exception=NotAuthenticatedException)
+manager = LoginManager(..., not_authenticated_exception=NotAuthenticatedException)
+
 manager.attach_middleware(app)
 
 @manager.user_loader()
@@ -32,6 +40,28 @@ def load_user(email):
 - Refactor decoding token
 - Remove `passlib`
 - Bump dependencies
+
+Now `passlib` should be used directly. This may be a breaking change for some users.
+
+```py
+from config import DEFAULT_SETTINGS
+from passlib.context import CryptContext
+
+from fastapi_login import LoginManager
+
+manager = LoginManager(DEFAULT_SETTINGS.secret, DEFAULT_SETTINGS.token_url)
+pwd_context = CryptContext(schemes=["bcrypt"])
+
+
+def hash_password(plaintext_password: str):
+    """Return the hash of a password"""
+    return pwd_context.hash(plaintext_password)
+
+
+def verify_password(password_input: str, hashed_password: str):
+    """Check if the provided password matches"""
+    return pwd_context.verify(password_input, hashed_password)
+```
 
 ## 1.9.2
 
