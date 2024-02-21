@@ -40,7 +40,7 @@ mkdocs = "*"
 mkdocs-material = "*"
 mkdocstrings = {version = "^0.24.0", extras = ["python"]}
 pymdown-extensions = "*"
-pytest = "*"
+pytest = "7.*.*"
 pytest-asyncio = "*"
 pytest-lazy-fixture = "^0.6.3"
 

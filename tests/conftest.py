@@ -22,15 +22,19 @@ try:
         private_key = key.private_bytes(
             serialization.Encoding.PEM,
             serialization.PrivateFormat.PKCS8,
-            serialization.BestAvailableEncryption(password)
-            if password is not None
-            else serialization.NoEncryption(),
+            (
+                serialization.BestAvailableEncryption(password)
+                if password is not None
+                else serialization.NoEncryption()
+            ),
         )
         return private_key
 
 except ImportError:
     _has_cryptography = False
-    generate_rsa_key = lambda *args, **kwargs: b""
+
+    def generate_rsa_key(*args, **kwargs):
+        return b""
 
 
 require_cryptography = pytest.mark.skipif(
@@ -129,6 +133,15 @@ class CustomAuthException(Exception):
     pass
 
 
+class CustomScopeException(Exception):
+    pass
+
+
 @pytest.fixture
-def custom_exception():
+def auth_exception():
     return CustomAuthException
+
+
+@pytest.fixture
+def scope_exception():
+    return CustomScopeException

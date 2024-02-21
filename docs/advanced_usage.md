@@ -1,3 +1,5 @@
+# Advanced usage
+
 ## Cookies
 
 By default ``LoginManager`` expects the token to be in the ``Authorization``
