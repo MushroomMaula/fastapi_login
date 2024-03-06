@@ -4,9 +4,11 @@ from typing import Any, Awaitable, Callable, Collection, Dict, Optional, Type, U
 
 import jwt
 from anyio.to_thread import run_sync
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from fastapi.security.utils import get_authorization_scheme_param
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 from .exceptions import InsufficientScopeException, InvalidCredentialsException
 from .secrets import to_secret
@@ -29,6 +31,7 @@ class LoginManager(OAuth2PasswordBearer):
         default_expiry: timedelta = timedelta(minutes=15),
         scopes: Optional[Dict[str, str]] = None,
         out_of_scope_exception: CUSTOM_EXCEPTION = InsufficientScopeException,
+        oauth_scheme: str = "Bearer",
     ):
         """
         Initializes LoginManager
@@ -56,7 +59,7 @@ class LoginManager(OAuth2PasswordBearer):
 
         self.secret = to_secret({"algorithms": algorithm, "secret": secret})
         self.algorithm = algorithm
-        self.oauth_scheme = None
+        self.oauth_scheme = oauth_scheme
         self.use_cookie = use_cookie
         self.use_header = use_header
         self.cookie_name = cookie_name
@@ -340,12 +343,26 @@ class LoginManager(OAuth2PasswordBearer):
             token = self._token_from_cookie(request)
 
         if not token and self.use_header:
-            token = await super(LoginManager, self).__call__(request)
+            token = await self._get_token_from_request(request)
 
         if not token:
             raise self.not_authenticated_exception
 
         return token
+
+    async def _get_token_from_request(self, request: Request) -> Optional[str]:
+        authorization = request.headers.get("Authorization")
+        scheme, param = get_authorization_scheme_param(authorization)
+        if not authorization or scheme.lower() != self.oauth_scheme.lower():
+            if self.auto_error:
+                raise HTTPException(
+                    status_code=HTTP_401_UNAUTHORIZED,
+                    detail="Not authenticated",
+                    headers={"WWW-Authenticate": f"{self.oauth_scheme}"},
+                )
+            else:
+                return None  # pragma: nocover
+        return param
 
     async def __call__(self, request: Request, security_scopes: SecurityScopes = None) -> Any:  # type: ignore
         """
