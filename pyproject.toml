@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-login"
-version = "1.10.0"
+version = "1.10.1"
 # metadata
 authors = [
   "Max Rausch-Dupont <maxrd79@gmail.com>",
@@ -16,6 +16,9 @@ documentation = "https://fastapi-login.readthedocs.io/"
 homepage = "https://github.com/MushroomMaula/fastapi_login"
 include = ["fastapi_login/py.typed"]
 license = "MIT"
+maintainers = [
+  "Weiliang Li <to.be.impressive@gmail.com>",
+]
 packages = [
   {include = "fastapi_login"},
 ]
