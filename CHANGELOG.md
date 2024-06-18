@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.1
+
+- Bump dependencies
+
 ## 1.10.0
 
 - Add custom out-of-scope exception, defaults to `fastapi_login.exceptions.InsufficientScopeException`
