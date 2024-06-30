@@ -1,6 +1,6 @@
 import pytest
 from fastapi import Depends, Security
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazy_fixtures import lf
 
 from fastapi_login import LoginManager
 
@@ -120,7 +120,7 @@ async def test_scoped_dependency_raises(client, scoped_manager, default_data):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "data, is_invalid",
-    [(lazy_fixture("default_data"), 0), (lazy_fixture("invalid_data"), 1)],
+    [(lf("default_data"), 0), (lf("invalid_data"), 1)],
 )
 async def test_optional_dependency(client, cookie_header_manager, data, is_invalid):
     token = cookie_header_manager.create_access_token(data=data)
