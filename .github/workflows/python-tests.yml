@@ -45,4 +45,4 @@ jobs:
 
       - name: Test pydantic v1 compatibility
         working-directory: ./tests
-        run: poetry run pip install 'pydantic==1.10' && poetry run pytest
+        run: poetry run pip install 'pydantic<2' && poetry run pytest

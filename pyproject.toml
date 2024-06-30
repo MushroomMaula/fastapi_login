@@ -41,11 +41,11 @@ async-asgi-testclient = "*"
 markdown-include = "*"
 mkdocs = "*"
 mkdocs-material = "*"
-mkdocstrings = {version = "^0.24.0", extras = ["python"]}
+mkdocstrings = {version = "^0.25.1", extras = ["python"]}
 pymdown-extensions = "*"
-pytest = "7.*.*"
+pytest = ">=7"
 pytest-asyncio = "*"
-pytest-lazy-fixture = "^0.6.3"
+pytest-lazy-fixtures = "^1.0.7"
 
 [tool.poetry.group.example.dependencies]
 email-validator = "^2.0.0.post2"
@@ -53,10 +53,10 @@ passlib = {extras = ["bcrypt"], version = "*"}
 pydantic = ">=2.0.1"
 pydantic_settings = ">=2.0.1"
 python-dotenv = "^1.0.0"
-python-multipart = ">=0.0.6,<0.0.8"
+python-multipart = ">=0.0.6"
 sqlalchemy = "^2.0.18"
 sqlalchemy-stubs = "^0.4"
-uvicorn = "^0.27.0"
+uvicorn = ">=0.27.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
