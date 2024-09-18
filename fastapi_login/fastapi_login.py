@@ -268,7 +268,7 @@ class LoginManager(OAuth2PasswordBearer):
         *,
         data: dict,
         expires: Optional[timedelta] = None,
-        scopes: Optional[Collection[str]] = None
+        scopes: Optional[Collection[str]] = None,
     ) -> str:
         """
         Helper function to create the encoded access token using
@@ -347,7 +347,11 @@ class LoginManager(OAuth2PasswordBearer):
 
         return token
 
-    async def __call__(self, request: Request, security_scopes: SecurityScopes = None) -> Any:  # type: ignore
+    async def __call__(
+        self,
+        request: Request,
+        security_scopes: SecurityScopes = None,  # type: ignore
+    ) -> Any:
         """
         Provides the functionality to act as a Dependency
 
