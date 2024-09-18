@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.2
+
+- Bump dependencies
+- Remove anyio dependency
+
 ## 1.10.1
 
 - Bump dependencies
