@@ -7,6 +7,7 @@ from fastapi_login.secrets import AsymmetricSecret, SymmetricSecret, to_secret
 
 from .conftest import generate_rsa_key, require_cryptography
 
+key_size = 1024
 happypath_parametrize_argvalues = [
     pytest.param(
         SymmetricSecret,
@@ -16,20 +17,20 @@ happypath_parametrize_argvalues = [
     pytest.param(
         AsymmetricSecret,
         "RS256",
-        generate_rsa_key(512),
+        generate_rsa_key(key_size),
         marks=require_cryptography,
     ),
     pytest.param(
         AsymmetricSecret,
         "RS256",
-        {"private_key": generate_rsa_key(512)},
+        {"private_key": generate_rsa_key(key_size)},
         marks=require_cryptography,
     ),
     pytest.param(
         AsymmetricSecret,
         "RS256",
         {
-            "private_key": generate_rsa_key(512, b"qwer1234"),
+            "private_key": generate_rsa_key(key_size, b"qwer1234"),
             "password": b"qwer1234",
         },
         marks=require_cryptography,
@@ -37,7 +38,7 @@ happypath_parametrize_argvalues = [
     #
     # Treat rsa-private-key as secret
     pytest.param(
-        SymmetricSecret, "HS256", generate_rsa_key(512), marks=require_cryptography
+        SymmetricSecret, "HS256", generate_rsa_key(key_size), marks=require_cryptography
     ),
 ]
 
@@ -54,7 +55,7 @@ invalid_parametrize_argvalues = [
     pytest.param("HS256", None),
     pytest.param("HS256", {"private_key": secrets.token_hex(16)}),
     pytest.param(
-        "HS256", {"private_key": generate_rsa_key(512)}, marks=require_cryptography
+        "HS256", {"private_key": generate_rsa_key(key_size)}, marks=require_cryptography
     ),
     pytest.param("RS256", None),
     pytest.param("RS256", secrets.token_hex(16).encode()),
@@ -62,7 +63,7 @@ invalid_parametrize_argvalues = [
     pytest.param(
         "RS256",
         {
-            "private_key": generate_rsa_key(512, b"password"),
+            "private_key": generate_rsa_key(key_size, b"password"),
             "password": b"wrong-password",
         },
         marks=require_cryptography,

@@ -17,7 +17,7 @@ try:
 
     def generate_rsa_key(key_size=2048, password=None):
         key = rsa.generate_private_key(
-            backend=default_backend(), public_exponent=65537, key_size=key_size
+            public_exponent=65537, key_size=key_size, backend=default_backend()
         )
         private_key = key.private_bytes(
             serialization.Encoding.PEM,
@@ -95,7 +95,7 @@ def secret():
     scope="session",
     params=[
         pytest.param((secrets.token_hex(16), "HS256")),
-        pytest.param((generate_rsa_key(512), "RS256"), marks=require_cryptography),
+        pytest.param((generate_rsa_key(1024), "RS256"), marks=require_cryptography),
     ],
 )
 def secret_and_algorithm(request) -> str:

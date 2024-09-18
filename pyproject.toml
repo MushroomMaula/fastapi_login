@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-login"
-version = "1.10.1"
+version = "1.10.2"
 # metadata
 authors = [
   "Max Rausch-Dupont <maxrd79@gmail.com>",
@@ -28,24 +28,25 @@ readme = "README.md"
 python = "^3.8"
 typing-extensions = "^4.1.1"
 
-anyio = {version = "^3.6.2", extras = ["trio"]}
-cryptography = {version = ">=39.0.1,<43.0.0", optional = true}
+cryptography = {version = ">=39.0.1,<44.0.0", optional = true}
 fastapi = "*"
-pyjwt = "^2.4"
+pyjwt = ">=2.4"
 
 [tool.poetry.extras]
 asymmetric = ["cryptography"]
 
 [tool.poetry.group.dev.dependencies]
-async-asgi-testclient = "*"
 markdown-include = "*"
 mkdocs = "*"
 mkdocs-material = "*"
-mkdocstrings = {version = "^0.25.1", extras = ["python"]}
+mkdocstrings = {version = "^0.26.1", extras = ["python"]}
 pymdown-extensions = "*"
+
+[tool.poetry.group.test.dependencies]
+async-asgi-testclient = "*"
 pytest = ">=7"
 pytest-asyncio = "*"
-pytest-lazy-fixtures = "^1.0.7"
+pytest-lazy-fixtures = "^1.1.1"
 
 [tool.poetry.group.example.dependencies]
 email-validator = "^2.0.0.post2"
@@ -61,3 +62,6 @@ uvicorn = ">=0.27.0"
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
