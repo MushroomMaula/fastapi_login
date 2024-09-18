@@ -13,4 +13,5 @@ formats:
 
 python:
   install:
+    # ./scripts/update_requirements.sh
     - requirements: requirements.txt
