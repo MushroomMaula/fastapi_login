@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-login"
-version = "1.10.2"
+version = "1.10.3"
 # metadata
 authors = [
   "Max Rausch-Dupont <maxrd79@gmail.com>",
@@ -28,7 +28,7 @@ readme = "README.md"
 python = "^3.8"
 typing-extensions = "^4.1.1"
 
-cryptography = {version = ">=39.0.1,<44.0.0", optional = true}
+cryptography = {version = ">=39.0.1,<45.0.0", optional = true}
 fastapi = "*"
 pyjwt = ">=2.4"
 
@@ -39,8 +39,9 @@ asymmetric = ["cryptography"]
 markdown-include = "*"
 mkdocs = "*"
 mkdocs-material = "*"
-mkdocstrings = {version = "^0.26.1", extras = ["python"]}
+mkdocstrings = {version = "^0.27.0", python = "^3.9", extras = ["python"]}
 pymdown-extensions = "*"
+ruff = "^0.8.2"
 
 [tool.poetry.group.test.dependencies]
 async-asgi-testclient = "*"
@@ -49,12 +50,12 @@ pytest-asyncio = "*"
 pytest-lazy-fixtures = "^1.1.1"
 
 [tool.poetry.group.example.dependencies]
-email-validator = "^2.0.0.post2"
+email-validator = "^2.2.0"
 passlib = {extras = ["bcrypt"], version = "*"}
 pydantic = ">=2.0.1"
 pydantic_settings = ">=2.0.1"
 python-dotenv = "^1.0.0"
-python-multipart = ">=0.0.6"
+python-multipart = ">=0.0.19"
 sqlalchemy = "^2.0.18"
 sqlalchemy-stubs = "^0.4"
 uvicorn = ">=0.27.0"
@@ -64,4 +65,5 @@ build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
 
 [tool.pytest.ini_options]
+addopts = "--ignore=examples"
 asyncio_default_fixture_loop_scope = "function"
