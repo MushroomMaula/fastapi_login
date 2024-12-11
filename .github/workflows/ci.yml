@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Python package
+name: Build
 
 on:
   push:
@@ -41,3 +38,4 @@ jobs:
       - name: Test pydantic v1 compatibility
         working-directory: ./tests
         run: poetry run pip install 'pydantic<2' && poetry run pytest
+      - run: poetry build
