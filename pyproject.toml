@@ -45,7 +45,7 @@ ruff = "^0.8.2"
 
 [tool.poetry.group.test.dependencies]
 async-asgi-testclient = "*"
-pytest = ">=7"
+pytest = ">=8"
 pytest-asyncio = "*"
 pytest-lazy-fixtures = "^1.1.1"
 

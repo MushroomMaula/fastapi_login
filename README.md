@@ -21,7 +21,7 @@ pip install fastapi-login
 
 ## Usage
 
-To begin we have to setup our FastAPI app:
+To begin we have to set up our FastAPI app:
 
 ```python
 from fastapi import FastAPI
@@ -31,10 +31,9 @@ SECRET = 'your-secret-key'
 app = FastAPI()
 ```
 
-To obtain a suitable secret key you can run ``import os; print(os.urandom(24).hex())``.
+To obtain a suitable secret key you can run `import secrets; secrets.token_hex(24)`.
 
-Now we can import and setup the LoginManager, which will handle the process of
-encoding and decoding our Json Web Tokens.
+Now we can import and setup the `LoginManager`, which will handle the process of encoding and decoding our Json Web Tokens.
 
 ```python
 from fastapi_login import LoginManager
@@ -114,7 +113,7 @@ app.add_exception_handler(NotAuthenticatedException, exc_handler)
 ```
 
 To change the expiration date of the token use the ``expires_delta`` argument of the `create_access_token` method
-with a timedelta. The default is set 15 min. Please be aware that setting a long expiry date is not considered a good practice
+with `timedelta`. The default is set 15 min. Please be aware that setting a long expiry date is not considered a good practice
 as it would allow an attacker with the token to use your application as long as he wants.
 
 ```python
@@ -161,5 +160,4 @@ def auth(response: Response, user=Depends(manager)):
     )
     manager.set_cookie(response, token)
     return response
-
 ```
