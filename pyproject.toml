@@ -44,7 +44,7 @@ pymdown-extensions = "*"
 ruff = "^0.8.2"
 
 [tool.poetry.group.test.dependencies]
-async-asgi-testclient = "*"
+httpx = "^0.28.1"
 pytest = ">=8"
 pytest-asyncio = "*"
 pytest-lazy-fixtures = "^1.1.1"
@@ -66,4 +66,4 @@ requires = ["poetry-core>=1.0.0"]
 
 [tool.pytest.ini_options]
 addopts = "--ignore=examples"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_fixture_loop_scope = "session"

@@ -1,6 +1,6 @@
 # FastAPI-Login
 
-[![CI](https://img.shields.io/github/actions/workflow/status/MushroomMaula/fastapi_login/python-tests.yml?branch=master)](https://github.com/MushroomMaula/fastapi_login/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/MushroomMaula/fastapi_login/ci.yml)](https://github.com/MushroomMaula/fastapi_login/actions)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fastapi-login.svg)](https://pypi.org/project/fastapi-login/)
 [![PyPI](https://img.shields.io/pypi/v/fastapi-login.svg)](https://pypi.org/project/fastapi-login/)
 [![License](https://img.shields.io/github/license/MushroomMaula/fastapi_login.svg)](https://github.com/MushroomMaula/fastapi_login)
@@ -31,7 +31,7 @@ SECRET = 'your-secret-key'
 app = FastAPI()
 ```
 
-To obtain a suitable secret key you can run `import secrets; secrets.token_hex(24)`.
+To obtain a suitable secret key you can run `import secrets; print(secrets.token_hex(24))`.
 
 Now we can import and setup the `LoginManager`, which will handle the process of encoding and decoding our Json Web Tokens.
 

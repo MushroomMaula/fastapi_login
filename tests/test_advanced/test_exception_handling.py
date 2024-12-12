@@ -92,7 +92,6 @@ async def test_exception_handling(exception_manager, client, invalid_data):
     resp = await client.get(
         "/private/exception", headers={"Authorization": f"Bearer {invalid_token}"}
     )
-
     assert resp.json()["detail"] == "Redirected"
 
 

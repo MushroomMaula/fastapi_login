@@ -17,7 +17,7 @@ normally one would store the secret key in some sort of environment variable.
 !!! warning
     To obtain a suitable key run the following command in your shell.
     ```
-    python -c "import os; print(os.urandom(24).hex())"
+    python -c "import secrets; print(secrets.token_hex(24))"
     ```
 !!! warning
     Most of the time it's better not to store the secret key in a file like this,

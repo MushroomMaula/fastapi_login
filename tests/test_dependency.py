@@ -76,9 +76,9 @@ async def test_header_dependency(client, header_manager, default_data):
 @pytest.mark.asyncio
 async def test_cookie_dependency(client, cookie_manager, default_data):
     token = cookie_manager.create_access_token(data=default_data)
-    resp = await client.get(
-        "/private/cookie", cookies={cookie_manager.cookie_name: token}
-    )
+    client._cookies = client._merge_cookies({cookie_manager.cookie_name: token})
+    resp = await client.get("/private/cookie")
+    client._cookies.clear()
 
     assert resp.status_code == 200
     assert resp.json()["detail"] == "Success"
@@ -87,8 +87,9 @@ async def test_cookie_dependency(client, cookie_manager, default_data):
 @pytest.mark.asyncio
 async def test_cookie_header_fallback(client, cookie_header_manager, default_data):
     token = cookie_header_manager.create_access_token(data=default_data)
+    client._cookies.clear()
     resp = await client.get(
-        "/private/both", headers={"Authorization": f"Bearer {token}"}, cookies={}
+        "/private/both", headers={"Authorization": f"Bearer {token}"}
     )
 
     # even tough no valid access cookie is present,
@@ -127,7 +128,7 @@ async def test_optional_dependency(client, cookie_header_manager, data, is_inval
     resp = await client.get(
         "/private/optional",
         headers={"Authorization": f"Bearer {token}"},
-        query_string={"invalid": is_invalid},
+        params={"invalid": is_invalid},
     )
 
     assert resp.status_code == 200
