@@ -1,8 +1,12 @@
-from fastapi import Depends
+from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_login.exceptions import InvalidCredentialsException
 
+app = FastAPI()
+
+def query_user(email):
+    return {"email": email, "password": "password"}
 
 @app.post("/login")
 def login(data: OAuth2PasswordRequestForm = Depends()):

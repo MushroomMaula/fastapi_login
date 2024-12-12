@@ -20,4 +20,4 @@
     pipenv install fastapi-login
     ```
 
-Now you can start with the [set up](setup.md).
+Now you can start with the [setup](setup.md).
