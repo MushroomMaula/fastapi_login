@@ -2,8 +2,8 @@ import secrets
 from typing import Callable, Dict
 
 import pytest
-from async_asgi_testclient import TestClient
 from fastapi import FastAPI
+from httpx import ASGITransport, AsyncClient
 from pydantic import BaseModel
 
 from fastapi_login import LoginManager
@@ -33,7 +33,7 @@ try:
 except ImportError:
     _has_cryptography = False
 
-    def generate_rsa_key(*args, **kwargs):
+    def generate_rsa_key(key_size=2048, password=None):
         return b""
 
 
@@ -108,8 +108,12 @@ def token_url() -> str:
 
 
 @pytest.fixture(scope="module")
-def client(app) -> TestClient:
-    return TestClient(app)
+def client(app):
+    return AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+        follow_redirects=True,
+    )
 
 
 @pytest.fixture()
