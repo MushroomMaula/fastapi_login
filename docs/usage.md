@@ -29,7 +29,7 @@ be used to access protected routes.
 
 ## Usage as a dependency
 
-After the user has way to obtain an access_token, the ``LoginManager`` instance
+After the user has a way to obtain an access_token, the ``LoginManager`` instance
 can be used as a dependency.
 
 ```python hl_lines="2"
